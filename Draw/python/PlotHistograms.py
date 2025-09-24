@@ -164,10 +164,10 @@ class HTT_Histogram:
             self.lep2 = "\\mu"
         elif self.channel == "ee":
             self.backgrounds = {
-                                "$t\\bar{t}$": {"nodes": ["TTL", "TTJ"], "color": "violet"},
+                                "$t\\bar{t}$": {"nodes": ["TTT", "TTJ"], "color": "violet"},
                                 "QCD": {"nodes": ["QCD"], "color": "pink"},
-                                "Electroweak": {"nodes": ["VVL", "VVJ", "W"], "color": "red"},
-                                "Z$\\to ee": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
+                                "Electroweak": {"nodes": ["VVT", "VVJ", "W"], "color": "red"},
+                                "Z$\\to$ ee": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
                                 "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
                             }
             self.lep1 = "e_1"
