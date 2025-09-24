@@ -1,6 +1,7 @@
 import ROOT
 import argparse
 import os
+from tqdm import tqdm
 from Draw.python.PlotHistograms import HTT_Histogram
 
 def hadd_root_files(input_files, output_file, dir_combinations, exp_num=None):
@@ -16,11 +17,11 @@ def hadd_root_files(input_files, output_file, dir_combinations, exp_num=None):
     """
     # Create an empty output ROOT file
     output = ROOT.TFile(output_file, "RECREATE")
-    
+    print("Created output file:", output_file)
     # First, create a map of (hist_name, dir_name, file_name) to histogram
     histogram_dir_file_map = {}
 
-    for file_name in input_files:
+    for file_name in tqdm(input_files):
 
         input_root = ROOT.TFile.Open(file_name, "READ")
         
@@ -44,7 +45,8 @@ def hadd_root_files(input_files, output_file, dir_combinations, exp_num=None):
                         out_key = (hist_name,dir_name,file_name)
                         histogram_dir_file_map[out_key] = hist.Clone()
                         histogram_dir_file_map[out_key].SetDirectory(0)
-       
+    print("Mapped histograms from input files")
+
     # now we convert this map into a histogram_dir_map with format (hist_name, dir_name) : hist
     # we check that a histogram exists for all files, if it is a systematic histogram identifed by ending in 'Up', 'Up_2D', 'Down', or 'Down_2D' then it might not exist in all files
     # in this case we will add the nominal histogram from that file instead
@@ -61,7 +63,8 @@ def hadd_root_files(input_files, output_file, dir_combinations, exp_num=None):
         if not (hist_name.endswith('Up') or hist_name.endswith('Down') or hist_name.endswith('Up_2D') or hist_name.endswith('Down_2D')):
             nominal_hist_names.add(hist_name)
 
-    for key in histogram_dir_map.keys():
+    print("Getting Keys")
+    for key in tqdm(histogram_dir_map.keys()):
         hist_name, dir_name = key
         hist = None
         hist_count = 0
@@ -106,6 +109,7 @@ def hadd_root_files(input_files, output_file, dir_combinations, exp_num=None):
         elif hist_count != exp_num:
             print(f"Warning: Histogram {hist_name} in directory {dir_name} found in {hist_count} out of expected {exp_num} input files. Not adding to output.")
 
+    print("Processed Keys")
 
     # now we take care of combining directories together if needed based on dir_combinations
     if dir_combinations:
@@ -132,6 +136,7 @@ def hadd_root_files(input_files, output_file, dir_combinations, exp_num=None):
         histogram_dir_map = combined_histogram_dir_map
 
     dir_names = []
+    print("Combined directories")
 
     # now we write the histograms to the output file
     for (hist_name, dir_name), hist in histogram_dir_map.items():
@@ -146,6 +151,8 @@ def hadd_root_files(input_files, output_file, dir_combinations, exp_num=None):
 
     # Close the output file
     output.Close()
+
+    print("Written output file:", output_file)
 
     for dir_name in dir_names:
 
