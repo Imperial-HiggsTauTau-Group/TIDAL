@@ -4,6 +4,24 @@
 git clone --recurse-submodules git@github.com:Ksavva1021/TIDAL.git
 ```
 
+## CP Analysis Instructions
+
+Code to produce datacards is in the `Draw` directory (make sure to setup Draw utilities).
+
+The config for the CP analysis is:
+```
+Draw/scripts/cpdecay_datacards.yaml
+```
+
+To create the datacards run:
+```
+python Draw/scripts/makeDatacards.py --config Draw/scripts/cpdecay_datacards.yaml --batch
+```
+
+Once all jobs are complete, `hadd` them for combine with:
+```
+python Draw/scripts/hadd_cp_datacards.py -i Draw/Plots/Path/You/Chose/*/*/*/*.root -o Draw/Plots/Path/You/Chose/added_histo.root
+```
 
 ## Setup Instructions
 
@@ -16,7 +34,29 @@ git clone --recurse-submodules git@github.com:Ksavva1021/TIDAL.git
 micromamba env create -f environment.yml
 ```
 
-### Setting up SVFIT - Careful:
+
+
+### Setting up Draw Utilities (Separate from SVFIT, clean terminal):
+
+Setting up Draw utilities (Multidraw):
+
+```
+micromamba activate TIDAL
+source setup_multidraw.sh
+pip install -e .
+```
+
+#### Using Draw:
+
+Activate the environment and load ROOT:
+
+```
+micromamba activate TIDAL
+source load_package.sh # Select Option 1
+```
+
+
+### Setting up SVFIT:
 
 ```
 micromamba activate TIDAL
@@ -50,22 +90,3 @@ Output file is called `svfit.parquet` and contains `run, lumi, event, svfit mass
 
 ```/vols/cms/ks1021/offline/HiggsDNA/IC/output/test/Run3_2022/tt/DYto2L_M-50_madgraphMLM/nominal/svfit.parquet```
 
-
-### Setting up Draw Utilities (Separate from SVFIT, clean terminal):
-
-Setting up Draw utilities (Multidraw):
-
-```
-micromamba activate TIDAL
-source setup_multidraw.sh
-pip install -e .
-```
-
-#### Using Draw:
-
-Activate the environment and load ROOT: 
-
-```
-micromamba activate TIDAL
-source load_package.sh # Select Option 1
-```
