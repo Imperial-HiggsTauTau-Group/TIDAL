@@ -124,7 +124,10 @@ if __name__ == "__main__":
             for plot in plot_config: # can have several lines in the config
                 for category in plot['category']:
                     for variable in plot['plotting_variable']:
-                        f_name = f"datacard_{variable}_{category}_{channel}_$ERA.root"
+                        if channel in ['et', 'mt']:
+                            f_name = f"datacard_{variable}_mTLt65_{category}_{channel}_$ERA.root"
+                        else:  # tt channel
+                            f_name = f"datacard_{variable}_{category}_{channel}_$ERA.root"
                         print("\n" + "*"*100)
                         print(f"-> Datacards to merge: {f_name}")
                         combine_eras(eras_to_combine, channel, scheme, directory, f_name)
