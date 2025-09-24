@@ -45,20 +45,22 @@ def create_bins(variable: str) -> str:
 
 
 def create_condor_submit_file(
-    logs_path: str, variable_name: str, submit_file: str, script_path: str
+    logs_path: str, variable_name: str, submit_file: str, script_path: str, era: str = "", run_systematics: bool = False
 ):
     condor_template = f"""
 executable = {script_path}
 output = {logs_path}/condor_{variable_name}.out
 error = {logs_path}/condor_{variable_name}.err
 log = {logs_path}/condor_{variable_name}.log
-request_memory = 16000
-request_cpus = 2
+request_memory = 8000
+request_cpus = 1
 getenv = True
 +MaxRuntime = 10500
 queue
 """
-
+    if run_systematics and (era == "Run3_2022EE" or era == "Run3_2023"):
+        print("ASSIGNING EXTRA RUNTIME")
+        condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 30000")
     with open(submit_file, "w") as f:
         f.write(condor_template)
     os.system(f"chmod +x {submit_file}")
@@ -183,7 +185,7 @@ parameter_path = config["parameter_path"]
 schemes = config["schemes"]
 run_systematics = config["run_systematics"]
 
-available_channels = ["mm", "mt", "tt", "et"]
+available_channels = ["mm", "ee", "mt", "tt", "et"]
 for channel in channels:
     if channel not in available_channels:
         raise ValueError(
@@ -345,7 +347,7 @@ for era in eras:
                                logs, f"submit_{filename}.sub"
                             )
                             create_condor_submit_file(
-                               logs, filename, submit_file, script_path
+                               logs, filename, submit_file, script_path, era, run_systematics
                             )
                             if args.batch:
                                subprocess.run(["condor_submit", submit_file])
