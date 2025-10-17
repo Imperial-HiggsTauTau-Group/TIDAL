@@ -1,9 +1,10 @@
-input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/control_noMETrecoil
-output_path: /vols/cms/ks1021/TIDAL/Draw/Plots/Control
-channels: [et,mt,tt]
-eras: [Run3_2022EE]
-parameter_path: /vols/cms/ks1021/offline/HiggsDNA/IC/scripts/ditau/config/
+input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/fully_corrected_nominal #SF_templates_CP #control_noMETRecoil
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/Control/Oct13
+channels: [ et, mt, ee, mm]
+eras: [Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix]
+parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [control]
+run_systematics: false
 
 control:
   variable_definitions:
@@ -12,8 +13,8 @@ control:
     m_vis_tt: "m_vis(50,0,400)"
     pt_1: "pt_1(40,0,200)"
     pt_2: "pt_2(40,0,200)"
-    eta_1: "eta_1(21,-2.1,2.1)"
-    eta_2: "eta_2(21,-2.1,2.1)"
+    eta_1: "eta_1(48,-2.4,2.4)"
+    eta_2: "eta_2(48,-2.4,2.4)"
     phi_1: "phi_1(32,-pi,pi)"
     phi_2: "phi_2(32,-pi,pi)"
     dR: "dR(42,0,5)"
@@ -38,6 +39,10 @@ control:
 
   mm:
   # GENERAL CONTROL
-  - { method: "5", category:  [ inclusive ], plotting_variable: [ m_vis, met_pt]}
+  - { method: "5", category:  [ inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
+
+  ee:
+  # GENERAL CONTROL
+  - { method: "5", category:  [ inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
 
 
