@@ -1,14 +1,15 @@
 input_folder:  /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/SF_templates_HPS
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/SF_Templates_HPS_CONTROL/CONTROL_v2p1
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/SF_Templates_HPS_CONTROL
 channels: [ mt]
 eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [ sf_calculation ]
-run_systematics: true
+run_systematics: false
 
 sf_calculation:
   variable_definitions:
     pt_2_vs_mvis: "pt_2,m_vis(36,20,200),(64,40,200)"
+    m_vis: "m_vis(40,0,200)"
     jpt_1: "jpt_1(20,30,200)"
     jpt_2: "jpt_2(20,30,200)"
 
