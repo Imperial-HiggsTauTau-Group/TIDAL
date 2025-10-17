@@ -62,15 +62,15 @@ def combine_eras(eras_to_combine, channel, scheme, directory, f_name):
     # Combine histograms
     out_prefix = f"datacard_{args['var'].split('[')[0]}_{args['category']}_{args['channel']}"
     if ("Run3_2022" in eras_to_combine) and ("Run3_2022EE" in eras_to_combine) and ("Run3_2023" in eras_to_combine) and ("Run3_2023BPix" in eras_to_combine):
-        cmb_directory = os.path.join(directory, "combined_earlyRun3")
+        cmb_directory = os.path.join(directory, "combined_earlyRun3", channel)
         cmb_file = os.path.join(cmb_directory, out_prefix + "_full2223.root")
         era = "earlyrun3"
     elif ("Run3_2022" in eras_to_combine) and ("Run3_2022EE" in eras_to_combine):
-        cmb_directory = os.path.join(directory, "combined_2022")
+        cmb_directory = os.path.join(directory, "combined_2022", channel)
         cmb_file = os.path.join(cmb_directory, out_prefix + "_full22.root")
         era = "full22"
     elif ("Run3_2023" in eras_to_combine) and ("Run3_2023BPix" in eras_to_combine):
-        cmb_directory = os.path.join(directory, "combined_2023")
+        cmb_directory = os.path.join(directory, "combined_2023", channel)
         cmb_file = os.path.join(cmb_directory, out_prefix + "_full23.root")
         era = "full23"
     else:
@@ -126,7 +126,7 @@ if __name__ == "__main__":
                     for variable in plot['plotting_variable']:
                         if channel in ['et', 'mt']:
                             f_name = f"datacard_{variable}_mTLt65_{category}_{channel}_$ERA.root"
-                        else:  # tt channel
+                        else:  # tt, ee, mm channel
                             f_name = f"datacard_{variable}_{category}_{channel}_$ERA.root"
                         print("\n" + "*"*100)
                         print(f"-> Datacards to merge: {f_name}")
