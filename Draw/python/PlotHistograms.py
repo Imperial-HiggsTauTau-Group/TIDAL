@@ -111,6 +111,36 @@ class HTT_Histogram:
                 self.channel_label = r"$\mu a_1^{1pr}$"
             elif "DM10_" in self.category:
                 self.channel_label = r"$\mu a_1^{3pr}$"
+            # define CP channel label
+            if ("higgs_" in self.category):
+                if "mupi" in self.category:
+                    self.channel_label = r"$\mu\pi$"
+                elif "murho" in self.category:
+                    self.channel_label = r"$\mu\rho$"
+                elif "mua11pr" in self.category:
+                    self.channel_label = r"$\mu a_1^{1pr}$"
+                elif "mua1" in self.category:
+                    self.channel_label = r"$\mu a_1^{3pr}$"
+        elif self.channel == 'et':
+            if "DM0_" in self.category:
+                self.channel_label = r"$e\pi$"
+            elif "DM1_" in self.category:
+                self.channel_label = r"$e\rho$"
+            elif "DM2_" in self.category:
+                self.channel_label = r"$e a_1^{1pr}$"
+            elif "DM10_" in self.category:
+                self.channel_label = r"$e a_1^{3pr}$"
+            # define CP channel label
+            if ("higgs_" in self.category):
+                if "epi" in self.category:
+                    self.channel_label = r"$e\pi$"
+                elif "erho" in self.category:
+                    self.channel_label = r"$e\rho$"
+                elif "ea11pr" in self.category:
+                    self.channel_label = r"$e a_1^{1pr}$"
+                elif "ea1" in self.category:
+                    self.channel_label = r"$e a_1^{3pr}$"
+
 
 
     def initialize_nodes(self):
@@ -331,7 +361,7 @@ class HTT_Histogram:
         self.ax.fill_between(self.bin_edges,
                     self.stacked_block-np.insert(self.total_background["error_down"], len(self.total_background["error_down"]), 0),
                     self.stacked_block+np.insert(self.total_background["error_up"], len(self.total_background["error_up"]), 0),
-                    step="post", facecolor='none', hatch='////////', edgecolor='grey', linewidth=0, label = "Background Uncertainty")
+                    step="post", facecolor='none', hatch='////////', edgecolor='grey', linewidth=0, label = "Bkg. Uncert.")
         if not self.blind:
             # add data
             self.ax.errorbar(self.bin_centers, self.data['counts'], label='Observation', yerr=self.data['errors'], fmt='o', color = 'black', markersize=3, linewidth=0.6)
@@ -378,7 +408,11 @@ class HTT_Histogram:
             # place legend outside of plot
             plt.legend(handles[::-1], labels[::-1], loc='upper left', frameon=1, framealpha=1, bbox_to_anchor=(1.005, 5.2))
         else:
-            self.ax.legend(handles[::-1], labels[::-1], loc='upper right', frameon=1, framealpha=1, bbox_to_anchor=(0.98, 0.98))
+            if len(handles) < 5:
+                ncols=1
+            else:
+                ncols=2
+            self.ax.legend(handles[::-1], labels[::-1], loc='upper right', frameon=1, framealpha=1, bbox_to_anchor=(0.98, 0.98), ncol=ncols)
 
         # main plot
         if "(GeV)" in self.variable_label:
@@ -389,7 +423,7 @@ class HTT_Histogram:
             self.ax.set_yscale('log')
             self.ax.set_ylim(0.1, 10*np.max(self.stacked_block))
         else:
-            self.ax.set_ylim(0, 1.6*np.max(self.stacked_block))
+            self.ax.set_ylim(0, 1.9*np.max(self.stacked_block))
         self.ax.set_xlim(self.bin_edges[0], self.bin_edges[-1])
         # ratio plot
         self.ax_ratio.set_ylabel("Obs/Exp")
