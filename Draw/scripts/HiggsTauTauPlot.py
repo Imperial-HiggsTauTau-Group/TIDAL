@@ -356,34 +356,79 @@ if args.channel == "tt":
         )
 
 elif args.channel == "mt":
-    # PNet DM separated categories (with CP selections)
+    # PNet DM separated categories for SFs (with CP selections)
     categories["DM0_tau_cp"] = "decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
     categories["DM1_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
     categories["DM2_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
     categories["DM10_tau_cp"] = "decayModePNet_2 == 10 && hasRefitSV_2"
     categories["DM11_tau_cp"] = "decayModePNet_2 == 11 && hasRefitSV_2"
-    categories['cp_inclusive'] = f"(({categories['DM0_tau_cp']}) || ({categories['DM1_tau_cp']}) || ({categories['DM2_tau_cp']}) || ({categories['DM10_tau_cp']}))"
 
     # HPS DM separate categories (inclusive)
     categories["DM0_tau"] = "decayMode_2 == 0"
     categories["DM1_tau"] = "decayMode_2==1"
     categories["DM10_tau"] = "decayMode_2==10"
     categories["DM11_tau"] = "decayMode_2==11"
+
+    # CP measurement categories
+    categories["sel_mupi"] = "mt_1<65 && decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25" # add IP sig cut when SFs are ready
+    categories["sel_murho"] = "mt_1<65 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2" # add IP sig cut when SFs are ready
+    categories["sel_mua11pr"] = "mt_1<65 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2" # add IP sig cut when SFs are ready
+    categories["sel_mua1"] = "mt_1<65 && decayModePNet_2 == 10 && hasRefitSV_2" # add IP sig cut when SFs are ready
+    # inclusive category including an mT cut to suppress W+jets
+    categories['cp_inclusive'] = f"((mt_1<65) && ({categories['sel_mupi']}) || ({categories['sel_murho']}) || ({categories['sel_mua11pr']}) || ({categories['sel_mua1']}))"
+
+    categories["mva_higgs"] = f"(BDT_pred_class==1) && ({categories['cp_inclusive']})"
+    categories["mva_fake"] = f"(BDT_pred_class==2) && ({categories['cp_inclusive']})"
+    categories["mva_tau"] = f"(BDT_pred_class==0) && ({categories['cp_inclusive']})"
+
+    lt_channels = [
+        "mupi",
+        "murho",
+        "mua11pr",
+        "mua1"
+    ]
+    for c in lt_channels:
+        categories[f"higgs_{c}"] = f"({categories['mva_higgs']} && {categories[f'sel_{c}']})"
+        categories[f"tau_{c}"] = f"({categories['mva_tau']} && {categories[f'sel_{c}']})"
+        categories[f"fake_{c}"] = f"({categories['mva_fake']} && {categories[f'sel_{c}']})"
+
 
 elif args.channel == "et":
-    # PNet DM separated categories (with CP selections)
+    # PNet DM separated categories for SFs (with CP selections)
     categories["DM0_tau_cp"] = "decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
     categories["DM1_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
     categories["DM2_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
     categories["DM10_tau_cp"] = "decayModePNet_2 == 10 && hasRefitSV_2"
     categories["DM11_tau_cp"] = "decayModePNet_2 == 11 && hasRefitSV_2"
-    categories['cp_inclusive'] = f"(({categories['DM0_tau_cp']}) || ({categories['DM1_tau_cp']}) || ({categories['DM2_tau_cp']}) || ({categories['DM10_tau_cp']}))"
 
     # HPS DM separate categories (inclusive)
     categories["DM0_tau"] = "decayMode_2 == 0"
     categories["DM1_tau"] = "decayMode_2==1"
     categories["DM10_tau"] = "decayMode_2==10"
     categories["DM11_tau"] = "decayMode_2==11"
+
+    # CP measurement categories
+    categories["sel_epi"] = "mt_1<65 && decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25" # add IP sig cut when SFs are ready
+    categories["sel_erho"] = "mt_1<65 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2" # add IP sig cut when SFs are ready
+    categories["sel_ea11pr"] = "mt_1<65 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2" # add IP sig cut when SFs are ready
+    categories["sel_ea1"] = "mt_1<65 && decayModePNet_2 == 10 && hasRefitSV_2" # add IP sig cut when SFs are ready
+    # inclusive category including an mT cut to suppress W+jets
+    categories['cp_inclusive'] = f"((mt_1<65) && ({categories['sel_epi']}) || ({categories['sel_erho']}) || ({categories['sel_ea11pr']}) || ({categories['sel_ea1']}))"
+
+    categories["mva_higgs"] = f"(BDT_pred_class==1) && ({categories['cp_inclusive']})"
+    categories["mva_fake"] = f"(BDT_pred_class==2) && ({categories['cp_inclusive']})"
+    categories["mva_tau"] = f"(BDT_pred_class==0) && ({categories['cp_inclusive']})"
+
+    lt_channels = [
+        "epi",
+        "erho",
+        "ea11pr",
+        "ea1"
+    ]
+    for c in lt_channels:
+        categories[f"higgs_{c}"] = f"({categories['mva_higgs']} && {categories[f'sel_{c}']})"
+        categories[f"tau_{c}"] = f"({categories['mva_tau']} && {categories[f'sel_{c}']})"
+        categories[f"fake_{c}"] = f"({categories['mva_fake']} && {categories[f'sel_{c}']})"
 
 # if args.set_alias is not None then overwrite the categories with the selection provided
 
