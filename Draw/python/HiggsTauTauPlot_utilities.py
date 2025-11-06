@@ -72,7 +72,7 @@ def PrintSummary(
 def GetTotals(ana, nodename="", add_name="", samples_dict={}, outfile="outfile.root"):
     # add histograms to get totals for backgrounds split into real/fake taus and make a total backgrounds histogram
 
-    processes = ["ZTT", "ZL", "ZJ", "TTT", "ΤΤJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead"]
+    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ", "VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead"]
 
     outfile.cd(nodename)
     nodes = ana.nodes[nodename].SubNodes()
