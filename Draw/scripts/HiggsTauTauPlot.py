@@ -204,16 +204,20 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         )
         if args.do_aiso:
             categories["baseline"] = re.sub(
-                "iso_1\s*<\s*0.15", "iso_1 > 0.15 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
+                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
             )
     if args.channel == "et":
         # et_cross_only = "(trg_et_cross && pt_1 > 25 && pt_1 < 31 && abs(eta_1) < 2.1 && pt_2 > 35 && abs(eta_2) < 2.1)"
         single_electron_only = "(trg_singleelectron && pt_1 >= 31 && abs(eta_1) < 2.1 )"
         trg_full = single_electron_only # remove et cross trigger until Nanoprod v3
         categories["baseline"] = ( # Tight VSe for et
-            "(iso_1 < 0.15&& idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 6 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            "(m_vis>40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 6 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
+        if args.do_aiso:
+            categories["baseline"] = re.sub(
+                "iso_1\s*<\s*0.15", "iso_1 > 0.-5 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
+            )
 
     if args.channel == "tt":
         doubletau_only_trg = "(trg_doubletau && pt_1 > 40 && pt_2 > 40)"
@@ -251,16 +255,6 @@ categories["qcd_loose_shape"] = re.sub(
     "iso_1\s*<\s*0.15", "iso_1 < 0.3", categories["baseline"]
 )
 
-categories["aminus_low"] = (
-    "(alphaAngle_mu_pi_1 < {} && svfit_Mass < 100 && mt_1<50 && ip_LengthSig_1 > 1)".format(
-        np.pi / 4
-    )
-)
-categories["aminus_high"] = (
-    "(alphaAngle_mu_pi_1 > {} && svfit_Mass < 100 && mt_1<50 && ip_LengthSig_1 > 1)".format(
-        np.pi / 4
-    )
-)
 categories["ip_control"] = "(m_vis > 40 && m_vis < 90 && mt_1 < 40)"
 
 categories["xt_dM0"] = "(decayMode_2 == 0)"
@@ -269,22 +263,6 @@ categories["xt_dM10"] = "(decayMode_2 == 10)"
 categories["xt_dM11"] = "(decayMode_2 == 11)"
 
 if args.channel == "tt":
-    categories["inclusive_pipi"] = (
-        "(decayMode_1==0 && ip_LengthSig_1>=1.5 && decayMode_2==0 && ip_LengthSig_2>=1.5)"
-    )
-    categories["inclusive_pirho"] = (
-        "((decayMode_1==1 && decayMode_2==0 && ip_LengthSig_2>=1.5) || (decayMode_1==0 && ip_LengthSig_1>=1.5 && decayMode_2==1))"
-    )
-    categories["inclusive_rhorho"] = "(decayMode_1==1 && decayMode_2==1)"
-    categories["inclusive_a1pi"] = (
-        "((decayMode_1==10 && hasRefitSV_1 && decayMode_2==0 && ip_LengthSig_2>=1.5) || (decayMode_1==0 && ip_LengthSig_1>=1.5 && decayMode_2==10 && hasRefitSV_2))"
-    )
-    categories["inclusive_a1rho"] = (
-        "((decayMode_1==10 && hasRefitSV_1 && decayMode_2==1) || (decayMode_1==1 && decayMode_2==10 && hasRefitSV_2))"
-    )
-    categories["inclusive_a1a1"] = (
-        "(decayMode_1==10 && decayMode_2==10 && hasRefitSV_1 && hasRefitSV_2)"
-    )
 
     sel_pi = "decayModePNet_X==0 && ip_LengthSig_X>=1.25"
     sel_rho = "decayMode_X==1 && decayModePNet_X==1 && pion_E_split_X>0.2"
@@ -344,16 +322,39 @@ if args.channel == "tt":
         "a1a11pr",
         "a11pra1",
     ]
+
     for c in tt_channels:
-        categories["higgs_{}".format(c)] = "({} && {})".format(
-            categories["mva_higgs"], categories["inclusive_PNet_{}".format(c)]
-        )
-        categories["tau_{}".format(c)] = "({} && {})".format(
-            categories["mva_tau"], categories["inclusive_PNet_{}".format(c)]
-        )
-        categories["fake_{}".format(c)] = "({} && {})".format(
-            categories["mva_fake"], categories["inclusive_PNet_{}".format(c)]
-        )
+        categories[f"higgs_{c}"] = f"((BDT_pred_class==1) && {categories[f'inclusive_PNet_{c}']})"
+        categories[f"tau_{c}"] = f"((BDT_pred_class==0) && {categories[f'inclusive_PNet_{c}']})"
+        categories[f"fake_{c}"] = f"((BDT_pred_class==2) && {categories[f'inclusive_PNet_{c}']})"
+
+
+    # Define MVA categories by channels instead
+    # categories['mva_tau'] = f"((BDT_pred_class==0) && ({categories['inclusive_PNet_rhorho']} || {categories['inclusive_PNet_pirho']} || {categories['inclusive_PNet_rhopi']} || {categories['inclusive_PNet_a1rho']} || {categories['inclusive_PNet_rhoa1']} || {categories['inclusive_PNet_a1pi']} || {categories['inclusive_PNet_pia1']} || {categories['inclusive_PNet_a1a1']} || {categories['inclusive_PNet_pipi']} || {categories['inclusive_PNet_pia11pr']} || {categories['inclusive_PNet_a11prpi']} || {categories['inclusive_PNet_rhoa11pr']} || {categories['inclusive_PNet_a1a11pr']} || {categories['inclusive_PNet_a11pra1']}) )"
+    # categories['mva_fake'] = f"((BDT_pred_class==2) && ({categories['inclusive_PNet_rhorho']} || {categories['inclusive_PNet_pirho']} || {categories['inclusive_PNet_rhopi']} || {categories['inclusive_PNet_a1rho']} || {categories['inclusive_PNet_rhoa1']} || {categories['inclusive_PNet_a1pi']} || {categories['inclusive_PNet_pia1']} || {categories['inclusive_PNet_a1a1']} || {categories['inclusive_PNet_pipi']} || {categories['inclusive_PNet_pia11pr']} || {categories['inclusive_PNet_a11prpi']} || {categories['inclusive_PNet_rhoa11pr']} || {categories['inclusive_PNet_a1a11pr']} || {categories['inclusive_PNet_a11pra1']}) )"
+    # categories['mva_higgs'] = f"((BDT_pred_class==1) && ({categories['inclusive_PNet_rhorho']} || {categories['inclusive_PNet_pirho']} || {categories['inclusive_PNet_rhopi']} || {categories['inclusive_PNet_a1rho']} || {categories['inclusive_PNet_rhoa1']} || {categories['inclusive_PNet_a1pi']} || {categories['inclusive_PNet_pia1']} || {categories['inclusive_PNet_a1a1']} || {categories['inclusive_PNet_pipi']} || {categories['inclusive_PNet_pia11pr']} || {categories['inclusive_PNet_a11prpi']} || {categories['inclusive_PNet_rhoa11pr']} || {categories['inclusive_PNet_a1a11pr']} || {categories['inclusive_PNet_a11pra1']}) )"
+
+
+    # alpha minus validation angles
+    for opt, opt_cut in zip(['high', 'low'], ['>', '<']):
+        for obj in [1, 2]:
+            categories[f'aminus_rho_rho_{obj}_{opt}'] = f"(alphaAngle_rho_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_rhorho']}))"
+            categories[f'aminus_pi_rho_{obj}_{opt}'] = f"(alphaAngle_pi_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_pirho']}))"
+            categories[f'aminus_rho_pi_{obj}_{opt}'] = f"(alphaAngle_rho_pi_{obj} {opt_cut} {np.pi/4} && ({categories['tau_rhopi']}))"
+            categories[f'aminus_a1_rho_{obj}_{opt}'] = f"(alphaAngle_a1_rho_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a1rho']}))"
+            categories[f'aminus_rho_a1_{obj}_{opt}'] = f"(alphaAngle_rho_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_rhoa1']}))"
+            categories[f'aminus_a1_pi_{obj}_{opt}'] = f"(alphaAngle_a1_pi_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a1pi']}))"
+            categories[f'aminus_pi_a1_{obj}_{opt}'] = f"(alphaAngle_pi_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_pia1']}))"
+            categories[f'aminus_a1_a1_{obj}_{opt}'] = f"(alphaAngle_a1_a1_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a1a1']}))"
+            categories[f'aminus_pi_pi_{obj}_{opt}'] = f"(alphaAngle_pi_pi_{obj} {opt_cut} {np.pi/4} && ({categories['tau_pipi']}))"
+            categories[f'aminus_pi_a11pr_{obj}_{opt}'] = f"(alphaAngle_pi_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_pia11pr']}))"
+            categories[f'aminus_a11pr_pi_{obj}_{opt}'] = f"(alphaAngle_rho_pi_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a11prpi']}))"
+            categories[f'aminus_rho_a11pr_{obj}_{opt}'] = f"(alphaAngle_rho_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_rhoa11pr']}))"
+            categories[f'aminus_a11pr_rho_{obj}_{opt}'] = f"(alphaAngle_rho_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a1a11pr']}))"
+            categories[f'aminus_a1_a11pr_{obj}_{opt}'] = f"(alphaAngle_a1_rho_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a11pra1']}))"
+            categories[f'aminus_a11pr_a1_{obj}_{opt}'] = f"(alphaAngle_rho_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a11pra1']}))"
+
+
 
 elif args.channel == "mt":
     # PNet DM separated categories for SFs (with CP selections)
@@ -370,12 +371,12 @@ elif args.channel == "mt":
     categories["DM11_tau"] = "decayMode_2==11"
 
     # CP measurement categories
-    categories["sel_mupi"] = "mt_1<65 && decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25" # add IP sig cut when SFs are ready
-    categories["sel_murho"] = "mt_1<65 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2" # add IP sig cut when SFs are ready
-    categories["sel_mua11pr"] = "mt_1<65 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2" # add IP sig cut when SFs are ready
-    categories["sel_mua1"] = "mt_1<65 && decayModePNet_2 == 10 && hasRefitSV_2" # add IP sig cut when SFs are ready
+    categories["sel_mupi"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
+    categories["sel_murho"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
+    categories["sel_mua11pr"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
+    categories["sel_mua1"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2"
     # inclusive category including an mT cut to suppress W+jets
-    categories['cp_inclusive'] = f"((mt_1<65) && ({categories['sel_mupi']}) || ({categories['sel_murho']}) || ({categories['sel_mua11pr']}) || ({categories['sel_mua1']}))"
+    categories['cp_inclusive'] = f"(({categories['sel_mupi']}) || ({categories['sel_murho']}) || ({categories['sel_mua11pr']}) || ({categories['sel_mua1']}))"
 
     categories["mva_higgs"] = f"(BDT_pred_class==1) && ({categories['cp_inclusive']})"
     categories["mva_fake"] = f"(BDT_pred_class==2) && ({categories['cp_inclusive']})"
@@ -391,6 +392,29 @@ elif args.channel == "mt":
         categories[f"higgs_{c}"] = f"({categories['mva_higgs']} && {categories[f'sel_{c}']})"
         categories[f"tau_{c}"] = f"({categories['mva_tau']} && {categories[f'sel_{c}']})"
         categories[f"fake_{c}"] = f"({categories['mva_fake']} && {categories[f'sel_{c}']})"
+
+    # alpha minus validation angles
+    for opt, opt_cut in zip(['high', 'low'], ['>', '<']):
+        for obj in [1, 2]:
+            categories[f'aminus_mu_pi_{obj}_{opt}'] = f"(alphaAngle_mu_pi_{obj} {opt_cut} {np.pi/4} && ({categories['tau_mupi']}))"
+            categories[f'aminus_mu_rho_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_murho']}))"
+            categories[f'aminus_mu_a11pr_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_mua11pr']}))"
+            categories[f'aminus_mu_a1_{obj}_{opt}'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_mua1']}))"
+            categories[f'BDTinc_aminus_mu_pi_{obj}_{opt}'] = f"(alphaAngle_mu_pi_{obj} {opt_cut} {np.pi/4} && ({categories['sel_mupi']}))"
+            categories[f'BDTinc_aminus_mu_rho_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['sel_murho']}))"
+            categories[f'BDTinc_aminus_mu_a11pr_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['sel_mua11pr']}))"
+            categories[f'BDTinc_aminus_mu_a1_{obj}_{opt}'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['sel_mua1']}))"
+
+    # for obj in [1, 2]:
+    #     categories[f'aminus_mu_pi_{obj}_high'] = f"(alphaAngle_mu_pi_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mupi']}))"
+    #     categories[f'aminus_mu_rho_{obj}_high'] = f"(alphaAngle_mu_rho_{obj} > {np.pi/4 + 0.2} && ({categories['tau_murho']}))"
+    #     categories[f'aminus_mu_a11pr_{obj}_high'] = f"(alphaAngle_mu_rho_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mua11pr']}))"
+    #     categories[f'aminus_mu_a1_{obj}_high'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mua1']}))"
+    #     categories[f'aminus_mu_pi_{obj}_low'] = f"(alphaAngle_mu_pi_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mupi']}))"
+    #     categories[f'aminus_mu_rho_{obj}_low'] = f"(alphaAngle_mu_rho_{obj} < {np.pi/4 - 0.2} && ({categories['tau_murho']}))"
+    #     categories[f'aminus_mu_a11pr_{obj}_low'] = f"(alphaAngle_mu_rho_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mua11pr']}))"
+    #     categories[f'aminus_mu_a1_{obj}_low'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mua1']}))"
+
 
 
 elif args.channel == "et":
@@ -408,12 +432,12 @@ elif args.channel == "et":
     categories["DM11_tau"] = "decayMode_2==11"
 
     # CP measurement categories
-    categories["sel_epi"] = "mt_1<65 && decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25" # add IP sig cut when SFs are ready
-    categories["sel_erho"] = "mt_1<65 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2" # add IP sig cut when SFs are ready
-    categories["sel_ea11pr"] = "mt_1<65 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2" # add IP sig cut when SFs are ready
-    categories["sel_ea1"] = "mt_1<65 && decayModePNet_2 == 10 && hasRefitSV_2" # add IP sig cut when SFs are ready
+    categories["sel_epi"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
+    categories["sel_erho"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
+    categories["sel_ea11pr"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
+    categories["sel_ea1"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2"
     # inclusive category including an mT cut to suppress W+jets
-    categories['cp_inclusive'] = f"((mt_1<65) && ({categories['sel_epi']}) || ({categories['sel_erho']}) || ({categories['sel_ea11pr']}) || ({categories['sel_ea1']}))"
+    categories['cp_inclusive'] = f"(({categories['sel_epi']}) || ({categories['sel_erho']}) || ({categories['sel_ea11pr']}) || ({categories['sel_ea1']}))"
 
     categories["mva_higgs"] = f"(BDT_pred_class==1) && ({categories['cp_inclusive']})"
     categories["mva_fake"] = f"(BDT_pred_class==2) && ({categories['cp_inclusive']})"
@@ -429,6 +453,15 @@ elif args.channel == "et":
         categories[f"higgs_{c}"] = f"({categories['mva_higgs']} && {categories[f'sel_{c}']})"
         categories[f"tau_{c}"] = f"({categories['mva_tau']} && {categories[f'sel_{c}']})"
         categories[f"fake_{c}"] = f"({categories['mva_fake']} && {categories[f'sel_{c}']})"
+
+    # alpha minus validation angles
+    for opt, opt_cut in zip(['high', 'low'], ['>', '<']):
+        for obj in [1, 2]:
+            categories[f'aminus_e_pi_{obj}_{opt}'] = f"(alphaAngle_e_pi_{obj} {opt_cut} {np.pi/4} && ({categories['tau_epi']}))"
+            categories[f'aminus_e_rho_{obj}_{opt}'] = f"(alphaAngle_e_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_erho']}))"
+            categories[f'aminus_e_a11pr_{obj}_{opt}'] = f"(alphaAngle_e_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_ea11pr']}))"
+            categories[f'aminus_e_a1_{obj}_{opt}'] = f"(alphaAngle_e_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_ea1']}))"
+
 
 # if args.set_alias is not None then overwrite the categories with the selection provided
 
@@ -1335,7 +1368,7 @@ for hist in directory.GetListOfKeys():
     if ".subnodes" in hist.GetName():
         continue
 
-    processes = ["ZTT", "ZL", "ZJ", "TTT", "ΤΤJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead"]
+    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead"]
     if hist.GetName().endswith("Up") or hist.GetName().endswith("Down"):
         for proc in processes:
             if hist.GetName().startswith(proc + '_'):
