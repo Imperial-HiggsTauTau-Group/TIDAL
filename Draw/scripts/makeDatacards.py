@@ -201,7 +201,7 @@ if __name__ == "__main__":
                 f"Era {era} is not a valid era. Please choose from {available_eras}"
             )
 
-    available_schemes = ["sf_calculation", "control", "cpdecay", "cpdecay_fakefactors_control", "aco_validation"]
+    available_schemes = ["sf_calculation", "control", "cpdecay", "cpdecay_fakefactors_control", "cp_alpha_angles", "cp_O_star_variables", "cp_angular_systematics"]
     for scheme in schemes:
         if scheme not in available_schemes:
             raise ValueError(
