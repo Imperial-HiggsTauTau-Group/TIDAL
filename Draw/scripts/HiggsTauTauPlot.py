@@ -216,7 +216,7 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         )
         if args.do_aiso:
             categories["baseline"] = re.sub(
-                "iso_1\s*<\s*0.15", "iso_1 > 0.-5 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
+                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
             )
 
     if args.channel == "tt":
