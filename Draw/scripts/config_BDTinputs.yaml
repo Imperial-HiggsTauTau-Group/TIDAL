@@ -1,6 +1,6 @@
-input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/control_noMETrecoil #SF_templates_CP #control_noMETRecoil
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/BDTControl/Oct6
-channels: [ tt]
+input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Nov_systematics_run #SF_templates_CP #control_noMETRecoil
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/Control/Nov6_QCD
+channels: [ mt]
 eras: [Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [control]

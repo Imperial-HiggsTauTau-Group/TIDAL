@@ -1,6 +1,6 @@
-input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/fully_corrected_nominal #SF_templates_CP #control_noMETRecoil
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/Control/Oct13
-channels: [ et, mt, ee, mm]
+input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/add_IPsig_SFs #SF_templates_CP #control_noMETRecoil
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/FFs/Nov6_QCD # #Nov6_BDT_distribution #Nov6_highmT_base #Nov6_highmT_bveto
+channels: [ et, mt]
 eras: [Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [control]
