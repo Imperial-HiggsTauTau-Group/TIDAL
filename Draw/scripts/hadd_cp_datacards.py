@@ -4,7 +4,7 @@ import os
 from tqdm import tqdm
 from Draw.python.PlotHistograms import HTT_Histogram
 
-def hadd_root_files(input_files, output_file, dir_combinations, exp_num=None):
+def hadd_root_files(input_files, output_file, dir_combinations, channel, exp_num=None):
     """
     Combine ROOT files and merge specific directories by adding their histograms.
     
@@ -149,6 +149,27 @@ def hadd_root_files(input_files, output_file, dir_combinations, exp_num=None):
         hist.SetName(hist_name)
         hist.Write(hist_name)
 
+    if channel in ['mt', 'et']: # manually create jet fakes while without FFs
+        for key in output.GetListOfKeys():
+            if key.GetClassName() != "TDirectoryFile":
+                continue
+            dirname = key.GetName()
+            print(f"Processing directory: {dirname}")
+            dir_obj = output.GetDirectory(dirname)
+            hists = [dir_obj.Get(hn) for hn in ["TTJ", "VVJ", "W", "QCD", "ZJ"]]
+            hists_to_sum = [h for h in hists if h is not None]
+            if not hists_to_sum:
+                continue
+            # Clone first histo and add others
+            h_sum = hists_to_sum[0].Clone("JetFakes")
+            h_sum.Reset() # clear
+            for h in hists_to_sum:
+                h_sum.Add(h)
+            # Write to directory
+            dir_obj.cd()
+            h_sum.Write("JetFakes")
+
+
     # Close the output file
     output.Close()
 
@@ -170,13 +191,14 @@ def hadd_root_files(input_files, output_file, dir_combinations, exp_num=None):
         Histo_Plotter = HTT_Histogram(
             output_file,
             dir_name,
-            'tt',
+            channel,
             '...',
             var_name,
             blind=blind,
             log_y=False,
             is2Dunrolled=False,
-            save_name=output_file.replace('.root', f'_{dir_name}')
+            save_name=output_file.replace('.root', f'_{dir_name}',),
+            for_combine=True,
         )
         Histo_Plotter.plot_1D_histo()
 
@@ -190,7 +212,8 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--input', nargs='+', required=True, help="List of input ROOT files")
     parser.add_argument('-o', '--output', required=True, help="Name of the output ROOT file")
     parser.add_argument('-e', '--expected', type=int, default=None, help="Expected number of input files each histogram should appear in i.e the number of eras")
-    
+    parser.add_argument('-c', '--channel', default='tt', help="Channel to process (default: 'tt')")
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -200,37 +223,50 @@ if __name__ == "__main__":
     # Output ROOT file from command-line
     output_file = args.output
 
+    # channel to precess
+    ch = args.channel
+
     exp_num = args.expected
 
     # Define which directories to combine (customize this based on your case)
-    dir_combinations = {
-        'tt_higgs_pirho': ['tt_higgs_pirho', 'tt_higgs_rhopi'],
-        'tt_higgs_rhoa1': ['tt_higgs_a1rho', 'tt_higgs_rhoa1'],
-        'tt_higgs_pia1': ['tt_higgs_a1pi', 'tt_higgs_pia1'],
-        'tt_higgs_pia11pr': ['tt_higgs_pia11pr', 'tt_higgs_a11prpi'],
-        'tt_higgs_a11pra1': ['tt_higgs_a11pra1', 'tt_higgs_a1a11pr'],
+    if ch == 'tt':
+        dir_combinations = {
+            'tt_higgs_pirho': ['tt_higgs_pirho', 'tt_higgs_rhopi'],
+            'tt_higgs_rhoa1': ['tt_higgs_a1rho', 'tt_higgs_rhoa1'],
+            'tt_higgs_pia1': ['tt_higgs_a1pi', 'tt_higgs_pia1'],
+            'tt_higgs_pia11pr': ['tt_higgs_pia11pr', 'tt_higgs_a11prpi'],
+            'tt_higgs_a11pra1': ['tt_higgs_a11pra1', 'tt_higgs_a1a11pr'],
 
-        'tt_fake_pirho': ['tt_fake_pirho', 'tt_fake_rhopi'],
-        'tt_fake_rhoa1': ['tt_fake_a1rho', 'tt_fake_rhoa1'],
-        'tt_fake_pia1': ['tt_fake_a1pi', 'tt_fake_pia1'],
-        'tt_fake_pia11pr': ['tt_fake_pia11pr', 'tt_fake_a11prpi'],
-        'tt_fake_a11pra1': ['tt_fake_a11pra1', 'tt_fake_a1a11pr'],       
+            'tt_fake_pirho': ['tt_fake_pirho', 'tt_fake_rhopi'],
+            'tt_fake_rhoa1': ['tt_fake_a1rho', 'tt_fake_rhoa1'],
+            'tt_fake_pia1': ['tt_fake_a1pi', 'tt_fake_pia1'],
+            'tt_fake_pia11pr': ['tt_fake_pia11pr', 'tt_fake_a11prpi'],
+            'tt_fake_a11pra1': ['tt_fake_a11pra1', 'tt_fake_a1a11pr'],
 
-        'tt_tau_pirho': ['tt_tau_pirho', 'tt_tau_rhopi'],
-        'tt_tau_rhoa1': ['tt_tau_a1rho', 'tt_tau_rhoa1'],
-        'tt_tau_pia1': ['tt_tau_a1pi', 'tt_tau_pia1'],
-        'tt_tau_pia11pr': ['tt_tau_pia11pr', 'tt_tau_a11prpi'],
-        'tt_tau_a11pra1': ['tt_tau_a11pra1', 'tt_tau_a1a11pr'],
-    }
+            'tt_tau_pirho': ['tt_tau_pirho', 'tt_tau_rhopi'],
+            'tt_tau_rhoa1': ['tt_tau_a1rho', 'tt_tau_rhoa1'],
+            'tt_tau_pia1': ['tt_tau_a1pi', 'tt_tau_pia1'],
+            'tt_tau_pia11pr': ['tt_tau_pia11pr', 'tt_tau_a11prpi'],
+            'tt_tau_a11pra1': ['tt_tau_a11pra1', 'tt_tau_a1a11pr'],
+        }
+        # add aiso directories to the combinations
+        dir_combinations_extra = {}
+        for dir_name in dir_combinations.keys():
+            dir_combinations_extra[dir_name + '_aiso'] = [d + '_aiso' for d in dir_combinations[dir_name]]
+            dir_combinations_extra[dir_name + '_aco_aiso'] = [d + '_aco_aiso' for d in dir_combinations[dir_name]]
+            dir_combinations_extra[dir_name + '_BDT_score_aiso'] = [d + '_BDT_score_aiso' for d in dir_combinations[dir_name]]
+        dir_combinations.update(dir_combinations_extra)
 
-    # add aiso directories to the combinations
-    dir_combinations_extra = {}
-    for dir_name in dir_combinations.keys():
-        dir_combinations_extra[dir_name + '_aiso'] = [d + '_aiso' for d in dir_combinations[dir_name]]
-        dir_combinations_extra[dir_name + '_aco_aiso'] = [d + '_aco_aiso' for d in dir_combinations[dir_name]]
-        dir_combinations_extra[dir_name + '_BDT_score_aiso'] = [d + '_BDT_score_aiso' for d in dir_combinations[dir_name]]
-    dir_combinations.update(dir_combinations_extra)
+    elif ch in ['et', 'mt']:
+        dir_combinations = None
+        # {
+        #     'mt_higgs_mupi': ['mt_higgs_mupi'],
+        #     'mt_higgs_murho': ['mt_higgs_murho'],
+        #     'mt_higgs_mua11pr': ['mt_higgs_mua11pr'],
+        #     'mt_higgs_mua1': ['mt_higgs_mua1'],
+        # }
+
 
     # Call the hadd function with the provided arguments
-    hadd_root_files(input_files, output_file, dir_combinations, exp_num=exp_num)
+    hadd_root_files(input_files, output_file, dir_combinations, ch, exp_num=exp_num)
     # should be called added_histo_Run2Bins.root
