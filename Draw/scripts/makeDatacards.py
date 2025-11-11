@@ -164,193 +164,195 @@ def format_first_selection(selection):
         return readable_format
     return None
 
-parser = argparse.ArgumentParser()
+if __name__ == "__main__":
 
-parser.add_argument("--config", type=str, help="Configuration file")
-parser.add_argument("--batch", action="store_true", help="Run in batch mode")
+    parser = argparse.ArgumentParser()
 
-args = parser.parse_args()
+    parser.add_argument("--config", type=str, help="Configuration file")
+    parser.add_argument("--batch", action="store_true", help="Run in batch mode")
 
-config_file = args.config
+    args = parser.parse_args()
 
-# read config file which is a yaml file
-with open(config_file) as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
+    config_file = args.config
 
-input_folder = config["input_folder"]
-output_path = config["output_path"]
-channels = config["channels"]
-eras = config["eras"]
-parameter_path = config["parameter_path"]
-schemes = config["schemes"]
-run_systematics = config["run_systematics"]
+    # read config file which is a yaml file
+    with open(config_file) as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
 
-available_channels = ["mm", "ee", "mt", "tt", "et"]
-for channel in channels:
-    if channel not in available_channels:
-        raise ValueError(
-            f"Channel {channel} is not a valid channel. Please choose from {available_channels}"
-        )
+    input_folder = config["input_folder"]
+    output_path = config["output_path"]
+    channels = config["channels"]
+    eras = config["eras"]
+    parameter_path = config["parameter_path"]
+    schemes = config["schemes"]
+    run_systematics = config["run_systematics"]
 
-available_eras = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
-for era in eras:
-    if era not in available_eras:
-        raise ValueError(
-            f"Era {era} is not a valid era. Please choose from {available_eras}"
-        )
-
-available_schemes = ["sf_calculation", "control", "cpdecay", "cpdecay_fakefactors_control"]
-for scheme in schemes:
-    if scheme not in available_schemes:
-        raise ValueError(
-            f"Scheme {scheme} is not a valid scheme. Please choose from {available_schemes}"
-        )
-
-for era in eras:
-    parameter_file = f"{parameter_path}/{era}/params.yaml"
+    available_channels = ["mm", "ee", "mt", "tt", "et"]
     for channel in channels:
-        for scheme in schemes:
-            settings = config[scheme]
-            output_folder = f"{output_path}/{era}/{scheme}/{channel}"
-            subprocess.run(["mkdir", "-p", output_folder])
+        if channel not in available_channels:
+            raise ValueError(
+                f"Channel {channel} is not a valid channel. Please choose from {available_channels}"
+            )
 
-            # check if settings Aliases exists
-            if "Aliases" in settings:
-                available_aliases = settings["Aliases"]
-            else:
-                available_aliases = {}
+    available_eras = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
+    for era in eras:
+        if era not in available_eras:
+            raise ValueError(
+                f"Era {era} is not a valid era. Please choose from {available_eras}"
+            )
 
-            systematics_to_run = []
-            if run_systematics and "systematics" in config[scheme]:
-                if "per_era" in config[scheme]["systematics"]:
-                    if (
-                        era not in config[scheme]["systematics"]["per_era"]
-                        and "default" in config[scheme]["systematics"]["per_era"]
-                    ):
+    available_schemes = ["sf_calculation", "control", "cpdecay", "cpdecay_fakefactors_control", "cp_alpha_angles", "cp_O_star_variables", "cp_angular_systematics"]
+    for scheme in schemes:
+        if scheme not in available_schemes:
+            raise ValueError(
+                f"Scheme {scheme} is not a valid scheme. Please choose from {available_schemes}"
+            )
+
+    for era in eras:
+        parameter_file = f"{parameter_path}/{era}/params.yaml"
+        for channel in channels:
+            for scheme in schemes:
+                settings = config[scheme]
+                output_folder = f"{output_path}/{era}/{scheme}/{channel}"
+                subprocess.run(["mkdir", "-p", output_folder])
+
+                # check if settings Aliases exists
+                if "Aliases" in settings:
+                    available_aliases = settings["Aliases"]
+                else:
+                    available_aliases = {}
+
+                systematics_to_run = []
+                if run_systematics and "systematics" in config[scheme]:
+                    if "per_era" in config[scheme]["systematics"]:
                         if (
-                            channel
-                            in config[scheme]["systematics"]["per_era"]["default"]
+                            era not in config[scheme]["systematics"]["per_era"]
+                            and "default" in config[scheme]["systematics"]["per_era"]
                         ):
-                            channel_systematics = config[scheme]["systematics"][
-                                "per_era"
-                            ]["default"][channel]
-                            for syst in channel_systematics:
-                                systematics_to_run.append(f"{syst[0]}={syst[1]}")
-                        if (
-                            "common"
-                            in config[scheme]["systematics"]["per_era"]["default"]
-                        ):
-                            common_systematics = config[scheme]["systematics"][
-                                "per_era"
-                            ]["default"]["common"]
-                            for syst in common_systematics:
-                                systematics_to_run.append(f"{syst[0]}={syst[1]}")
+                            if (
+                                channel
+                                in config[scheme]["systematics"]["per_era"]["default"]
+                            ):
+                                channel_systematics = config[scheme]["systematics"][
+                                    "per_era"
+                                ]["default"][channel]
+                                for syst in channel_systematics:
+                                    systematics_to_run.append(f"{syst[0]}={syst[1]}")
+                            if (
+                                "common"
+                                in config[scheme]["systematics"]["per_era"]["default"]
+                            ):
+                                common_systematics = config[scheme]["systematics"][
+                                    "per_era"
+                                ]["default"]["common"]
+                                for syst in common_systematics:
+                                    systematics_to_run.append(f"{syst[0]}={syst[1]}")
 
-            for setting in settings[channel]:
-                method = setting.get("method", "1")
-                category = setting.get("category", "[inclusive]")
-                variables = setting.get("plotting_variable", "[m_vis]")
-                blind = setting.get("blind", False)
-                auto_rebin = setting.get("auto_rebin", False)
-                additional_selections = setting.get("additional_selections", ["(1)"])
-                if isinstance(additional_selections, str):
-                    additional_selections = [additional_selections]
-                set_alias = setting.get("set_alias", "")
-                additional_weight = setting.get("additional_weight", "(1)")
-                extra_identifier = setting.get("extra_identifier", "")
-                aiso = setting.get("aiso", False)
-                same_sign = setting.get("same_sign", False)
-                unroll = setting.get("unroll", False)
-                rename_procs = setting.get("rename_procs", False)
-                dy_LO= setting.get("dy_LO", False)
-                dy_NLO = setting.get("dy_NLO", False)
-                use_filtered_DY = setting.get('use_filtered_DY', False)
-                if use_filtered_DY:
-                    print("WARNING: To use filtered DY, different parameters will be sourced (automatically)")
-                    parameter_file = f"{parameter_path}/{era}/params_DYfiltered.yaml"
-                if set_alias and set_alias in available_aliases:
-                    set_alias = available_aliases[set_alias]
+                for setting in settings[channel]:
+                    method = setting.get("method", "1")
+                    category = setting.get("category", "[inclusive]")
+                    variables = setting.get("plotting_variable", "[m_vis]")
+                    blind = setting.get("blind", False)
+                    auto_rebin = setting.get("auto_rebin", False)
+                    additional_selections = setting.get("additional_selections", ["(1)"])
+                    if isinstance(additional_selections, str):
+                        additional_selections = [additional_selections]
+                    set_alias = setting.get("set_alias", "")
+                    additional_weight = setting.get("additional_weight", "(1)")
+                    extra_identifier = setting.get("extra_identifier", "")
+                    aiso = setting.get("aiso", False)
+                    same_sign = setting.get("same_sign", False)
+                    unroll = setting.get("unroll", False)
+                    rename_procs = setting.get("rename_procs", False)
+                    dy_LO= setting.get("dy_LO", False)
+                    dy_NLO = setting.get("dy_NLO", False)
+                    use_filtered_DY = setting.get('use_filtered_DY', False)
+                    if use_filtered_DY:
+                        print("WARNING: To use filtered DY, different parameters will be sourced (automatically)")
+                        parameter_file = f"{parameter_path}/{era}/params_DYfiltered.yaml"
+                    if set_alias and set_alias in available_aliases:
+                        set_alias = available_aliases[set_alias]
 
-                for cat in category:
-                    if set_alias:
-                        alias = set_alias.replace("category", cat)
-                    else:
-                        alias = None
-                    for additional_selection in additional_selections:
-                        for variable in variables:
-                            variable = settings["variable_definitions"][variable]
-                            variable = create_bins(variable)
-                            variable_name = variable.split("[")[0]
-                            variable_name = variable_name.replace(",", "_vs_")
-                            nodename = ""
-                            if additional_selection and additional_selection != "" and additional_selection != "(1)":
-                                variable_name = variable_name + '_' + format_first_selection(additional_selection)
-                                nodename = format_first_selection(additional_selection)
-                            else:
-                                variable_name = variable_name
+                    for cat in category:
+                        if set_alias:
+                            alias = set_alias.replace("category", cat)
+                        else:
+                            alias = None
+                        for additional_selection in additional_selections:
+                            for variable in variables:
+                                variable = settings["variable_definitions"][variable]
+                                variable = create_bins(variable)
+                                variable_name = variable.split("[")[0]
+                                variable_name = variable_name.replace(",", "_vs_")
+                                nodename = ""
+                                if additional_selection and additional_selection != "" and additional_selection != "(1)":
+                                    variable_name = variable_name + '_' + format_first_selection(additional_selection)
+                                    nodename = format_first_selection(additional_selection)
+                                else:
+                                    variable_name = variable_name
 
-                            nodename += setting.get("nodename", "")
+                                nodename += setting.get("nodename", "")
 
-                            if extra_identifier:
-                                variable_name = variable_name + "_" + extra_identifier
-                            if aiso:
-                                variable_name = variable_name + "_aiso"
-                                nodename = nodename + "_aiso"
-                            if same_sign:
-                                variable_name = variable_name + "_ss"
-                                nodename = nodename + "_ss"
-                            if dy_LO:
-                                variable_name = variable_name + "_dy_LO"
-                            if dy_NLO:
-                                variable_name = variable_name + "_dy_NLO"
+                                if extra_identifier:
+                                    variable_name = variable_name + "_" + extra_identifier
+                                if aiso:
+                                    variable_name = variable_name + "_aiso"
+                                    nodename = nodename + "_aiso"
+                                if same_sign:
+                                    variable_name = variable_name + "_ss"
+                                    nodename = nodename + "_ss"
+                                if dy_LO:
+                                    variable_name = variable_name + "_dy_LO"
+                                if dy_NLO:
+                                    variable_name = variable_name + "_dy_NLO"
 
-                            if nodename != "":
-                                if nodename[0] != "_":
-                                    nodename = "_" + nodename
+                                if nodename != "":
+                                    if nodename[0] != "_":
+                                        nodename = "_" + nodename
 
-                            filename = f'{variable_name}_{cat}'
+                                filename = f'{variable_name}_{cat}'
 
-                            logs = f"{output_folder}/logs"
-                            subprocess.run(["mkdir", "-p", logs])
-                            script_path = os.path.join(
-                                logs, f"{filename}.sh"
-                            )
-                            create_shell_script(
-                                input_folder,
-                                output_folder,
-                                parameter_file,
-                                channel,
-                                era,
-                                method,
-                                cat,
-                                variable,
-                                additional_selection,
-                                additional_weight,
-                                variable_name,
-                                script_path,
-                                run_systematics=run_systematics,
-                                systematics_to_run=systematics_to_run,
-                                blind=blind,
-                                auto_rebin=auto_rebin,
-                                set_alias=alias,
-                                aiso=aiso,
-                                same_sign=same_sign,
-                                unroll=unroll,
-                                rename_procs=rename_procs,
-                                dy_LO=dy_LO,
-                                dy_NLO=dy_NLO,
-                                use_filtered_DY=use_filtered_DY,
-                                nodename=nodename,
-                            )
+                                logs = f"{output_folder}/logs"
+                                subprocess.run(["mkdir", "-p", logs])
+                                script_path = os.path.join(
+                                    logs, f"{filename}.sh"
+                                )
+                                create_shell_script(
+                                    input_folder,
+                                    output_folder,
+                                    parameter_file,
+                                    channel,
+                                    era,
+                                    method,
+                                    cat,
+                                    variable,
+                                    additional_selection,
+                                    additional_weight,
+                                    variable_name,
+                                    script_path,
+                                    run_systematics=run_systematics,
+                                    systematics_to_run=systematics_to_run,
+                                    blind=blind,
+                                    auto_rebin=auto_rebin,
+                                    set_alias=alias,
+                                    aiso=aiso,
+                                    same_sign=same_sign,
+                                    unroll=unroll,
+                                    rename_procs=rename_procs,
+                                    dy_LO=dy_LO,
+                                    dy_NLO=dy_NLO,
+                                    use_filtered_DY=use_filtered_DY,
+                                    nodename=nodename,
+                                )
 
-                            submit_file = os.path.join(
-                               logs, f"submit_{filename}.sub"
-                            )
-                            create_condor_submit_file(
-                               logs, filename, submit_file, script_path, era, run_systematics
-                            )
-                            if args.batch:
-                               subprocess.run(["condor_submit", submit_file])
-                            else:
-                               os.chmod(script_path, 0o755)
-                               subprocess.run(["/bin/bash", script_path])
+                                submit_file = os.path.join(
+                                logs, f"submit_{filename}.sub"
+                                )
+                                create_condor_submit_file(
+                                logs, filename, submit_file, script_path, era, run_systematics
+                                )
+                                if args.batch:
+                                    subprocess.run(["condor_submit", submit_file])
+                                else:
+                                    os.chmod(script_path, 0o755)
+                                    subprocess.run(["/bin/bash", script_path])
