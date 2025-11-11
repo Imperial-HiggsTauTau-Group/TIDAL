@@ -6,7 +6,6 @@ import argparse
 from Draw.python.PlotHistograms import HTT_Histogram
 from Draw.scripts.makeDatacards import create_bins, format_first_selection
 
-
 def find_sh_file(root_file):
     # Find the shell file with parameters used to make the plot
     job_dir = os.path.join(os.path.dirname(root_file), 'logs')
@@ -35,7 +34,6 @@ def plot_combined(cmb_file, tree_name, channel, era, variable, blind, unrolled):
     Histo_Plotter.plot_1D_histo()
 
 def get_files_to_combine(eras_to_combine, channel, scheme, directory, f_name):
-    # example args: [Run3_2022, Run3_2022EE], et, control, /path/to/dir, datacard_m_vis_cp_inclusive_tt_Run3_2022.root
     print(f"\nERAS TO COMBINE: {eras_to_combine}")
 
     # Get the files
@@ -137,6 +135,8 @@ def main(args, eras):
                                     nodename = "_" + nodename
                             filename = f'{variable_name}_{cat}'
                             f_name = f"datacard_{filename}_{channel}_$ERA.root"
+                            if same_sign:
+                                f_name = f_name.replace('$ERA', '$ERA_ss')
                             print(f"Identified files to merge: {f_name}")
                             # Get files to combine and target file
                             files_to_combine, cmb_file, era_name = get_files_to_combine(eras, channel, scheme, output_path, f_name)
