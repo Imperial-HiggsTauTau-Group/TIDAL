@@ -61,37 +61,19 @@ parser.add_argument("--run_systematics", action="store_true", help="Run systemat
 # Available Systematic Options:
 # ------------------------------------------------------------------------------------------------------------------------
 systematic_options = [
-    ["Muon_ID", "Muon ID systematic"],
-    ["Muon_Isolation", "Muon Isolation systematic"],
-    ["Electron_ID", "Electron ID systematic"],
+    ["Muon_ID_iso", "Muon ID and isolation systematics"],
+    ["Electron_ID_Reco", "Electron ID and Reconstruction systematic"],
     ["Tau_ID", "Tau ID systematic"],
-    [
-        "Tau_FakeRate_e",
-        "Tau Fake Rate systematic for genuine electrons misidentified as taus",
-    ],
-    [
-        "Tau_FakeRate_mu",
-        "Tau Fake Rate systematic for genuine muons misidentified as taus",
-    ],
-    [
-        "Tau_EnergyScale_PNet_JSCALE",
-        "Tau Energy Scale systematic for jets misidentified as taus",
-    ],
+    ["Tau_FakeRate_e","Tau Fake Rate systematic for genuine electrons misidentified as taus"],
+    ["Tau_FakeRate_mu","Tau Fake Rate systematic for genuine muons misidentified as taus"],
     ["Tau_EnergyScale_PNet_TSCALE", "Tau Energy Scale systematic for genuine taus"],
-    [
-        "Tau_EnergyScale_PNet_ESCALE",
-        "Tau Energy Scale systematic for genuine electrons misidentified as taus",
-    ],
-    [
-        "Tau_EnergyScale_PNet_MUSCALE",
-        "Tau Energy Scale systematic for genuine muons misidentified as taus",
-    ],
+    ["Tau_EnergyScale_PNet_ESCALE", "Tau Energy Scale systematic for genuine electrons misidentified as taus"],
+    ["Tau_EnergyScale_PNet_MUSCALE", "Tau Energy Scale systematic for genuine muons misidentified as taus"],
     ['MET_Recoil', 'MET Recoil systematic'],
     ['Trigger', 'Trigger efficiency systematic'],
     ["Jet_EnergyScale_Total", "Jet Energy Scale Total systematic"],
     ["Jet_EnergyResolution", "Jet Energy Resolution systematic"],
-    ["Electron_Scale", "Electron Scale systematic"],
-    ["Electron_Smearing", "Electron Smearing systematic"],
+    ["Electron_Scale_Smearing", "Electron Scale and Smearing systematics"],
     ["QCD_Background", "QCD Background systematic"],
     ["DY_Shape", "DY Shape systematic from ZpT reweighting"],
     ["DY_Shape_Imperial", "DY Shape systematic from ZpT reweighting (Imperial)"],
@@ -99,9 +81,11 @@ systematic_options = [
     ["Fake_Flat_Uncertainty", "flat fake uncertainty"],
     ["Tau_ID_PNet", "Tau ID systematic"],
     ["Fake_Factors", "fake factor related uncertainties"],
+    ["Pileup", "pileup systematic"],
     ["Signal_Theory", "theoretical uncertainties on the signal"],
     ["IP_Calibration", "Uncertainty on the IP calibration"],
-    ["SV_Resolution", "Uncertainty on the SV resolution"]
+    ["SV_Resolution", "Uncertainty on the SV resolution"],
+    ['IP_Significance', 'Uncertainty on the IP significance cut SFs']
 ]
 
 
