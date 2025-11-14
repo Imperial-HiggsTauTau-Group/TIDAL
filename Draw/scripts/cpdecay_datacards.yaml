@@ -1,10 +1,10 @@
-input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/angular_syst_determination_v2 # fully_corrected_nominal
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/CPValidation/angular_scan_v2 #
-channels: [ mt]
+input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/nominal_new_angular_systs # fully_corrected_nominal
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/CPDatacards/Nov14_weightsysts #
+channels: [ tt]
 eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix ] #Run3_2022EE, Run3_2023,
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [cpdecay]
-run_systematics: false
+run_systematics: true
 
 cpdecay:
 
@@ -12,18 +12,36 @@ cpdecay:
     per_era:
       default:
         tt:
-         - [ "systematic_DY_Shape", "dy_pt_reweighting" ]
-         - [ "systematic_TTbar_Shape", "top_pt_reweighting" ]
          - [ "systematic_Fake_Factors", "ff_*channel"]
-         - [ "systematic_Tau_EnergyScale_PNet_TSCALE", "CMS_scale_t_DeepTau2018v2p5_*group_*year_genTau" ]
+         - [ "systematic_Trigger", "CMS_trig_*obj_*trigger_*group" ]
+
+        mt:
+        # - [ "systematic_Tau_EnergyScale_PNet_MUSCALE", "CMS_scale_mu_DeepTau2018v2p5_*group_*year_genMuon" ]
+        - [ "systematic_Muon_ID_iso", "CMS_eff_m_*kind_syst" ]
+        - [ "systematic_Tau_FakeRate_mu", "CMS_fake_t_DeepTau2018v2p5_VSmu_*year_eta_*eta"]
+        - [ "systematic_Trigger", "CMS_eff_m_trigger_syst"]
+        - [ 'systematic_IP_Significance', "CMS_eff_IPSigCut_*obj_eta_*eta"]
+
+        et:
+        # - [ "systematic_Tau_EnergyScale_PNet_ESCALE", "CMS_scale_e_DeepTau2018v2p5_*group_*year_genElectron" ]
+        - [ "systematic_Tau_FakeRate_e", "CMS_fake_t_DeepTau2018v2p5_VSe_*year_eta_*eta"]
+        - [ "systematic_Electron_Scale_Smearing", "CMS_*kind_e_13p6TeV"]
+        - [ "systematic_Electron_ID_Reco", "CMS_eff_e_*kind_13p6TeV"]
+        - [ 'systematic_IP_Significance', "CMS_eff_IPSigCut_*obj_eta_*eta"]
+
+        common:
+         - [ "systematic_DY_Shape", "CMS_Z_pt_reweighting" ]
+         - [ "systematic_TTbar_Shape", "CMS_Top_pt_reweighting" ]
          - [ "systematic_Tau_ID_PNet", "CMS_eff_t_DeepTau2018v2p5_VSjet_dm_*group" ]
+         - [ "systematic_Tau_EnergyScale_PNet_TSCALE", "CMS_scale_t_DeepTau2018v2p5_*group_*year_genTau" ]
+         - [ "systematic_MET_Recoil", "CMS_*type_met" ]
          - [ "systematic_Jet_EnergyScale_Total", "CMS_scale_j_13p6TeV" ]
          - [ "systematic_Jet_EnergyResolution", "CMS_res_j_13p6TeV" ]
-         - [ "systematic_MET_Recoil", "CMS_*type_met" ]
-         - [ "systematic_Trigger", "CMS_trig_*obj_*trigger_*group" ]
-         - [ "systematic_Signal_Theory", "*type_signal"]
+         - [ 'systematic_Pileup', 'CMS_pileup']
          - [ "systematic_IP_Calibration", "CMS_res_IP"]
          - [ "systematic_SV_Resolution", "CMS_res_SV"]
+         - [ "systematic_Signal_Theory", "*type_signal"]
+
 
   variable_definitions:
       MVA_score: "BDT_pred_score[0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]"
@@ -129,6 +147,40 @@ cpdecay:
      - { method: '5', category:  ['higgs_erho'], plotting_variable: [ MVA_vs_aco_e_rho], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
      - { method: '5', category:  ['higgs_ea11pr'], plotting_variable: [ MVA_vs_aco_e_a11pr], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
      - { method: '5', category:  ['higgs_ea1'], plotting_variable: [ MVA_vs_aco_e_a1], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+
+cp_acoplanarity:
+
+  variable_definitions:
+      aco_rho_rho: "aco_rho_rho(10,0,2pi)"
+      aco_pi_pi: "aco_pi_pi(4,0,2pi)"
+      aco_a1_a1: "aco_a1_a1(4,0,2pi)"
+      aco_pi_rho: "aco_pi_rho(10,0,2pi)"
+      aco_rho_pi: "aco_rho_pi(10,0,2pi)"
+      aco_pi_a11pr: "aco_pi_rho(4,0,2pi)"
+      aco_a11pr_pi: "aco_rho_pi(4,0,2pi)"
+      aco_rho_a11pr: "aco_rho_rho(10,0,2pi)"
+      aco_a1_a11pr: "aco_a1_rho_FASTMTT_MassConstraint(4,0,2pi)"
+      aco_a11pr_a1: "aco_rho_a1_FASTMTT_MassConstraint(4,0,2pi)"
+      aco_a1_rho: "aco_a1_rho_FASTMTT_MassConstraint(10,0,2pi)"
+      aco_rho_a1: "aco_rho_a1_FASTMTT_MassConstraint(10,0,2pi)"
+      aco_a1_pi: "aco_a1_pi_FASTMTT_MassConstraint(4,0,2pi)"
+      aco_pi_a1: "aco_pi_a1_FASTMTT_MassConstraint(4,0,2pi)"
+
+  tt:
+    - { method: '4', category:  ['higgs_rhorho'], plotting_variable: [ aco_rho_rho], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_pipi'], plotting_variable: [ aco_pi_pi], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_a1a1'], plotting_variable: [ aco_a1_a1], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_pirho'], plotting_variable: [ aco_pi_rho], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_rhopi'], plotting_variable: [ aco_rho_pi], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_pia11pr'], plotting_variable: [ aco_pi_rho], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_a11prpi'], plotting_variable: [ aco_rho_pi], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_rhoa11pr'], plotting_variable: [ aco_rho_rho], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_a1a11pr'], plotting_variable: [ aco_a1_rho], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_a11pra1'], plotting_variable: [ aco_rho_a1], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_a1rho'], plotting_variable: [ aco_a1_rho], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_rhoa1'], plotting_variable: [ aco_rho_a1], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_a1pi'], plotting_variable: [ aco_a1_pi], blind: true, use_filtered_DY: true}
+    - { method: '4', category:  ['higgs_pia1'], plotting_variable: [ aco_pi_a1], blind: true, use_filtered_DY: true}
 
 
 
