@@ -233,14 +233,13 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
 
         categories['qcd_sdb_cat'] = categories[cat_name]+'&&'+categories['tt_qcd_norm']
         categories_unmodified['qcd_sdb_cat'] = categories_unmodified[cat_name]+'&&'+categories_unmodified['tt_qcd_norm']
-
-        subtract_node = GetSubtractNode(ana, '', plot, plot_unmodified, wt, sel+'*(genPartFlav_1 != 0)', 'cat', categories, categories_unmodified, method, qcd_factor, False, samples_dict, gen_sels_dict, includeW=True)
+        subtract_node = GetSubtractNode(ana, '', plot, plot_unmodified, wt, sel+'(genPartFlav_1 != 0)', 'cat', categories, categories_unmodified, method, qcd_factor, False, samples_dict, gen_sels_dict, includeW=True)
         num_selection = BuildCutString(data_weight, sel, cat_data, '!os')
         num_node = Analysis.SubtractNode('ratio_num',
                        ana.SummedFactory('data', samples_dict['data_samples'], plot_unmodified, num_selection),
                        subtract_node)
 
-        subtract_node = GetSubtractNode(ana, '', plot, plot_unmodified, wt, sel+'*(genPartFlav_1 != 0)', 'qcd_sdb_cat', categories, categories_unmodified, method, qcd_factor, False, samples_dict, gen_sels_dict, includeW=True)
+        subtract_node = GetSubtractNode(ana, '', plot, plot_unmodified, wt, sel+'(genPartFlav_1 != 0)', 'qcd_sdb_cat', categories, categories_unmodified, method, qcd_factor, False, samples_dict, gen_sels_dict, includeW=True)
         den_selection = BuildCutString(data_weight, sel, categories_unmodified['qcd_sdb_cat'], '!os')
         den_node = Analysis.SubtractNode('ratio_den',
                        ana.SummedFactory('data', samples_dict['data_samples'], plot_unmodified, den_selection),
@@ -248,7 +247,8 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
 
         shape_node = None
         full_selection = BuildCutString(data_weight, sel, categories_unmodified['qcd_sdb_cat'], OSSS)
-        subtract_node = GetSubtractNode(ana, '', plot, plot_unmodified, wt, sel+'*(genPartFlav_1 != 0)', 'qcd_sdb_cat', categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=True)
+        print("Full selection: ", full_selection)
+        subtract_node = GetSubtractNode(ana, '', plot, plot_unmodified, wt, sel+'(genPartFlav_1 != 0)', 'qcd_sdb_cat', categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=True)
 
         if 'flat_fake_sub_up' in systematic:
             syst_weight = 1.2
@@ -273,7 +273,7 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
         categories_unmodified['qcd_ff_estimate'] = categories_unmodified[cat_name]+'&&'+categories_unmodified['tt_ff_AR']
         ff_selection = BuildCutString(ff_weight, sel, categories['qcd_ff_estimate'], OSSS)
         # Get MC background and data yields
-        mc_bkg_node = GetSubtractNode(ana, '', plot, plot_unmodified, ff_weight, sel+'*(genPartFlav_1 != 0)', 'qcd_ff_estimate', categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=True)
+        mc_bkg_node = GetSubtractNode(ana, '', plot, plot_unmodified, ff_weight, sel+'(genPartFlav_1 != 0)', 'qcd_ff_estimate', categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=True)
         data_node = ana.SummedFactory('data', samples_dict['data_samples'], plot_unmodified, ff_selection)
         # Data - MC background yield
         qcd_estimate = Analysis.SubtractNode('JetFakes'+add_name,
@@ -374,3 +374,27 @@ def GenerateReweightedCPSignal(ana, nodename='', add_name='', samples={}, masses
                      sample_names.append(i.replace('*',mass))
                  else: sample_names = [samples[key].replace('*',mass)]
                  ana.nodes[nodename].AddNode(ana.SummedFactory(key.replace('*',mass)+add_name, sample_names, plot, full_selection))
+
+
+def GenerateMSSMReweightedSignal(ana, nodename='', add_name='', samples={}, masses=[], plot='', wt='', sel='', cat='', get_os=True):
+    """
+    For MSSM signals: plain loop over masses with no reweighting (TODO: Irene).
+    """
+    OSSS = 'os' if get_os else '!os'
+
+    for key, sample in samples.items():
+        for mass in masses:
+            full_selection = BuildCutString(wt, sel, cat, OSSS)
+            print("Full selection for MSSM signal: ", full_selection)
+            proc_name = key.replace('*', mass) + add_name
+
+            sample_names = []
+            if isinstance(sample, list):
+                for s in sample:
+                    sample_names.append(s.replace('*', mass))
+            else:
+                sample_names = [sample.replace('*', mass)]
+
+            ana.nodes[nodename].AddNode(
+                ana.SummedFactory(proc_name, sample_names, plot, full_selection)
+            )
