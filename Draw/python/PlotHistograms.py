@@ -10,7 +10,7 @@ plt.rcParams.update({"font.size": 16})
 
 class HTT_Histogram:
 
-    def __init__(self, file, category, channel, era, variable,blind=False, log_y=False, is2Dunrolled=False):
+    def __init__(self, file, category, channel, era, variable,blind=False, log_y=False, is2Dunrolled=False, save_name=None, for_combine=False):
         self.file = uproot.open(file)
         self.file_name = file
         self.directory = os.path.dirname(file)
@@ -21,7 +21,8 @@ class HTT_Histogram:
         self.variable = variable.split("[")[0]
         self.log_y = log_y
         self.is2Dunrolled = is2Dunrolled
-
+        self.save_name = save_name
+        self.for_combine = for_combine
         self.initialize_plotting()
         self.initialize_nodes()
         self.get_labels()
@@ -71,37 +72,35 @@ class HTT_Histogram:
 
         if self.channel == 'tt':
             # define CP channel label
-            if ("higgs_" in self.category) or ("inclusive_PNet_" in self.category):
-                if "pipi" in self.category:
-                    self.channel_label = r"$\pi\pi$"
-                elif "pirho" in self.category:
-                    self.channel_label = r"$\pi\rho$"
-                elif "rhopi" in self.category:
-                    self.channel_label = r"$\rho\pi$"
-                elif "rhorho" in self.category:
-                    self.channel_label = r"$\rho\rho$"
-                elif "pia11pr" in self.category:
-                    self.channel_label = r"$\pi a_1^{1pr}$"
-                elif "pia1" in self.category:
-                    self.channel_label = r"$\pi a_1^{3pr}$"
-                elif "a11prpi" in self.category:
-                    self.channel_label = r"$a_1^{1pr}\pi$"
-                elif "a1pi" in self.category:
-                    self.channel_label = r"$a_1^{3pr} \pi$"
-                elif "rhoa11pr" in self.category:
-                    self.channel_label = r"""$\rho a_1^{1pr}$ / $a_1^{1pr}\rho$
-    $a_1^{1pr}a_1^{1pr}$"""
-                    self.ch_label_height = 0.825
-                elif "rhoa1" in self.category:
-                    self.channel_label = r"$\rho a_1^{3pr}$"
-                elif "a1rho" in self.category:
-                    self.channel_label = r"$a_1^{3pr}\rho$"
-                elif "a11pra1" in self.category:
-                    self.channel_label = r"$a_1^{1pr}a_1^{3pr}$"
-                elif "a1a11pr" in self.category:
-                    self.channel_label = r"$a_1^{3pr}a_1^{1pr}$"
-                elif "a1a1" in self.category:
-                    self.channel_label = r"$a_1^{3pr}a_1^{3pr}$"
+            if "pipi" in self.category or "pi_pi" in self.category:
+                self.channel_label = r"$\pi\pi$"
+            elif "pirho" in self.category or "pi_rho" in self.category:
+                self.channel_label = r"$\pi\rho$"
+            elif "rhopi" in self.category or "rho_pi" in self.category:
+                self.channel_label = r"$\rho\pi$"
+            elif "rhorho" in self.category or "rho_rho" in self.category:
+                self.channel_label = r"$\rho\rho$"
+            elif "pia11pr" in self.category or "pi_a11pr" in self.category:
+                self.channel_label = r"$\pi a_1^{1pr}$"
+            elif "pia1" in self.category or "pi_a1" in self.category:
+                self.channel_label = r"$\pi a_1^{3pr}$"
+            elif "a11prpi" in self.category or "a11pr_pi" in self.category:
+                self.channel_label = r"$a_1^{1pr}\pi$"
+            elif "a1pi" in self.category or "a1_pi" in self.category:
+                self.channel_label = r"$a_1^{3pr} \pi$"
+            elif "rhoa11pr" in self.category or "rho_a11pr" in self.category:
+                self.channel_label = r"""$\rho a_1^{1pr}$ / $a_1^{1pr}\rho$ / $a_1^{1pr}a_1^{1pr}$"""
+                # self.ch_label_height = 0.825
+            elif "rhoa1" in self.category or "rho_a1" in self.category:
+                self.channel_label = r"$\rho a_1^{3pr}$"
+            elif "a1rho" in self.category or "a1_rho" in self.category:
+                self.channel_label = r"$a_1^{3pr}\rho$"
+            elif "a11pra1" in self.category or "a11pr_a1" in self.category:
+                self.channel_label = r"$a_1^{1pr}a_1^{3pr}$"
+            elif "a1a11pr" in self.category or "a1_a11pr" in self.category:
+                self.channel_label = r"$a_1^{3pr}a_1^{1pr}$"
+            elif "a1a1" in self.category or "a1_a1" in self.category:
+                self.channel_label = r"$a_1^{3pr}a_1^{3pr}$"
         elif self.channel == 'mt':
             if "DM0_" in self.category:
                 self.channel_label = r"$\mu\pi$"
@@ -111,6 +110,35 @@ class HTT_Histogram:
                 self.channel_label = r"$\mu a_1^{1pr}$"
             elif "DM10_" in self.category:
                 self.channel_label = r"$\mu a_1^{3pr}$"
+            # define CP channel label
+            # if ("higgs_" in self.category):
+            if "mupi" in self.category or "mu_pi" in self.category:
+                self.channel_label = r"$\mu\pi$"
+            elif "murho" in self.category or "mu_rho" in self.category:
+                self.channel_label = r"$\mu\rho$"
+            elif "mua11pr" in self.category or "mu_a11pr" in self.category:
+                self.channel_label = r"$\mu a_1^{1pr}$"
+            elif "mua1" in self.category or "mu_a1" in self.category:
+                self.channel_label = r"$\mu a_1^{3pr}$"
+        elif self.channel == 'et':
+            if "DM0_" in self.category:
+                self.channel_label = r"$e\pi$"
+            elif "DM1_" in self.category:
+                self.channel_label = r"$e\rho$"
+            elif "DM2_" in self.category:
+                self.channel_label = r"$e a_1^{1pr}$"
+            elif "DM10_" in self.category:
+                self.channel_label = r"$e a_1^{3pr}$"
+            # define CP channel label
+            if "epi" in self.category or "e_pi" in self.category:
+                self.channel_label = r"$e\pi$"
+            elif "erho" in self.category or "e_rho" in self.category:
+                self.channel_label = r"$e\rho$"
+            elif "ea11pr" in self.category or "e_a11pr" in self.category:
+                self.channel_label = r"$e a_1^{1pr}$"
+            elif "ea1" in self.category or "e_a1" in self.category:
+                self.channel_label = r"$e a_1^{3pr}$"
+
 
 
     def initialize_nodes(self):
@@ -122,35 +150,43 @@ class HTT_Histogram:
         }
         if self.channel == "tt":
             self.backgrounds = {
-                                "$t\\bar{t}$": {"nodes": ["TTJ"], "color": "violet"},
                                 "Jet$\\to\\tau_h$": {"nodes": ["JetFakes", "JetFakesSublead"], "color": "green"},
-                                "Electroweak": {"nodes": ["VVJ", "W", "ZL", "ZJ"], "color": "red"},
+                                "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
                                 "Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT", "qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "yellow"},
                             }
-            # TEMPORARY: Add signal to list of backgrounds
-            # self.signal = {"SM H$\\to\\tau\\tau$": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"]}
-                        #    }
             self.lep1 = "\\tau_1"
             self.lep2 = "\\tau_2"
         elif self.channel == "mt":
             self.backgrounds = {
-                                "$t\\bar{t}$": {"nodes": ["TTJ"], "color": "violet"},
                                 "QCD": {"nodes": ["QCD"], "color": "pink"},
-                                "Electroweak": {"nodes": ["VVJ", "W"], "color": "red"},
-                                "Z$\\to\\mu\\mu$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
-                                "Genuine $\\tau$": {"nodes": ["VVT", "TTT", "ZTT"], "color": "yellow"},
+                                "Electroweak": {"nodes": ["VVJ", "W", "VVT"], "color": "red"},
+                                "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
+                                "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
+                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
                             }
+            if self.for_combine: # Jet Fake Cat test
+                self.backgrounds = {
+                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes",], "color": "green"},
+                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
+                                    "Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT"], "color": "yellow"},
+                                }
             self.lep1 = "\\mu"
             self.lep2 = "\\tau"
 
         elif self.channel == "et":
             self.backgrounds = {
-                                "$t\\bar{t}$": {"nodes": ["TTJ"], "color": "violet"},
                                 "QCD": {"nodes": ["QCD"], "color": "pink"},
-                                "Electroweak": {"nodes": ["VVJ", "W"], "color": "red"},
-                                "Z$\\to ee$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
-                                "Genuine $\\tau$": {"nodes": ["VVT", "TTT", "ZTT"], "color": "yellow"},
+                                "Electroweak": {"nodes": ["VVJ", "W", "VVT"], "color": "red"},
+                                "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
+                                "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
+                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
                             }
+            if self.for_combine: # Jet Fake Cat test
+                self.backgrounds = {
+                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes",], "color": "green"},
+                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
+                                    "Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT"], "color": "yellow"},
+                                }
             self.lep1 = "e"
             self.lep2 = "\\tau"
         elif self.channel == "em":
@@ -165,10 +201,10 @@ class HTT_Histogram:
             self.lep2 = "\\mu"
         elif self.channel == "ee":
             self.backgrounds = {
-                                "$t\\bar{t}$": {"nodes": ["TTL", "TTJ"], "color": "violet"},
+                                "$t\\bar{t}$": {"nodes": ["TTT", "TTJ"], "color": "violet"},
                                 "QCD": {"nodes": ["QCD"], "color": "pink"},
-                                "Electroweak": {"nodes": ["VVL", "VVJ", "W"], "color": "red"},
-                                "Z$\\to ee": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
+                                "Electroweak": {"nodes": ["VVT", "VVJ", "W"], "color": "red"},
+                                "Z$\\to$ ee": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
                                 "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
                             }
             self.lep1 = "e_1"
@@ -189,9 +225,17 @@ class HTT_Histogram:
         elif self.era == "Run3_2022EE":
             self.lumi = 26.67
         elif self.era == "Run3_2023":
-            self.lumi = 17.79
+            self.lumi = 18.06
         elif self.era == "Run3_2023BPix":
-            self.lumi = 9.45
+            self.lumi = 9.69
+        elif self.era == 'full22':
+            self.lumi = 34.65
+        elif self.era == 'full23':
+            self.lumi = 27.76
+        elif self.era == 'earlyrun3':
+            self.lumi = 62.41
+        else: 
+            self.lumi = 0.0
         # get color for each background
         for bkg, info in self.backgrounds.items():
             info['color'] = self.colors[info["color"]]  # replace color name with hex code
@@ -324,7 +368,7 @@ class HTT_Histogram:
         self.ax.fill_between(self.bin_edges,
                     self.stacked_block-np.insert(self.total_background["error_down"], len(self.total_background["error_down"]), 0),
                     self.stacked_block+np.insert(self.total_background["error_up"], len(self.total_background["error_up"]), 0),
-                    step="post", facecolor='none', hatch='////////', edgecolor='grey', linewidth=0, label = "Background Uncertainty")
+                    step="post", facecolor='none', hatch='////////', edgecolor='grey', linewidth=0, label = "Bkg. Uncert.")
         if not self.blind:
             # add data
             self.ax.errorbar(self.bin_centers, self.data['counts'], label='Observation', yerr=self.data['errors'], fmt='o', color = 'black', markersize=3, linewidth=0.6)
@@ -371,7 +415,11 @@ class HTT_Histogram:
             # place legend outside of plot
             plt.legend(handles[::-1], labels[::-1], loc='upper left', frameon=1, framealpha=1, bbox_to_anchor=(1.005, 5.2))
         else:
-            self.ax.legend(handles[::-1], labels[::-1], loc='upper right', frameon=1, framealpha=1, bbox_to_anchor=(0.98, 0.98))
+            if len(handles) <= 5:
+                ncols=1
+            else:
+                ncols=2
+            self.ax.legend(handles[::-1], labels[::-1], loc='upper right', frameon=1, framealpha=1, bbox_to_anchor=(0.98, 0.98), ncol=ncols)
 
         # main plot
         if "(GeV)" in self.variable_label:
@@ -382,7 +430,7 @@ class HTT_Histogram:
             self.ax.set_yscale('log')
             self.ax.set_ylim(0.1, 10*np.max(self.stacked_block))
         else:
-            self.ax.set_ylim(0, 2.0*np.max(self.stacked_block))
+            self.ax.set_ylim(0, 1.9*np.max(self.stacked_block))
         self.ax.set_xlim(self.bin_edges[0], self.bin_edges[-1])
         # ratio plot
         self.ax_ratio.set_ylabel("Obs/Exp")
@@ -390,22 +438,33 @@ class HTT_Histogram:
         self.ax_ratio.set_ylim(ratio_min, ratio_max)
 
         # Save to pdf and png
-        save_path_png = self.file_name.split(os.sep)
-        save_path_png.insert(-1, 'pngs')
-        os.makedirs(os.sep.join(save_path_png[:-1]), exist_ok=True) # make dir if not exists
-        save_path_png = os.sep.join(save_path_png).replace(".root", ".png")
+        if self.save_name:
+            save_path_png = self.save_name+".png"
+            save_path_pdf = self.save_name+".pdf"
+        else:
+            save_path_png = self.file_name.split(os.sep)
+            save_path_png.insert(-1, 'pngs')
+            os.makedirs(os.sep.join(save_path_png[:-1]), exist_ok=True) # make dir if not exists
+            save_path_png = os.sep.join(save_path_png).replace(".root", ".png")
+            save_path_pdf = self.file_name.split(os.sep)
+            save_path_pdf.insert(-1, 'pdfs')
+            os.makedirs(os.sep.join(save_path_pdf[:-1]), exist_ok=True) # make dir if not exists
+            save_path_pdf = os.sep.join(save_path_pdf).replace(".root", ".pdf")
         plt.savefig(save_path_png, bbox_inches='tight')
         print(f'Saved histogram to {save_path_png}')
 
-        save_path_pdf = self.file_name.split(os.sep)
-        save_path_pdf.insert(-1, 'pdfs')
-        os.makedirs(os.sep.join(save_path_pdf[:-1]), exist_ok=True) # make dir if not exists
-        save_path_pdf = os.sep.join(save_path_pdf).replace(".root", ".pdf")
         plt.savefig(save_path_pdf, bbox_inches='tight')
         print(f'Saved histogram to {save_path_pdf}')
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
+    # histo = HTT_Histogram("/vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/ZpT_Recoil_v4_TEST/Run3_2022/control/mm/datacard_pt_tt_inclusive_mm_Run3_2022.root", "mm_inclusive", "mm", "Run3_2022", "pt_tt", log_y=False, blind=False)
+    # histo.plot_1D_histo()
+
+
+
+    histo = HTT_Histogram("/vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/test_datacards_newBDT/Run3_2022/cpdecay/tt/datacard_BDT_pred_score_vs_aco_rho_rho_higgs_rhorho_tt_Run3_2022.root", "tt_higgs_rhorho", "tt", "Run3_2022", "BDT_pred_score,aco_rho_rho[0.,0.7,0.8,0.9,1.0],[0.0,0.6283185307179586,1.2566370614359172,1.8849555921538759,2.5132741228718345,3.141592653589793,3.7699111843077517,4.39822971502571,5.026548245743669,5.654866776461628,6.283185307179586]", log_y=False, blind=True, is2Dunrolled=True)
+    histo.plot_1D_histo()
 
     # histo = HTT_Histogram("/vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/DeriveIDSFs_May25/AntiIso_0p3/Run3_2022/sf_calculation/mt/datacard_m_vis_mTLt65_aiso_inclusive_mt_Run3_2022.root", "mt_inclusive_mTLt65_aiso", "mt", "Run3_2022", "m_vis", log_y=False, blind=False)
 

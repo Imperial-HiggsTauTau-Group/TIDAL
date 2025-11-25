@@ -74,18 +74,20 @@ systematic_options = [
         "Tau Fake Rate systematic for genuine muons misidentified as taus",
     ],
     [
-        "Tau_EnergyScale_JSCALE",
+        "Tau_EnergyScale_PNet_JSCALE",
         "Tau Energy Scale systematic for jets misidentified as taus",
     ],
-    ["Tau_EnergyScale_TSCALE", "Tau Energy Scale systematic for genuine taus"],
+    ["Tau_EnergyScale_PNet_TSCALE", "Tau Energy Scale systematic for genuine taus"],
     [
-        "Tau_EnergyScale_ESCALE",
+        "Tau_EnergyScale_PNet_ESCALE",
         "Tau Energy Scale systematic for genuine electrons misidentified as taus",
     ],
     [
-        "Tau_EnergyScale_MUSCALE",
+        "Tau_EnergyScale_PNet_MUSCALE",
         "Tau Energy Scale systematic for genuine muons misidentified as taus",
     ],
+    ['MET_Recoil', 'MET Recoil systematic'],
+    ['Trigger', 'Trigger efficiency systematic'],
     ["Jet_EnergyScale_Total", "Jet Energy Scale Total systematic"],
     ["Jet_EnergyResolution", "Jet Energy Resolution systematic"],
     ["Electron_Scale", "Electron Scale systematic"],
@@ -94,32 +96,13 @@ systematic_options = [
     ["DY_Shape", "DY Shape systematic from ZpT reweighting"],
     ["DY_Shape_Imperial", "DY Shape systematic from ZpT reweighting (Imperial)"],
     ["TTbar_Shape", "TTbar Shape systematic from top pT reweighting"],
-    ["Fake_Flat_Uncertainty", "flat fake uncertainty"]
+    ["Fake_Flat_Uncertainty", "flat fake uncertainty"],
+    ["Tau_ID_PNet", "Tau ID systematic"],
+    ["Fake_Factors", "fake factor related uncertainties"],
+    ["Signal_Theory", "theoretical uncertainties on the signal"],
+    ["IP_Calibration", "Uncertainty on the IP calibration"],
+    ["SV_Resolution", "Uncertainty on the SV resolution"]
 ]
-
-# TODO: for later on, systematics for PNet/CP SFs
-    # ["Tau_ID_PNet", "Tau ID systematic"],
-    # [
-    #     "Tau_FakeRate_e",
-    #     "Tau Fake Rate systematic for genuine electrons misidentified as taus",
-    # ],
-    # [
-    #     "Tau_FakeRate_mu",
-    #     "Tau Fake Rate systematic for genuine muons misidentified as taus",
-    # ],
-    # [
-    #     "Tau_EnergyScale_PNet_JSCALE",
-    #     "Tau Energy Scale systematic for jets misidentified as taus",
-    # ],
-    # ["Tau_EnergyScale_PNet_TSCALE", "Tau Energy Scale systematic for genuine taus"],
-    # [
-    #     "Tau_EnergyScale_PNet_ESCALE",
-    #     "Tau Energy Scale systematic for genuine electrons misidentified as taus",
-    # ],
-    # [
-    #     "Tau_EnergyScale_PNet_MUSCALE",
-    #     "Tau Energy Scale systematic for genuine muons misidentified as taus",
-    # ],
 
 
 # The nargs="?" option allows the user to provide an optional value for the systematic e.g. overriding the name assigned to the histogram
@@ -135,6 +118,7 @@ for systematic, description in systematic_options:
 # Additional Options:
 parser.add_argument("--LO_DY", action="store_true", help="Use LO")
 parser.add_argument("--NLO_DY", action="store_true", help="Use NLO DY")
+parser.add_argument("--use_filtered_DY", action="store_true", help="Include filtered DY")
 parser.add_argument("--sel", type=str, help="Additional Selection to apply", default="")
 parser.add_argument(
     "--set_alias",
@@ -213,19 +197,28 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
     if args.channel == "mt":
         mt_cross_only = "(trg_mt_cross && pt_1 > 21 && pt_1 <= 26 && abs(eta_1) < 2.1 && pt_2 > 32 && abs(eta_2) < 2.1)"
         single_muon_only = "(trg_singlemuon && pt_1 > 26  && abs(eta_1) < 2.4)"
-        trg_full = "(%s || %s)" % (mt_cross_only, single_muon_only)
+        trg_full = single_muon_only #"(%s || %s)" % (mt_cross_only, single_muon_only)
         categories["baseline"] = (
-            "(iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            "(m_vis>40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
+        if args.do_aiso:
+            categories["baseline"] = re.sub(
+                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
+            )
     if args.channel == "et":
         # et_cross_only = "(trg_et_cross && pt_1 > 25 && pt_1 < 31 && abs(eta_1) < 2.1 && pt_2 > 35 && abs(eta_2) < 2.1)"
         single_electron_only = "(trg_singleelectron && pt_1 >= 31 && abs(eta_1) < 2.1 )"
         trg_full = single_electron_only # remove et cross trigger until Nanoprod v3
         categories["baseline"] = ( # Tight VSe for et
-            "(iso_1 < 0.15&& idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 6 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            "(m_vis>40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 6 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
+        if args.do_aiso:
+            categories["baseline"] = re.sub(
+                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
+            )
+
     if args.channel == "tt":
         doubletau_only_trg = "(trg_doubletau && pt_1 > 40 && pt_2 > 40)"
         doubletaujet_only_trg = "(trg_doubletauandjet && pt_1 > 35 && pt_2 > 35 && jpt_1 > 60)"  # might need to revise jet cut later on
@@ -234,6 +227,13 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
             "(m_vis > 40 && idDeepTau2018v2p5VSjet_1 >= 7 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_1 >= 2 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_1 >= 4 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
+
+        if args.do_aiso:
+            categories["baseline"] = categories["baseline"].replace(
+                "idDeepTau2018v2p5VSjet_2 >= 7",
+                "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+            )
+
         categories["tt_qcd_norm"] = categories["baseline"].replace(
             "idDeepTau2018v2p5VSjet_1 >= 7",
             "idDeepTau2018v2p5VSjet_1 < 7 && idDeepTau2018v2p5VSjet_1 >= 1",
@@ -255,16 +255,6 @@ categories["qcd_loose_shape"] = re.sub(
     "iso_1\s*<\s*0.15", "iso_1 < 0.3", categories["baseline"]
 )
 
-categories["aminus_low"] = (
-    "(alphaAngle_mu_pi_1 < {} && svfit_Mass < 100 && mt_1<50 && ip_LengthSig_1 > 1)".format(
-        np.pi / 4
-    )
-)
-categories["aminus_high"] = (
-    "(alphaAngle_mu_pi_1 > {} && svfit_Mass < 100 && mt_1<50 && ip_LengthSig_1 > 1)".format(
-        np.pi / 4
-    )
-)
 categories["ip_control"] = "(m_vis > 40 && m_vis < 90 && mt_1 < 40)"
 
 categories["xt_dM0"] = "(decayMode_2 == 0)"
@@ -273,22 +263,6 @@ categories["xt_dM10"] = "(decayMode_2 == 10)"
 categories["xt_dM11"] = "(decayMode_2 == 11)"
 
 if args.channel == "tt":
-    categories["inclusive_pipi"] = (
-        "(decayMode_1==0 && ip_LengthSig_1>=1.5 && decayMode_2==0 && ip_LengthSig_2>=1.5)"
-    )
-    categories["inclusive_pirho"] = (
-        "((decayMode_1==1 && decayMode_2==0 && ip_LengthSig_2>=1.5) || (decayMode_1==0 && ip_LengthSig_1>=1.5 && decayMode_2==1))"
-    )
-    categories["inclusive_rhorho"] = "(decayMode_1==1 && decayMode_2==1)"
-    categories["inclusive_a1pi"] = (
-        "((decayMode_1==10 && hasRefitSV_1 && decayMode_2==0 && ip_LengthSig_2>=1.5) || (decayMode_1==0 && ip_LengthSig_1>=1.5 && decayMode_2==10 && hasRefitSV_2))"
-    )
-    categories["inclusive_a1rho"] = (
-        "((decayMode_1==10 && hasRefitSV_1 && decayMode_2==1) || (decayMode_1==1 && decayMode_2==10 && hasRefitSV_2))"
-    )
-    categories["inclusive_a1a1"] = (
-        "(decayMode_1==10 && decayMode_2==10 && hasRefitSV_1 && hasRefitSV_2)"
-    )
 
     sel_pi = "decayModePNet_X==0 && ip_LengthSig_X>=1.25"
     sel_rho = "decayMode_X==1 && decayModePNet_X==1 && pion_E_split_X>0.2"
@@ -305,7 +279,7 @@ if args.channel == "tt":
     sel_a11pr_2 = sel_a11pr.replace("X", "2")
 
     categories["cp_inclusive"] = (
-        f"(({sel_pi_1} || {sel_rho_1} || {sel_a1_1} || {sel_a11pr_1})) && (({sel_pi_2} || {sel_rho_2} || {sel_a1_2} || {sel_a11pr_2}))"
+        f"( ({sel_pi_1}) || ({sel_rho_1}) || ({sel_a1_1}) || ({sel_a11pr_1}) ) && ( ({sel_pi_2}) || ({sel_rho_2}) || ({sel_a1_2}) || ({sel_a11pr_2}) )"
     )
 
     categories["inclusive_PNet_rhorho"] = "(%(sel_rho_1)s && %(sel_rho_2)s)" % vars()
@@ -328,9 +302,9 @@ if args.channel == "tt":
     categories["inclusive_PNet_a11prpi"] = "(%(sel_a11pr_1)s && %(sel_pi_2)s)" % vars()
     categories["inclusive_PNet_a11pra1"] = "(%(sel_a11pr_1)s && %(sel_a1_2)s)" % vars()
 
-    categories["mva_higgs"] = "(BDT_pred_class==1)"
-    categories["mva_fake"] = "(BDT_pred_class==2)"
-    categories["mva_tau"] = "(BDT_pred_class==0)"
+    categories["mva_higgs"] = f"(BDT_pred_class==1) && ( ({sel_pi_1}) || ({sel_rho_1}) || ({sel_a1_1}) || ({sel_a11pr_1}) ) && ( ({sel_pi_2}) || ({sel_rho_2}) || ({sel_a1_2}) || ({sel_a11pr_2}) )"
+    categories["mva_fake"] = f"(BDT_pred_class==2) && ( ({sel_pi_1}) || ({sel_rho_1}) || ({sel_a1_1}) || ({sel_a11pr_1}) ) && ( ({sel_pi_2}) || ({sel_rho_2}) || ({sel_a1_2}) || ({sel_a11pr_2}) )"
+    categories["mva_tau"] = f"(BDT_pred_class==0) && ( ({sel_pi_1}) || ({sel_rho_1}) || ({sel_a1_1}) || ({sel_a11pr_1}) ) && ( ({sel_pi_2}) || ({sel_rho_2}) || ({sel_a1_2}) || ({sel_a11pr_2}) )"
 
     tt_channels = [
         "rhorho",
@@ -348,31 +322,146 @@ if args.channel == "tt":
         "a1a11pr",
         "a11pra1",
     ]
+
     for c in tt_channels:
-        categories["higgs_{}".format(c)] = "({} && {})".format(
-            categories["mva_higgs"], categories["inclusive_PNet_{}".format(c)]
-        )
-        categories["tau_{}".format(c)] = "({} && {})".format(
-            categories["mva_tau"], categories["inclusive_PNet_{}".format(c)]
-        )
-        categories["fake_{}".format(c)] = "({} && {})".format(
-            categories["mva_fake"], categories["inclusive_PNet_{}".format(c)]
-        )
+        categories[f"higgs_{c}"] = f"((BDT_pred_class==1) && {categories[f'inclusive_PNet_{c}']})"
+        categories[f"tau_{c}"] = f"((BDT_pred_class==0) && {categories[f'inclusive_PNet_{c}']})"
+        categories[f"fake_{c}"] = f"((BDT_pred_class==2) && {categories[f'inclusive_PNet_{c}']})"
+
+
+    # Define MVA categories by channels instead
+    # categories['mva_tau'] = f"((BDT_pred_class==0) && ({categories['inclusive_PNet_rhorho']} || {categories['inclusive_PNet_pirho']} || {categories['inclusive_PNet_rhopi']} || {categories['inclusive_PNet_a1rho']} || {categories['inclusive_PNet_rhoa1']} || {categories['inclusive_PNet_a1pi']} || {categories['inclusive_PNet_pia1']} || {categories['inclusive_PNet_a1a1']} || {categories['inclusive_PNet_pipi']} || {categories['inclusive_PNet_pia11pr']} || {categories['inclusive_PNet_a11prpi']} || {categories['inclusive_PNet_rhoa11pr']} || {categories['inclusive_PNet_a1a11pr']} || {categories['inclusive_PNet_a11pra1']}) )"
+    # categories['mva_fake'] = f"((BDT_pred_class==2) && ({categories['inclusive_PNet_rhorho']} || {categories['inclusive_PNet_pirho']} || {categories['inclusive_PNet_rhopi']} || {categories['inclusive_PNet_a1rho']} || {categories['inclusive_PNet_rhoa1']} || {categories['inclusive_PNet_a1pi']} || {categories['inclusive_PNet_pia1']} || {categories['inclusive_PNet_a1a1']} || {categories['inclusive_PNet_pipi']} || {categories['inclusive_PNet_pia11pr']} || {categories['inclusive_PNet_a11prpi']} || {categories['inclusive_PNet_rhoa11pr']} || {categories['inclusive_PNet_a1a11pr']} || {categories['inclusive_PNet_a11pra1']}) )"
+    # categories['mva_higgs'] = f"((BDT_pred_class==1) && ({categories['inclusive_PNet_rhorho']} || {categories['inclusive_PNet_pirho']} || {categories['inclusive_PNet_rhopi']} || {categories['inclusive_PNet_a1rho']} || {categories['inclusive_PNet_rhoa1']} || {categories['inclusive_PNet_a1pi']} || {categories['inclusive_PNet_pia1']} || {categories['inclusive_PNet_a1a1']} || {categories['inclusive_PNet_pipi']} || {categories['inclusive_PNet_pia11pr']} || {categories['inclusive_PNet_a11prpi']} || {categories['inclusive_PNet_rhoa11pr']} || {categories['inclusive_PNet_a1a11pr']} || {categories['inclusive_PNet_a11pra1']}) )"
+
+
+    # alpha minus validation angles
+    for opt, opt_cut in zip(['high', 'low'], ['>', '<']):
+        for obj in [1, 2]:
+            categories[f'aminus_rho_rho_{obj}_{opt}'] = f"(alphaAngle_rho_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_rhorho']}))"
+            categories[f'aminus_pi_rho_{obj}_{opt}'] = f"(alphaAngle_pi_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_pirho']}))"
+            categories[f'aminus_rho_pi_{obj}_{opt}'] = f"(alphaAngle_rho_pi_{obj} {opt_cut} {np.pi/4} && ({categories['tau_rhopi']}))"
+            categories[f'aminus_a1_rho_{obj}_{opt}'] = f"(alphaAngle_a1_rho_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a1rho']}))"
+            categories[f'aminus_rho_a1_{obj}_{opt}'] = f"(alphaAngle_rho_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_rhoa1']}))"
+            categories[f'aminus_a1_pi_{obj}_{opt}'] = f"(alphaAngle_a1_pi_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a1pi']}))"
+            categories[f'aminus_pi_a1_{obj}_{opt}'] = f"(alphaAngle_pi_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_pia1']}))"
+            categories[f'aminus_a1_a1_{obj}_{opt}'] = f"(alphaAngle_a1_a1_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a1a1']}))"
+            categories[f'aminus_pi_pi_{obj}_{opt}'] = f"(alphaAngle_pi_pi_{obj} {opt_cut} {np.pi/4} && ({categories['tau_pipi']}))"
+            categories[f'aminus_pi_a11pr_{obj}_{opt}'] = f"(alphaAngle_pi_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_pia11pr']}))"
+            categories[f'aminus_a11pr_pi_{obj}_{opt}'] = f"(alphaAngle_rho_pi_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a11prpi']}))"
+            categories[f'aminus_rho_a11pr_{obj}_{opt}'] = f"(alphaAngle_rho_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_rhoa11pr']}))"
+            categories[f'aminus_a11pr_rho_{obj}_{opt}'] = f"(alphaAngle_rho_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a1a11pr']}))"
+            categories[f'aminus_a1_a11pr_{obj}_{opt}'] = f"(alphaAngle_a1_rho_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a11pra1']}))"
+            categories[f'aminus_a11pr_a1_{obj}_{opt}'] = f"(alphaAngle_rho_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a11pra1']}))"
+
+
 
 elif args.channel == "mt":
-    # PNet DM separated categories (with CP selections)
+    # PNet DM separated categories for SFs (with CP selections)
     categories["DM0_tau_cp"] = "decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
     categories["DM1_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
     categories["DM2_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
     categories["DM10_tau_cp"] = "decayModePNet_2 == 10 && hasRefitSV_2"
     categories["DM11_tau_cp"] = "decayModePNet_2 == 11 && hasRefitSV_2"
-    categories['cp_inclusive'] = f"(({categories['DM0_tau_cp']}) || ({categories['DM1_tau_cp']}) || ({categories['DM2_tau_cp']}) || ({categories['DM10_tau_cp']}))"
 
     # HPS DM separate categories (inclusive)
     categories["DM0_tau"] = "decayMode_2 == 0"
     categories["DM1_tau"] = "decayMode_2==1"
     categories["DM10_tau"] = "decayMode_2==10"
     categories["DM11_tau"] = "decayMode_2==11"
+
+    # CP measurement categories
+    categories["sel_mupi"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
+    categories["sel_murho"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
+    categories["sel_mua11pr"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
+    categories["sel_mua1"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2"
+    # inclusive category including an mT cut to suppress W+jets
+    categories['cp_inclusive'] = f"(({categories['sel_mupi']}) || ({categories['sel_murho']}) || ({categories['sel_mua11pr']}) || ({categories['sel_mua1']}))"
+
+    categories["mva_higgs"] = f"(BDT_pred_class==1) && ({categories['cp_inclusive']})"
+    categories["mva_fake"] = f"(BDT_pred_class==2) && ({categories['cp_inclusive']})"
+    categories["mva_tau"] = f"(BDT_pred_class==0) && ({categories['cp_inclusive']})"
+
+    lt_channels = [
+        "mupi",
+        "murho",
+        "mua11pr",
+        "mua1"
+    ]
+    for c in lt_channels:
+        categories[f"higgs_{c}"] = f"({categories['mva_higgs']} && {categories[f'sel_{c}']})"
+        categories[f"tau_{c}"] = f"({categories['mva_tau']} && {categories[f'sel_{c}']})"
+        categories[f"fake_{c}"] = f"({categories['mva_fake']} && {categories[f'sel_{c}']})"
+
+    # alpha minus validation angles
+    for opt, opt_cut in zip(['high', 'low'], ['>', '<']):
+        for obj in [1, 2]:
+            categories[f'aminus_mu_pi_{obj}_{opt}'] = f"(alphaAngle_mu_pi_{obj} {opt_cut} {np.pi/4} && ({categories['tau_mupi']}))"
+            categories[f'aminus_mu_rho_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_murho']}))"
+            categories[f'aminus_mu_a11pr_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_mua11pr']}))"
+            categories[f'aminus_mu_a1_{obj}_{opt}'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_mua1']}))"
+            categories[f'BDTinc_aminus_mu_pi_{obj}_{opt}'] = f"(alphaAngle_mu_pi_{obj} {opt_cut} {np.pi/4} && ({categories['sel_mupi']}))"
+            categories[f'BDTinc_aminus_mu_rho_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['sel_murho']}))"
+            categories[f'BDTinc_aminus_mu_a11pr_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['sel_mua11pr']}))"
+            categories[f'BDTinc_aminus_mu_a1_{obj}_{opt}'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['sel_mua1']}))"
+
+    # for obj in [1, 2]:
+    #     categories[f'aminus_mu_pi_{obj}_high'] = f"(alphaAngle_mu_pi_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mupi']}))"
+    #     categories[f'aminus_mu_rho_{obj}_high'] = f"(alphaAngle_mu_rho_{obj} > {np.pi/4 + 0.2} && ({categories['tau_murho']}))"
+    #     categories[f'aminus_mu_a11pr_{obj}_high'] = f"(alphaAngle_mu_rho_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mua11pr']}))"
+    #     categories[f'aminus_mu_a1_{obj}_high'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mua1']}))"
+    #     categories[f'aminus_mu_pi_{obj}_low'] = f"(alphaAngle_mu_pi_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mupi']}))"
+    #     categories[f'aminus_mu_rho_{obj}_low'] = f"(alphaAngle_mu_rho_{obj} < {np.pi/4 - 0.2} && ({categories['tau_murho']}))"
+    #     categories[f'aminus_mu_a11pr_{obj}_low'] = f"(alphaAngle_mu_rho_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mua11pr']}))"
+    #     categories[f'aminus_mu_a1_{obj}_low'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mua1']}))"
+
+
+
+elif args.channel == "et":
+    # PNet DM separated categories for SFs (with CP selections)
+    categories["DM0_tau_cp"] = "decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
+    categories["DM1_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
+    categories["DM2_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
+    categories["DM10_tau_cp"] = "decayModePNet_2 == 10 && hasRefitSV_2"
+    categories["DM11_tau_cp"] = "decayModePNet_2 == 11 && hasRefitSV_2"
+
+    # HPS DM separate categories (inclusive)
+    categories["DM0_tau"] = "decayMode_2 == 0"
+    categories["DM1_tau"] = "decayMode_2==1"
+    categories["DM10_tau"] = "decayMode_2==10"
+    categories["DM11_tau"] = "decayMode_2==11"
+
+    # CP measurement categories
+    categories["sel_epi"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
+    categories["sel_erho"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
+    categories["sel_ea11pr"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
+    categories["sel_ea1"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2"
+    # inclusive category including an mT cut to suppress W+jets
+    categories['cp_inclusive'] = f"(({categories['sel_epi']}) || ({categories['sel_erho']}) || ({categories['sel_ea11pr']}) || ({categories['sel_ea1']}))"
+
+    categories["mva_higgs"] = f"(BDT_pred_class==1) && ({categories['cp_inclusive']})"
+    categories["mva_fake"] = f"(BDT_pred_class==2) && ({categories['cp_inclusive']})"
+    categories["mva_tau"] = f"(BDT_pred_class==0) && ({categories['cp_inclusive']})"
+
+    lt_channels = [
+        "epi",
+        "erho",
+        "ea11pr",
+        "ea1"
+    ]
+    for c in lt_channels:
+        categories[f"higgs_{c}"] = f"({categories['mva_higgs']} && {categories[f'sel_{c}']})"
+        categories[f"tau_{c}"] = f"({categories['mva_tau']} && {categories[f'sel_{c}']})"
+        categories[f"fake_{c}"] = f"({categories['mva_fake']} && {categories[f'sel_{c}']})"
+
+    # alpha minus validation angles
+    for opt, opt_cut in zip(['high', 'low'], ['>', '<']):
+        for obj in [1, 2]:
+            categories[f'aminus_e_pi_{obj}_{opt}'] = f"(alphaAngle_e_pi_{obj} {opt_cut} {np.pi/4} && ({categories['tau_epi']}))"
+            categories[f'aminus_e_rho_{obj}_{opt}'] = f"(alphaAngle_e_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_erho']}))"
+            categories[f'aminus_e_a11pr_{obj}_{opt}'] = f"(alphaAngle_e_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_ea11pr']}))"
+            categories[f'aminus_e_a1_{obj}_{opt}'] = f"(alphaAngle_e_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_ea1']}))"
+
 
 # if args.set_alias is not None then overwrite the categories with the selection provided
 
@@ -408,17 +497,6 @@ if args.set_alias is not None:
             args.sel = overwrite_with
         else:
             categories[cat_to_overwrite] = overwrite_with
-
-if args.do_aiso:
-    if args.channel == 'mt':
-        categories["baseline"] = re.sub(
-            "iso_1\s*<\s*0.15", "iso_1 > 0.15 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
-        )
-    elif args.channel == 'tt':
-        categories["baseline"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_2 >= 7",
-            "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
-        )
 
 # ------------------------------------------------------------------------------------------------------------------------
 # Define the samples (Data and MC (Background & Signal))
@@ -526,71 +604,36 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
             ztt_samples.remove("DYto2L_M_50_amcatnloFXFX_ext1")
 
     else:
-        print("WARNING: Using NLO POWHEG DY samples")
+        print("Using New DY samples")
         ztt_samples = [
-            "DYto2E_MLL_120to200_powheg",
-            "DYto2E_MLL_1500to2500_powheg",
-            "DYto2E_MLL_200to400_powheg",
-            "DYto2E_MLL_2500to4000_powheg",
-            "DYto2E_MLL_4000to6000_powheg",
-            "DYto2E_MLL_400to800_powheg",
-            "DYto2E_MLL_50to120_powheg",
-            "DYto2E_MLL_6000_powheg",
-            "DYto2E_MLL_800to1500_powheg",
-            "DYto2Mu_MLL_120to200_powheg",
-            "DYto2Mu_MLL_1500to2500_powheg",
-            "DYto2Mu_MLL_200to400_powheg",
-            "DYto2Mu_MLL_2500to4000_powheg",
-            "DYto2Mu_MLL_4000to6000_powheg",
-            "DYto2Mu_MLL_400to800_powheg",
-            "DYto2Mu_MLL_50to120_powheg",
-            "DYto2Mu_MLL_6000_powheg",
-            "DYto2Mu_MLL_800to1500_powheg",
-            "DYto2Tau_MLL_120to200_powheg",
-            "DYto2Tau_MLL_1500to2500_powheg",
-            "DYto2Tau_MLL_200to400_powheg",
-            "DYto2Tau_MLL_2500to4000_powheg",
-            "DYto2Tau_MLL_4000to6000_powheg",
-            "DYto2Tau_MLL_400to800_powheg",
-            "DYto2Tau_MLL_50to120_powheg",
-            "DYto2Tau_MLL_6000_powheg",
-            "DYto2Tau_MLL_800to1500_powheg",
+            "DYto2Tau_MLL_50_0J_amcatnloFXFX",
+            "DYto2Tau_MLL_50_1J_amcatnloFXFX",
+            "DYto2Tau_MLL_50_2J_amcatnloFXFX"
         ]
-
-        if args.channel in ["mm","mt","tt"]:
-            ztt_samples.remove("DYto2E_MLL_120to200_powheg")
-            ztt_samples.remove("DYto2E_MLL_1500to2500_powheg")
-            ztt_samples.remove("DYto2E_MLL_200to400_powheg")
-            ztt_samples.remove("DYto2E_MLL_2500to4000_powheg")
-            ztt_samples.remove("DYto2E_MLL_4000to6000_powheg")
-            ztt_samples.remove("DYto2E_MLL_400to800_powheg")
-            ztt_samples.remove("DYto2E_MLL_50to120_powheg")
-            ztt_samples.remove("DYto2E_MLL_6000_powheg")
-            ztt_samples.remove("DYto2E_MLL_800to1500_powheg")
-        if args.channel in ["tt"]:
-            ztt_samples.remove("DYto2Mu_MLL_120to200_powheg")
-            ztt_samples.remove("DYto2Mu_MLL_1500to2500_powheg")
-            ztt_samples.remove("DYto2Mu_MLL_200to400_powheg")
-            ztt_samples.remove("DYto2Mu_MLL_2500to4000_powheg")
-            ztt_samples.remove("DYto2Mu_MLL_4000to6000_powheg")
-            ztt_samples.remove("DYto2Mu_MLL_400to800_powheg")
-            ztt_samples.remove("DYto2Mu_MLL_50to120_powheg")
-            ztt_samples.remove("DYto2Mu_MLL_6000_powheg")
-            ztt_samples.remove("DYto2Mu_MLL_800to1500_powheg")
+        if args.use_filtered_DY:
+            print(f"WARNING: Will use filtered DY, and read effective events from alternate file")
+            ztt_samples += [
+                "DYto2Tau_MLL_50_0J_Filtered_amcatnloFXFX",
+                "DYto2Tau_MLL_50_1J_Filtered_amcatnloFXFX",
+                "DYto2Tau_MLL_50_2J_Filtered_amcatnloFXFX"
+            ]
+        zll_samples = [
+            "DYto2L_M_50_amcatnloFXFX",
+            "DYto2L_M_50_amcatnloFXFX_ext1",
+            "DYto2L_M_50_0J_amcatnloFXFX",
+            "DYto2L_M_50_1J_amcatnloFXFX",
+            "DYto2L_M_50_2J_amcatnloFXFX"
+        ]
+        if args.era in ["Run3_2023", "Run3_2023BPix"]:
+            zll_samples.remove("DYto2L_M_50_amcatnloFXFX_ext1")
 
     top_samples = [
         "TTto2L2Nu",
         "TTto2L2Nu_ext1",
         "TTtoLNu2Q",
-        "TTtoLNu2Q_ext1",
-        "TTto4Q",
-        "TTto4Q_ext1",
+        "TTtoLNu2Q_ext1"
     ]
     vv_samples = [
-        "WWW_4F",
-        "WWZ_4F",
-        "WZZ",
-        "ZZZ",
         "WW",
         "WZ",
         "ZZ",
@@ -617,7 +660,6 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
     if args.era in ["Run3_2023", "Run3_2023BPix"]:
         top_samples.remove("TTto2L2Nu_ext1")
         top_samples.remove("TTtoLNu2Q_ext1")
-        top_samples.remove("TTto4Q_ext1")
         vv_samples.remove("ST_tW_top_2L2Nu_ext1")
         vv_samples.remove("ST_tW_antitop_2L2Nu_ext1")
         vv_samples.remove("ST_tW_top_LNu2Q_ext1")
@@ -625,72 +667,81 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         wjets_samples.remove("WtoLNu_madgraphMLM_ext1")
 
     if args.channel in ["et", "mt", "tt"]:
-        # TODO: Lucas Removing irrelevant signal samples for now (to avoid double counting)
         signal_samples = {
-
+            # Unfiltered samples
             # "qqH_sm_unfiltered_htt*": "VBFHToTauTau_UncorrelatedDecay_UnFiltered",
-            "qqH_sm_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
-            # "qqH_ps_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
-            # "qqH_mm_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
-            # "Higgs_flat_htt*": [
-            #     "VBFHToTauTau_UncorrelatedDecay_Filtered",
-            #     "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
-            #     "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
-            #     "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
-            # ],
-            # "qqH_flat_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
-            # "ggH_flat_prod_sm_htt*": [
-            #     "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay"
-            # ],
-            "ggH_sm_prod_sm_htt*": [
-                "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay"
-            ],
-            # "ggH_sm_prod_ps_htt*": [
-            #     "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay"
-            # ],
-            # "ggH_sm_prod_mm_htt*": [
-            #     "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay"
-            # ],
-            # "ggH_ps_prod_sm_htt*": [
-            #     "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay"
-            # ],
-            # "ggH_ps_prod_ps_htt*": [
-            #     "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay"
-            # ],
-            # "ggH_ps_prod_mm_htt*": [
-            #     "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay"
-            # ],
-            # "ggH_mm_prod_sm_htt*": [
-            #     "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay"
-            # ],
-            # "ggH_mm_prod_ps_htt*": [
-            #     "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay"
-            # ],
-            # "ggH_mm_prod_mm_htt*": [
-            #     "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay"
-            # ],
-            # "ggH_sm_prod_sm_reweight_htt*": ['GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay', 'GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay', 'GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay'],
             # "WH_sm_unfiltered_htt*": [
             #     "WplusHToTauTau_UncorrelatedDecay_UnFiltered",
             #     "WminusHToTauTau_UncorrelatedDecay_UnFiltered",
             # ],
+            # "ZH_sm_unfiltered_htt*": "ZHToTauTau_UncorrelatedDecay_UnFiltered",
+
+            # VBF samples
+            "qqH_sm_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
+            "qqH_ps_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
+            "qqH_mm_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
+
+            # ggH samples (SM production)
+            "ggH_sm_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+            "ggH_ps_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+            "ggH_mm_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+            # ggH samples (PS production)
+            "ggH_sm_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+            "ggH_ps_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+            "ggH_mm_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+            # ggH samples (MM production)
+            "ggH_sm_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+            "ggH_ps_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+            "ggH_mm_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+
+            # WH samples
             "WH_sm_htt*": [
                 "WplusHToTauTau_UncorrelatedDecay_Filtered",
                 "WminusHToTauTau_UncorrelatedDecay_Filtered",
             ],
-            # "WH_ps_htt*": [
-            #     "WplusHToTauTau_UncorrelatedDecay_Filtered",
-            #     "WminusHToTauTau_UncorrelatedDecay_Filtered",
-            # ],
-            # "WH_mm_htt*": [
-            #     "WplusHToTauTau_UncorrelatedDecay_Filtered",
-            #     "WminusHToTauTau_UncorrelatedDecay_Filtered",
-            # ],
-            # "ZH_sm_unfiltered_htt*": "ZHToTauTau_UncorrelatedDecay_UnFiltered",
+            "WH_ps_htt*": [
+                "WplusHToTauTau_UncorrelatedDecay_Filtered",
+                "WminusHToTauTau_UncorrelatedDecay_Filtered",
+            ],
+            "WH_mm_htt*": [
+                "WplusHToTauTau_UncorrelatedDecay_Filtered",
+                "WminusHToTauTau_UncorrelatedDecay_Filtered",
+            ],
+
+            # ZH samples
             "ZH_sm_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
-            # "ZH_ps_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
-            # "ZH_mm_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
+            "ZH_ps_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
+            "ZH_mm_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
+
+            # Higgs Flat samples (uncorrelated decay)
+            "Higgs_flat_htt*": [
+                "VBFHToTauTau_UncorrelatedDecay_Filtered",
+                "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+                "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+                "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+                "ZHToTauTau_UncorrelatedDecay_Filtered",
+                "WplusHToTauTau_UncorrelatedDecay_Filtered",
+                "WminusHToTauTau_UncorrelatedDecay_Filtered"
+            ],
+            "qqH_flat_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
+            "ggH_flat_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+            "ggH_flat_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+            "ggH_flat_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+            "WH_flat_htt*": [
+                "WplusHToTauTau_UncorrelatedDecay_Filtered",
+                "WminusHToTauTau_UncorrelatedDecay_Filtered",
+            ],
+            "ZH_flat_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
+
+            # combined ggH (events from all production mechanisms)
+            # "ggH_sm_prod_sm_reweight_htt*": [
+            #     'GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay',
+            #     'GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay',
+            #     'GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay'
+            # ],
         }
+
+
     else:
         signal_samples = {}
 
@@ -698,6 +749,7 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
     # signal_samples = {}
 
     samples_dict["ztt_samples"] = ztt_samples
+    samples_dict["zll_samples"] = zll_samples
     samples_dict["top_samples"] = top_samples
     samples_dict["vv_samples"] = vv_samples
     samples_dict["wjets_samples"] = wjets_samples
@@ -810,7 +862,7 @@ def RunPlotting(
     do_data=True,
     qcd_factor=1.0,
     method=1,
-    samples_to_skip=[],
+    nodes_to_skip=[],
 ):
     """
     RunPlotting handles how each process is added to the analysis
@@ -832,12 +884,18 @@ def RunPlotting(
     cat = categories["cat"]
     cat_data = categories_unmodified["cat"]
 
-    doZL = True if "ZL" not in samples_to_skip else False
-    doZJ = True if "ZJ" not in samples_to_skip else False
-    doTTT = True if "TTT" not in samples_to_skip else False
-    doTTJ = True if "TTJ" not in samples_to_skip else False
-    doVVT = True if "VVT" not in samples_to_skip else False
-    doVVJ = True if "VVJ" not in samples_to_skip else False
+    doZL = True if "ZL" not in nodes_to_skip else False
+    doZJ = True if "ZJ" not in nodes_to_skip else False
+    doTTT = True if "TTT" not in nodes_to_skip else False
+    doTTJ = True if "TTJ" not in nodes_to_skip else False
+    doVVT = True if "VVT" not in nodes_to_skip else False
+    doVVJ = True if "VVJ" not in nodes_to_skip else False
+
+
+    if method in [3,4]: # jet fake estimate so don't include other MC jet fakes:
+        doTTJ = False
+        doZJ = False
+        doVVJ = False
 
     if do_data:
         if args.do_ss:
@@ -850,7 +908,7 @@ def RunPlotting(
             ana.SummedFactory("data_obs", data_samples, plot_unmodified, full_selection)
         )
 
-    if "ZTT" not in samples_to_skip:
+    if "ZTT" not in nodes_to_skip:
         GenerateZTT(
             ana,
             nodename,
@@ -863,12 +921,12 @@ def RunPlotting(
             gen_sels_dict["z_sels"],
             not args.do_ss,
         )
-    if "ZLL" not in samples_to_skip:
+    if "ZLL" not in nodes_to_skip:
         GenerateZLL(
             ana,
             nodename,
             add_name,
-            samples_dict["ztt_samples"],
+            samples_dict["ztt_samples"] + samples_dict["zll_samples"],
             plot,
             wt,
             sel,
@@ -878,7 +936,7 @@ def RunPlotting(
             doZL,
             doZJ,
         )
-    if "TT" not in samples_to_skip:
+    if "TT" not in nodes_to_skip:
         GenerateTop(
             ana,
             nodename,
@@ -893,7 +951,7 @@ def RunPlotting(
             doTTT,
             doTTJ,
         )
-    if "VV" not in samples_to_skip:
+    if "VV" not in nodes_to_skip:
         GenerateVV(
             ana,
             nodename,
@@ -908,65 +966,65 @@ def RunPlotting(
             doVVT,
             doVVJ,
         )
-    if "W" not in samples_to_skip:
-        GenerateW(
+    if "W" not in nodes_to_skip:
+        if method in [1, 2, 5]: # only generate W if no jetfakes
+            GenerateW(
+                ana,
+                nodename,
+                add_name,
+                samples_dict,
+                gen_sels_dict,
+                plot,
+                plot_unmodified,
+                wt,
+                sel,
+                cat_name,
+                categories,
+                categories_unmodified=categories_unmodified,
+                method=method,
+                qcd_factor=qcd_factor,
+                get_os=not args.do_ss,
+            )
+    if "QCD" not in nodes_to_skip and method in [1, 2, 5]:  # QCD estimate
+        GenerateQCD(
             ana,
             nodename,
             add_name,
             samples_dict,
             gen_sels_dict,
+            systematic,
             plot,
             plot_unmodified,
             wt,
             sel,
             cat_name,
-            categories,
+            categories=categories,
             categories_unmodified=categories_unmodified,
             method=method,
             qcd_factor=qcd_factor,
             get_os=not args.do_ss,
         )
-    if "QCD" not in samples_to_skip:
-        if method in [1, 2, 5]:  # QCD estimate
-            GenerateQCD(
-                ana,
-                nodename,
-                add_name,
-                samples_dict,
-                gen_sels_dict,
-                systematic,
-                plot,
-                plot_unmodified,
-                wt,
-                sel,
-                cat_name,
-                categories=categories,
-                categories_unmodified=categories_unmodified,
-                method=method,
-                qcd_factor=qcd_factor,
-                get_os=not args.do_ss,
-            )
-        elif method in [3, 4]:  # Jet Fakes
-            GenerateFakes(
-                ana,
-                nodename,
-                add_name,
-                samples_dict,
-                gen_sels_dict,
-                systematic,
-                plot,
-                plot_unmodified,
-                wt,
-                sel,
-                cat_name,
-                categories=categories,
-                categories_unmodified=categories_unmodified,
-                method=method,
-                qcd_factor=qcd_factor,
-                get_os=not args.do_ss,
-            )
+    elif "JetFakes" not in nodes_to_skip and method in [3, 4]:  # Jet Fakes
+        GenerateFakes(
+            ana,
+            nodename,
+            add_name,
+            samples_dict,
+            gen_sels_dict,
+            systematic,
+            plot,
+            plot_unmodified,
+            wt,
+            sel,
+            cat_name,
+            categories=categories,
+            categories_unmodified=categories_unmodified,
+            method=method,
+            qcd_factor=qcd_factor,
+            get_os=not args.do_ss,
+        )
 
-    if "signal" not in samples_to_skip:
+    if "signal" not in nodes_to_skip:
         # generate correct signal
         # TODO: add scheme or similar flat to determine which ones to use
         GenerateReweightedCPSignal(
@@ -1038,23 +1096,25 @@ else:
 weight = "(weight)"
 if args.add_weight:
     weight += "*" + args.add_weight
-
+# weight += "/(w_Tau_e_FakeRate*w_Tau_mu_FakeRate)"
 # set systematics:
 # - 1st index sets folder name contaning systematic samples
 # - 2nd index sets string to be appended to output histograms
 # - 3rd index specifies the weight to be applied
-# - 4th lists samples that should be skipped
+# - 4th lists nodes that should be skipped
+# - 5th specifies if this is a FF systematic (string specifying which one)
+# - 6th specifies if variable to plot needs to be changed
 systematics = OrderedDict()
 if args.channel == "mt":
-    systematics["nominal"] = ("nominal", "", f"({weight})", [], False)
+    systematics["nominal"] = ("nominal", "", f"({weight})", [], None, None)
 elif args.channel == "et":
-    systematics["nominal"] = ("nominal", "", f"({weight})", [], False)
+    systematics["nominal"] = ("nominal", "", f"({weight})", [], None, None)
 elif args.channel in ["ee", "mm"]:
-    systematics["nominal"] = ("nominal", "", f"({weight})", [], False)
+    systematics["nominal"] = ("nominal", "", f"({weight})", [], None, None)
 elif args.channel == "tt":
-    systematics["nominal"] = ("nominal", "", f"({weight})", [], False)
+    systematics["nominal"] = ("nominal", "", f"({weight})", [], None, None)
 
-if args.run_systematics:
+if args.run_systematics and not args.do_aiso: # we dont run systematics for anti-iso region
     enabled_systematics = {
         systematic: getattr(args, "systematic_" + systematic)
         for systematic, _ in systematic_options
@@ -1072,6 +1132,7 @@ if args.run_systematics:
             specific_channel=args.channel,
             specific_systematic=syst,
             specific_name=specific_systematic_name,
+            variable_to_plot=args.var,
         )
 
         for available_systematic in systematics_dict.keys():
@@ -1085,8 +1146,8 @@ if args.run_systematics:
             systematics[syst][2].replace("weight_to_replace", weight),
             systematics[syst][3],
             systematics[syst][4],
+            systematics[syst][5],
         )
-
 # ------------------------------------------------------------------------------------------------------------------------
 
 categories["cat"] = (
@@ -1096,7 +1157,6 @@ categories["cat"] = (
 # ------------------------------------------------------------------------------------------------------------------------
 
 # Loop over systematics & run plotting, etc
-samples_to_skip_dict = {}
 systematic_suffixes = []
 max_systematics_per_pass = 10
 
@@ -1125,15 +1185,16 @@ if not args.bypass_plotter:
             print("")
 
             sel = args.sel
-            plot = args.var
+            plot = args.var if systematics[systematic][5] is None else systematics[systematic][5]
             # use plot_unmodified and categories_unmodified in cases where the data and MC get different selections due to a systematic variation
             plot_unmodified = plot
             categories_unmodified = copy.deepcopy(categories)
             systematic_folder_name = systematics[systematic][0]
             systematic_suffix = systematics[systematic][1]
             weight = systematics[systematic][2]
-            samples_to_skip = systematics[systematic][3]
-            is_FFsyst = systematics[systematic][4]
+            nodes_to_skip = systematics[systematic][3]
+            ff_syst = systematics[systematic][4]
+            if not isinstance(ff_syst, str): ff_syst = None
 
             systematic_suffixes.append(systematic_suffix)
 
@@ -1145,7 +1206,7 @@ if not args.bypass_plotter:
                     sample_name,
                 )
 
-            for sample_name in ztt_samples + top_samples + vv_samples + wjets_samples:
+            for sample_name in ztt_samples + zll_samples + top_samples + vv_samples + wjets_samples:
                 analysis.AddSamples(
                     f"{args.input_folder}/{args.era}/{args.channel}/{sample_name}/{systematic_folder_name}/merged.root",
                     "ntuple",
@@ -1177,7 +1238,7 @@ if not args.bypass_plotter:
                 nodename,
                 samples_dict,
                 gen_sels_dict,
-                systematic,
+                ff_syst if ff_syst else systematic,
                 args.category,
                 categories,
                 categories_unmodified,
@@ -1187,7 +1248,7 @@ if not args.bypass_plotter:
                 do_data,
                 qcd_factor,
                 method,
-                samples_to_skip,
+                nodes_to_skip,
             )
 
             del systematics[systematic]
@@ -1244,9 +1305,9 @@ if is_2d and args.do_unrolling:
                         [hist.GetYaxis().GetBinLowEdge(hist.GetNbinsY() + 1), -1]
                     )
     for hist in hists_to_add:
-        directory.Get(hist.GetName()).Write(
-            hist.GetName() + "_2D"
-        )  # write a copy of the 2D histogram as this will be overwritten by 1D version
+        hist_2d = directory.Get(hist.GetName()).Clone()
+        hist_2d.SetName(hist.GetName() + "_2D")
+        hist_2d.Write("", ROOT.TObject.kOverwrite)
         hist.Write("", ROOT.TObject.kOverwrite)
 
 # --------------------
@@ -1307,10 +1368,11 @@ for hist in directory.GetListOfKeys():
     if ".subnodes" in hist.GetName():
         continue
 
-    processes = ["ZTT", "ZL", "ZJ", "TTT", "ΤΤJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead"]
+    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead"]
     if hist.GetName().endswith("Up") or hist.GetName().endswith("Down"):
         for proc in processes:
-            if proc+"_" in hist.GetName():
+            if hist.GetName().startswith(proc + '_'):
+                print(f"Adding {hist.GetName()} to total uncertainty")
                 no_syst_name = proc
                 temp_hist = h0.Clone()
                 temp_hist.Add(directory.Get(no_syst_name),-1)

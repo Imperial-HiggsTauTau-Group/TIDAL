@@ -327,6 +327,23 @@ def compute_fastmtt(
 
 
 def run_processes(base_dir, constrain, constrain_setting, constrain_window, use_condor=False, chunk_size=10000):
+    variations = [
+"Electron_Smearing_down", "Tau_EnergyScale_PNet_ESCALE_3PRONG_1PI0_down", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_1PI0_up",
+"Electron_Smearing_up", "Tau_EnergyScale_PNet_ESCALE_3PRONG_1PI0_up", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_down",
+"jec_syst_Total_down", "Tau_EnergyScale_PNet_ESCALE_3PRONG_down", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_up",
+"jec_syst_Total_up", "Tau_EnergyScale_PNet_ESCALE_3PRONG_up", "Tau_EnergyScale_PNet_TSCALE_1PRONG_1PI0_down",
+"jer_syst_down",
+"Tau_EnergyScale_PNet_JSCALE_down", "Tau_EnergyScale_PNet_TSCALE_1PRONG_1PI0_up",
+"jer_syst_up",
+"Tau_EnergyScale_PNet_JSCALE_up", "Tau_EnergyScale_PNet_TSCALE_1PRONG_2PI0_down",
+"nominal", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_1PI0_down",  "Tau_EnergyScale_PNet_TSCALE_1PRONG_2PI0_up",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_1PI0_down", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_1PI0_up", "Tau_EnergyScale_PNet_TSCALE_1PRONG_down",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_1PI0_up", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_2PI0_down",   "Tau_EnergyScale_PNet_TSCALE_1PRONG_up",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_2PI0_down", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_2PI0_up", "Tau_EnergyScale_PNet_TSCALE_3PRONG_1PI0_down",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_2PI0_up", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_down", "Tau_EnergyScale_PNet_TSCALE_3PRONG_1PI0_up",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_down", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_up", "Tau_EnergyScale_PNet_TSCALE_3PRONG_down",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_up", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_1PI0_down", "Tau_EnergyScale_PNet_TSCALE_3PRONG_up"
+    ]
     for channel in os.listdir(base_dir):
         if channel not in ["mt","et","tt"]:
            continue
@@ -335,12 +352,13 @@ def run_processes(base_dir, constrain, constrain_setting, constrain_window, use_
             for process in os.listdir(channel_dir):
                 process_dir = os.path.join(channel_dir, process)
                 if os.path.isdir(process_dir):
-                    variation_dir = os.path.join(process_dir, "nominal")
-                    print(variation_dir)
-                    if os.path.isdir(variation_dir):
-                        parquet_file = os.path.join(variation_dir, 'merged.parquet')
-                        if os.path.exists(parquet_file):
-                            run_process(parquet_file, constrain, constrain_setting, constrain_window, channel, use_condor, chunk_size)
+                    for variation in variations:
+                        variation_dir = os.path.join(process_dir, variation)
+                        print(variation_dir)
+                        if os.path.isdir(variation_dir):
+                            parquet_file = os.path.join(variation_dir, 'merged.parquet')
+                            if os.path.exists(parquet_file):
+                                run_process(parquet_file, constrain, constrain_setting, constrain_window, channel, use_condor, chunk_size)
 
 
 def run_process(parquet_file, constrain, constrain_setting, constrain_window, channel, use_condor, chunk_size):
@@ -413,42 +431,78 @@ def submit_condor_job(submission_file_path):
 
 
 def merge_fastmtt_chunks(dir, output_dir_name, channels):
+    variations = [
+"Electron_Smearing_down", "Tau_EnergyScale_PNet_ESCALE_3PRONG_1PI0_down", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_1PI0_up",
+"Electron_Smearing_up", "Tau_EnergyScale_PNet_ESCALE_3PRONG_1PI0_up", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_down",
+"jec_syst_Total_down", "Tau_EnergyScale_PNet_ESCALE_3PRONG_down", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_up",
+"jec_syst_Total_up", "Tau_EnergyScale_PNet_ESCALE_3PRONG_up", "Tau_EnergyScale_PNet_TSCALE_1PRONG_1PI0_down",
+"jer_syst_down",
+"Tau_EnergyScale_PNet_JSCALE_down", "Tau_EnergyScale_PNet_TSCALE_1PRONG_1PI0_up",
+"jer_syst_up",
+"Tau_EnergyScale_PNet_JSCALE_up", "Tau_EnergyScale_PNet_TSCALE_1PRONG_2PI0_down",
+"nominal", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_1PI0_down",  "Tau_EnergyScale_PNet_TSCALE_1PRONG_2PI0_up",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_1PI0_down", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_1PI0_up", "Tau_EnergyScale_PNet_TSCALE_1PRONG_down",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_1PI0_up", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_2PI0_down",   "Tau_EnergyScale_PNet_TSCALE_1PRONG_up",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_2PI0_down", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_2PI0_up", "Tau_EnergyScale_PNet_TSCALE_3PRONG_1PI0_down",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_2PI0_up", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_down", "Tau_EnergyScale_PNet_TSCALE_3PRONG_1PI0_up",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_down", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_up", "Tau_EnergyScale_PNet_TSCALE_3PRONG_down",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_up", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_1PI0_down", "Tau_EnergyScale_PNet_TSCALE_3PRONG_up"
+    ]
     for channel in channels.split(","):
         print("-"*50)
         print("Processing channel:", channel)
         directory = os.path.join(dir, channel)
         for process in os.listdir(directory):
+            print(f"Merging for process: {process}")
             process_dir = os.path.join(directory, process)
             if os.path.isdir(process_dir):
-                variation_dir = os.path.join(process_dir, "nominal")
-                if os.path.isdir(variation_dir):
-                    fastmtt_dir = os.path.join(variation_dir, output_dir_name)
-                    parquet_files = [os.path.join(fastmtt_dir, file) for file in os.listdir(fastmtt_dir) if file.endswith(".parquet")]
-                    if len(parquet_files) == 1:
-                        print("-"*50)
-                        print(f"Copying single file for {process} and renaming to {output_dir_name}.parquet")
-                        os.system(f"cp {parquet_files[0]} {variation_dir}/{output_dir_name}.parquet")
-                    if len(parquet_files) > 1:
-                        print("-"*50)
-                        print(f"Merging fastmtt chunks for {process}")
-                        schema = None
-                        writer = None
-                        with alive_bar(len(parquet_files)) as bar:
-                            for f in parquet_files:
-                                dataset = pq.ParquetDataset(f)
-                                table = dataset.read()
-                                if schema is None:
-                                    schema = table.schema
-                                    writer = pq.ParquetWriter(os.path.join(variation_dir, f"{output_dir_name}.parquet"), schema)
-                                else:
-                                    table = table.cast(schema)
-                                writer.write_table(table)
-                                bar()
-                        if writer is not None:
-                            writer.close()
+                for variation in variations:
+                    variation_dir = os.path.join(process_dir, variation)
+                    if os.path.isdir(variation_dir):
+                        fastmtt_dir = os.path.join(variation_dir, output_dir_name)
+                        parquet_files = [os.path.join(fastmtt_dir, file) for file in os.listdir(fastmtt_dir) if file.endswith(".parquet")]
+                        if len(parquet_files) == 1:
+                            print("-"*50)
+                            print(f"Copying single file for {process} and renaming to {output_dir_name}.parquet")
+                            os.system(f"cp {parquet_files[0]} {variation_dir}/{output_dir_name}.parquet")
+                        if len(parquet_files) > 1:
+                            print("-"*50)
+                            print(f"Merging fastmtt chunks for {process}")
+                            schema = None
+                            writer = None
+                            with alive_bar(len(parquet_files)) as bar:
+                                for f in parquet_files:
+                                    dataset = pq.ParquetDataset(f)
+                                    table = dataset.read()
+                                    if schema is None:
+                                        schema = table.schema
+                                        writer = pq.ParquetWriter(os.path.join(variation_dir, f"{output_dir_name}.parquet"), schema)
+                                    else:
+                                        table = table.cast(schema)
+                                    writer.write_table(table)
+                                    bar()
+                            if writer is not None:
+                                writer.close()
 
 
 def check_logs(dir, output_dir_name, channels):
+    variations = [
+"Electron_Smearing_down", "Tau_EnergyScale_PNet_ESCALE_3PRONG_1PI0_down", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_1PI0_up",
+"Electron_Smearing_up", "Tau_EnergyScale_PNet_ESCALE_3PRONG_1PI0_up", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_down",
+"jec_syst_Total_down", "Tau_EnergyScale_PNet_ESCALE_3PRONG_down", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_up",
+"jec_syst_Total_up", "Tau_EnergyScale_PNet_ESCALE_3PRONG_up", "Tau_EnergyScale_PNet_TSCALE_1PRONG_1PI0_down",
+"jer_syst_down",
+"Tau_EnergyScale_PNet_JSCALE_down", "Tau_EnergyScale_PNet_TSCALE_1PRONG_1PI0_up",
+"jer_syst_up",
+"Tau_EnergyScale_PNet_JSCALE_up", "Tau_EnergyScale_PNet_TSCALE_1PRONG_2PI0_down",
+"nominal", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_1PI0_down",  "Tau_EnergyScale_PNet_TSCALE_1PRONG_2PI0_up",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_1PI0_down", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_1PI0_up", "Tau_EnergyScale_PNet_TSCALE_1PRONG_down",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_1PI0_up", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_2PI0_down",   "Tau_EnergyScale_PNet_TSCALE_1PRONG_up",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_2PI0_down", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_2PI0_up", "Tau_EnergyScale_PNet_TSCALE_3PRONG_1PI0_down",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_2PI0_up", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_down", "Tau_EnergyScale_PNet_TSCALE_3PRONG_1PI0_up",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_down", "Tau_EnergyScale_PNet_MUSCALE_1PRONG_up", "Tau_EnergyScale_PNet_TSCALE_3PRONG_down",
+"Tau_EnergyScale_PNet_ESCALE_1PRONG_up", "Tau_EnergyScale_PNet_MUSCALE_3PRONG_1PI0_down", "Tau_EnergyScale_PNet_TSCALE_3PRONG_up"
+    ]
     for channel in channels.split(","):
         print("-"*50)
         print("Processing channel:", channel)
@@ -460,72 +514,74 @@ def check_logs(dir, output_dir_name, channels):
 
         directory = os.path.join(dir, channel)
         for process in os.listdir(directory):
+            print(f"Checking process: {process}")
             process_dir = os.path.join(directory, process)
             if os.path.isdir(process_dir):
-                variation_dir = os.path.join(process_dir, "nominal")
-                if os.path.isdir(variation_dir):
-                    log_dir = os.path.join(variation_dir, output_dir_name, "condor")
-                    # remove log_dir
-                    #if os.path.exists(log_dir):
-                    #    os.system(f"rm -r {log_dir}")
-                    #continue
-                    if not os.path.exists(os.path.join(variation_dir, output_dir_name, "resubmit")):
-                        os.makedirs(os.path.join(variation_dir, output_dir_name, "resubmit"))
-                    for log_file in os.listdir(log_dir):
-                        job_status_running = "Total for query: 1 jobs; 0 completed, 0 removed, 0 idle, 1 running, 0 held, 0 suspended"
-                        job_status_idle = "Total for query: 1 jobs; 0 completed, 0 removed, 1 idle, 0 running, 0 held, 0 suspended"
-                        job_status_held = "Total for query: 1 jobs; 0 completed, 0 removed, 0 idle, 0 running, 1 held, 0 suspended"
-                        if log_file.endswith(".sub"):
-                            count_sub_files += 1
-                        if log_file.endswith(".log"):
-                            chunk_number = log_file.split("_")[-2].replace("chunk", "")
-                            sub_file = f"condor_submit_chunk{chunk_number}.sub"
-                            out_file = log_file.replace(".log", ".out")
-                            clusterID = log_file.split("_")[-1].replace(".log", "")
-                            condor_q = os.popen(f"condor_q {clusterID}").read()
+                for variation in variations:
+                    variation_dir = os.path.join(process_dir, variation)
+                    if os.path.isdir(variation_dir):
+                        log_dir = os.path.join(variation_dir, output_dir_name, "condor")
+                        # remove log_dir
+                        #if os.path.exists(log_dir):
+                        #    os.system(f"rm -r {log_dir}")
+                        #continue
+                        if not os.path.exists(os.path.join(variation_dir, output_dir_name, "resubmit")):
+                            os.makedirs(os.path.join(variation_dir, output_dir_name, "resubmit"))
+                        for log_file in os.listdir(log_dir):
+                            job_status_running = "Total for query: 1 jobs; 0 completed, 0 removed, 0 idle, 1 running, 0 held, 0 suspended"
+                            job_status_idle = "Total for query: 1 jobs; 0 completed, 0 removed, 1 idle, 0 running, 0 held, 0 suspended"
+                            job_status_held = "Total for query: 1 jobs; 0 completed, 0 removed, 0 idle, 0 running, 1 held, 0 suspended"
+                            if log_file.endswith(".sub"):
+                                count_sub_files += 1
+                            if log_file.endswith(".log"):
+                                chunk_number = log_file.split("_")[-2].replace("chunk", "")
+                                sub_file = f"condor_submit_chunk{chunk_number}.sub"
+                                out_file = log_file.replace(".log", ".out")
+                                clusterID = log_file.split("_")[-1].replace(".log", "")
+                                condor_q = os.popen(f"condor_q {clusterID}").read()
 
-                            if os.path.exists(os.path.join(log_dir, out_file)):
-                                with open(os.path.join(log_dir, out_file), 'r') as f:
-                                    lines = f.readlines()
-                                    if len(lines) > 0:
-                                        last_line = lines[-1]
+                                if os.path.exists(os.path.join(log_dir, out_file)):
+                                    with open(os.path.join(log_dir, out_file), 'r') as f:
+                                        lines = f.readlines()
+                                        if len(lines) > 0:
+                                            last_line = lines[-1]
 
-                                        if "Job is done" not in last_line:
-                                            if job_status_running not in condor_q and job_status_idle not in condor_q:
+                                            if "Job is done" not in last_line:
+                                                if job_status_running not in condor_q and job_status_idle not in condor_q:
+                                                    count_failed_jobs += 1
+
+                                                    if job_status_held not in condor_q:
+                                                        os.system(f"mv {os.path.join(log_dir, log_file)} {os.path.join(variation_dir, output_dir_name, 'resubmit')}")
+                                                        os.system(f"mv {os.path.join(log_dir, log_file.replace('.log', '.err'))} {os.path.join(variation_dir, output_dir_name, 'resubmit')}")
+                                                        os.system(f"mv {os.path.join(log_dir, out_file)} {os.path.join(variation_dir, output_dir_name, 'resubmit')}")
+                                                        os.system(f"condor_submit {os.path.join(log_dir, sub_file)}")
+
+                                                elif job_status_running in condor_q:
+                                                    count_running_jobs += 1
+
+                                            elif "Job is done" in last_line:
+                                                if job_status_running in condor_q:
+                                                    os.popen(f"condor_rm {clusterID}")
+                                                    print(f"Job {clusterID} is done but still running. Removing the job")
+                                                count_done += 1
+                                        else:
+                                            if job_status_running in condor_q or job_status_idle in condor_q:
+                                                count_running_jobs += 1
+                                            else:
                                                 count_failed_jobs += 1
-
                                                 if job_status_held not in condor_q:
                                                     os.system(f"mv {os.path.join(log_dir, log_file)} {os.path.join(variation_dir, output_dir_name, 'resubmit')}")
                                                     os.system(f"mv {os.path.join(log_dir, log_file.replace('.log', '.err'))} {os.path.join(variation_dir, output_dir_name, 'resubmit')}")
                                                     os.system(f"mv {os.path.join(log_dir, out_file)} {os.path.join(variation_dir, output_dir_name, 'resubmit')}")
                                                     os.system(f"condor_submit {os.path.join(log_dir, sub_file)}")
-
-                                            elif job_status_running in condor_q:
-                                                count_running_jobs += 1
-
-                                        elif "Job is done" in last_line:
-                                            if job_status_running in condor_q:
-                                                os.popen(f"condor_rm {clusterID}")
-                                                print(f"Job {clusterID} is done but still running. Removing the job")
-                                            count_done += 1
-                                    else:
-                                        if job_status_running in condor_q or job_status_idle in condor_q:
-                                            count_running_jobs += 1
-                                        else:
-                                            count_failed_jobs += 1
-                                            if job_status_held not in condor_q:
-                                                os.system(f"mv {os.path.join(log_dir, log_file)} {os.path.join(variation_dir, output_dir_name, 'resubmit')}")
-                                                os.system(f"mv {os.path.join(log_dir, log_file.replace('.log', '.err'))} {os.path.join(variation_dir, output_dir_name, 'resubmit')}")
-                                                os.system(f"mv {os.path.join(log_dir, out_file)} {os.path.join(variation_dir, output_dir_name, 'resubmit')}")
-                                                os.system(f"condor_submit {os.path.join(log_dir, sub_file)}")
-                            else:
-                                if job_status_running in condor_q or job_status_idle in condor_q:
-                                    count_running_jobs += 1
                                 else:
-                                    count_failed_jobs += 1
-                                    if job_status_held not in condor_q:
-                                        os.system(f"mv {os.path.join(log_dir, log_file)} {os.path.join(variation_dir, output_dir_name, 'resubmit')}")
-                                        os.system(f"condor_submit {os.path.join(log_dir, sub_file)}")
+                                    if job_status_running in condor_q or job_status_idle in condor_q:
+                                        count_running_jobs += 1
+                                    else:
+                                        count_failed_jobs += 1
+                                        if job_status_held not in condor_q:
+                                            os.system(f"mv {os.path.join(log_dir, log_file)} {os.path.join(variation_dir, output_dir_name, 'resubmit')}")
+                                            os.system(f"condor_submit {os.path.join(log_dir, sub_file)}")
 
         print(f"Number of jobs currently running: {count_running_jobs}")
         print(f"Number of finished jobs: {count_done}")

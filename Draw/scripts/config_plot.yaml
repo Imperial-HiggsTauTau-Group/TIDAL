@@ -1,63 +1,48 @@
-input_folder: /vols/cms/ks1021/offline/HiggsDNA/IC/outputs/production_06_12_2024
-output_path: /vols/cms/ks1021/TIDAL/Draw/plots/production_06_12_2024
-channels: [et,mt,tt]
-eras: [Run3_2022EE]
-parameter_path: /vols/cms/ks1021/offline/HiggsDNA/IC/scripts/ditau/config/
+input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/add_IPsig_SFs #SF_templates_CP #control_noMETRecoil
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/FFs/Nov6_QCD # #Nov6_BDT_distribution #Nov6_highmT_base #Nov6_highmT_bveto
+channels: [ et, mt]
+eras: [Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix]
+parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [control]
+run_systematics: false
 
-variables:
-  control:
-    definitions:
-      m_vis: "m_vis(50,0,400)"
-      pt_1: "pt_1(40,0,200)"
-      pt_2: "pt_2(40,0,200)"
-      eta_1: "eta_1(40,-pi,pi)"
-      eta_2: "eta_2(40,-pi,pi)"
-      phi_1: "phi_1(40,-pi,pi)"
-      phi_2: "phi_2(40,-pi,pi)"
-      alphaAngle_mu_pi_1: "alphaAngle_mu_pi_1[0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,1.12,1.2,1.28,1.36,1.44,1.52,1.6]"
-      aco_mu_pi: "aco_mu_pi(20,0,2pi)"
-      ip_x_1: "ip_x_1(50,-0.01,0.01)"
-      ip_y_1: "ip_y_1(50,-0.01,0.01)"
-      ip_z_1: "ip_z_1(50,-0.01,0.01)"
-      ip_x_2: "ip_x_2(50,-0.01,0.01)"
-      ip_y_2: "ip_y_2(50,-0.01,0.01)"
-      ip_z_2: "ip_z_2(50,-0.01,0.01)"
-      decayMode_2: "decayMode_2[0,1,2,3,4,5,6,7,8,9,10,11,12]"
-      decayModePNet_2: "decayModePNet_2[0,1,2,3,4,5,6,7,8,9,10,11,12]"
+control:
+  variable_definitions:
+    # CONTROL PLOTS
+    m_vis: "m_vis(50,0,200)"
+    m_vis_tt: "m_vis(50,0,400)"
+    pt_1: "pt_1(40,0,200)"
+    pt_2: "pt_2(40,0,200)"
+    eta_1: "eta_1(48,-2.4,2.4)"
+    eta_2: "eta_2(48,-2.4,2.4)"
+    phi_1: "phi_1(32,-pi,pi)"
+    phi_2: "phi_2(32,-pi,pi)"
+    dR: "dR(42,0,5)"
+    n_jets: "n_jets(10,0,10)"
+    met_pt: "met_pt(40,0,200)"
+    pt_tt: "pt_tt(50,0,400)"
+    met_phi: "met_phi(32,-pi,pi)"
 
-    tt:
-      - ["3", inclusive, m_vis]
-      - ["3", inclusive, pt_1]
-      - ["3", inclusive, pt_2]
-      - ["3", inclusive, eta_1]
-      - ["3", inclusive, eta_2]
-      - ["3", inclusive, phi_1]
-      - ["3", inclusive, phi_2]
-    mt:
-      - ["2", inclusive, m_vis]
-      - ["2", inclusive, pt_1]
-      - ["2", inclusive, pt_2]
-      - ['2', inclusive, eta_1]
-      - ['2', inclusive, eta_2]
-      - ['2', inclusive, phi_1]
-      - ['2', inclusive, phi_2]
-    et:
-      - ["2", inclusive, m_vis]
-      - ["2", inclusive, pt_1]
-      - ["2", inclusive, pt_2]
-      - ['2', inclusive, eta_1]
-      - ['2', inclusive, eta_2]
-      - ['2', inclusive, phi_1]
-      - ['2', inclusive, phi_2]
-      #- ["2", inclusive, alphaAngle_mu_pi_1]
-      #- ["1", aminus_low, aco_mu_pi]
-      #- ["1", aminus_high, aco_mu_pi]
-      #- ["2", inclusive, ip_x_1]
-      #- ["2", inclusive, ip_y_1]
-      #- ["2", inclusive, ip_z_1]
-      #- ["2", inclusive, ip_x_2]
-      #- ["2", inclusive, ip_y_2]
-      #- ["2", inclusive, ip_z_2]
-      #- ["2", inclusive, decayMode_2]
-      #- ["2", inclusive, decayModePNet_2]
+  mt:
+  # GENERAL CONTROL
+  - { method: "5", category:  [ cp_inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt], additional_selections: ["(mt_1<65)"]}
+
+  et:
+  # GENERAL CONTROL
+  - { method: "5", category:  [ cp_inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt], additional_selections: ["(mt_1<65)"]}
+
+  tt:
+  # GENERAL CONTROL
+  - { method: "4", category:  [ cp_inclusive ], plotting_variable: [ m_vis_tt, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
+  # - { method: "4", category:  [ cp_inclusive ], plotting_variable: [ m_vis_tt,  n_jets], additional_selections: [ "(1)" ], same_sign: True}
+  # - { method: "4", category:  [ cp_inclusive ], plotting_variable: [ m_vis_tt,  n_jets], additional_selections: [ "(1)" ], aiso: True}
+
+  mm:
+  # GENERAL CONTROL
+  - { method: "5", category:  [ inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
+
+  ee:
+  # GENERAL CONTROL
+  - { method: "5", category:  [ inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
+
+
