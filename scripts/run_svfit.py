@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from TauAnalysis.ClassicSVfit.wrapper.pybind_wrapper import ClassicSVfit, TauTauHistogramAdapter, MeasuredTauLepton
 import ROOT as root
-from coffea.nanoevents.methods import vector
+import vector
 import awkward as ak
 import numpy as np
 import os
@@ -15,15 +15,16 @@ import pyarrow.parquet as pq
 
 
 def calculate_p4(pt: ak.Array, eta: ak.Array, phi: ak.Array, mass: ak.Array) -> ak.Array:
-    return ak.zip(
-        {
-            "pt": pt,
-            "eta": eta,
-            "phi": phi,
-            "mass": mass
-        },
-        with_name="PtEtaPhiMLorentzVector",
-        behavior=vector.behavior
+    return vector.awk(
+        ak.zip(
+            {
+                "pt": pt,
+                "eta": eta,
+                "phi": phi,
+                "mass": mass
+            },
+            with_name="Momentum4D"
+        )
     )
 
 
