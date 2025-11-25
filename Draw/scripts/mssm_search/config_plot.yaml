@@ -1,7 +1,7 @@
-input_folder: /vols/cms/ia2318/HiggsDNA/output/production_070525_EarlyRun3SyncMSSM/
-output_path: /vols/cms/ia2318/TIDAL/Draw/production_070525_EarlyRun3SyncMSSM_blind
-channels: [mt,tt]
-eras: [Run3_2022EE]
+input_folder: /vols/cms/ia2318/HiggsDNA/output/production_070525_EarlyRun3SyncMSSM/ #/vols/cms/ia2318/HiggsDNA-powheg/output/production_etauAISOtests/
+output_path: /vols/cms/ia2318/TIDAL/Draw/etauAISOtests  #etauAISOtests #mutautests
+channels: [et]
+eras: [Run3_2022]
 parameter_path: /vols/cms/ia2318/HiggsDNA/scripts/ditau/config/
 schemes: [control]
 
@@ -9,7 +9,7 @@ working_points:
   et:
     vsJet: "Medium"
     vsEle: "Tight"
-    vsMu: "VLoose"
+    vsMu: "Tight"
   mt:
     vsJet: "Medium"
     vsEle: "VVLoose"
@@ -38,6 +38,7 @@ variables:
       # re-optimise mTLt40 once set-up is finalised for semileptonic analysis
       # bliding for mt_tot -- ## need to automate it for submitting iteratively as well
       FastMTT_mass: "FastMTT_mass(150,0,500)"
+      pt_2_custom: "pt_2(40,0,200)"
 
     tt:
       - ["3", inclusive, m_vis]
@@ -68,33 +69,35 @@ variables:
       - ["3", btag, mt_tot_btag, blind]
       - ["3", btag, FastMTT_mass]
     mt:
-      - ["1", inclusive, m_vis]
-      - ["1", inclusive, pt_1]
-      - ["1", inclusive, pt_2]
-      - ['1', inclusive, eta_1]
-      - ['1', inclusive, eta_2]
-      - ['1', inclusive, phi_1]
-      - ['1', inclusive, phi_2]
-      - ["1", inclusive, mt_tot_nobtag, blind]
-      - ["1", inclusive, FastMTT_mass]
-      - ["1", nobtag, m_vis]
-      - ["1", nobtag, pt_1]
       - ["1", nobtag, pt_2]
-      - ['1', nobtag, eta_1]
-      - ['1', nobtag, eta_2]
-      - ['1', nobtag, phi_1]
-      - ['1', nobtag, phi_2]
-      - ["1", nobtag, mt_tot_nobtag, blind]
-      - ["1", nobtag, FastMTT_mass]
-      - ["1", btag, m_vis]
-      - ["1", btag, pt_1]
-      - ["1", btag, pt_2]
-      - ['1', btag, eta_1]
-      - ['1', btag, eta_2]
-      - ['1', btag, phi_1]
-      - ['1', btag, phi_2]
-      - ["1", btag, mt_tot_btag, blind]
-      - ["1", btag, FastMTT_mass]
+      - ["1", nobtag, pt_2_custom, -sel, "(mt_1 > 65) & (n_bjets == 0) & (iso_1 >= 0.05) & (iso_1 <= 0.15) & (idDeepTau2018v2p5VSe_2 >= 2) & (idDeepTau2018v2p5VSmu_2 >= 4) & ((((trg_mt_cross) & (pt_1 > 21) & (pt_1 <= 26) & (abs(eta_1) < 2.1) & (pt_2 > 32) & (abs(eta_2) < 2.1)) | ((trg_singlemuon) & (pt_1 > 26) & (abs(eta_1) < 2.4))) | ((trg_singletau) & (pt_2 > 190)))"]
+      # - ["1", inclusive, m_vis]
+      # - ["1", inclusive, pt_1]
+      # - ["1", inclusive, pt_2]
+      # - ['1', inclusive, eta_1]
+      # - ['1', inclusive, eta_2]
+      # - ['1', inclusive, phi_1]
+      # - ['1', inclusive, phi_2]
+      # - ["1", inclusive, mt_tot_nobtag, blind]
+      # - ["1", inclusive, FastMTT_mass]
+      # - ["1", nobtag, m_vis]
+      # - ["1", nobtag, pt_1]
+      # - ["1", nobtag, pt_2]
+      # - ['1', nobtag, eta_1]
+      # - ['1', nobtag, eta_2]
+      # - ['1', nobtag, phi_1]
+      # - ['1', nobtag, phi_2]
+      # - ["1", nobtag, mt_tot_nobtag, blind]
+      # - ["1", nobtag, FastMTT_mass]
+      # - ["1", btag, m_vis]
+      # - ["1", btag, pt_1]
+      # - ["1", btag, pt_2]
+      # - ['1', btag, eta_1]
+      # - ['1', btag, eta_2]
+      # - ['1', btag, phi_1]
+      # - ['1', btag, phi_2]
+      # - ["1", btag, mt_tot_btag, blind]
+      # - ["1", btag, FastMTT_mass]
     et:  # confirm with Danny what Method to use for  et (cannot use 2 with mTLt40) cat -- give mt_1 < 40 GeV selection not in name but later
     # use -sel option functionality in makeDatacards_mssm.py
       - ["2", inclusive, m_vis]
