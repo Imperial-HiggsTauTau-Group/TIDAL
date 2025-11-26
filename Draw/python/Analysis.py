@@ -324,7 +324,7 @@ class SubtractNode(BaseNode):
             node.AddRequests(manifest)
             
 class FF_Node(BaseNode):
-    def __init__(self, name, QCD_node, W_node, Top_node, QCD_frac, W_frac, Top_frac):
+    def __init__(self, name, QCD_node, W_node, Top_node, QCD_frac, W_frac, Top_frac, flatten_y=False):
         BaseNode.__init__(self, name)
         self.shape = None
         self.QCD_node = QCD_node
@@ -333,8 +333,21 @@ class FF_Node(BaseNode):
         self.QCD_frac = QCD_frac
         self.W_frac = W_frac
         self.Top_frac = Top_frac
+        self.flatten_y = flatten_y
 
     def RunSelf(self):
+        if self.flatten_y:
+            print("WARNING: Fractions for FF contributions are being flattened across y (2D histogram)" )
+            for y_bin in range(1, self.QCD_frac.shape.hist.GetNbinsY()+1):
+                # set fraction to average across the given y (BDT bin for Higgs CP)
+                avg_QCD = sum(self.QCD_frac.shape.hist.GetBinContent(x_bin, y_bin) for x_bin in range(1, self.QCD_frac.shape.hist.GetNbinsX()+1))/ self.QCD_frac.shape.hist.GetNbinsX()
+                avg_Wj = sum(self.W_frac.shape.hist.GetBinContent(x_bin, y_bin) for x_bin in range(1, self.W_frac.shape.hist.GetNbinsX()+1))/ self.W_frac.shape.hist.GetNbinsX()
+                avg_Top = sum(self.Top_frac.shape.hist.GetBinContent(x_bin, y_bin) for x_bin in range(1, self.Top_frac.shape.hist.GetNbinsX()+1))/ self.Top_frac.shape.hist.GetNbinsX()
+                for x_bin in range(1, self.QCD_frac.shape.hist.GetNbinsX()+1):
+                    self.QCD_frac.shape.hist.SetBinContent(x_bin, y_bin, avg_QCD)
+                    self.W_frac.shape.hist.SetBinContent(x_bin, y_bin, avg_Wj)
+                    self.Top_frac.shape.hist.SetBinContent(x_bin, y_bin, avg_Top)
+
         for i in range(1, self.QCD_frac.shape.hist.GetNbinsX() + 1):
             # set errors for fractions to 0 so don't influence bbb uncertainties of final templates
             self.QCD_frac.shape.hist.SetBinError(i, 0.0)

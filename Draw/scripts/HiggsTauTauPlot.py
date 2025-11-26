@@ -989,6 +989,11 @@ def RunPlotting(
             get_os=not args.do_ss,
         )
     elif "JetFakes" not in nodes_to_skip and method in [3,4,6]:  # Jet Fakes
+        if method == 6 and "BDT_pred_score,aco" in args.var:
+            print("WARNING: For CP datacards with variable names matching: `BDT_pred_score,aco*`, jet fake fractions are computed per BDT bin")
+            flatten_y = True
+        else:
+            flatten_y = False
         GenerateFakes(
             ana,
             nodename,
@@ -1006,7 +1011,8 @@ def RunPlotting(
             method=method,
             qcd_factor=qcd_factor,
             get_os=not args.do_ss,
-        )
+            flatten_y = flatten_y
+            )
 
     if "signal" not in nodes_to_skip:
         # generate correct signal

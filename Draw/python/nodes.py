@@ -264,7 +264,7 @@ def GenerateW(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={}, plo
     w_node = GetWNode(ana, add_name, samples_dict['wjets_samples'], plot, wt, sel, cat, "", get_os)
   ana.nodes[nodename].AddNode(w_node)
 
-def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={}, systematic='', plot='', plot_unmodified='', wt='', sel='', cat_name='', categories={}, categories_unmodified={}, method=3, qcd_factor=1.0, get_os=True):
+def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={}, systematic='', plot='', plot_unmodified='', wt='', sel='', cat_name='', categories={}, categories_unmodified={}, method=3, qcd_factor=1.0, get_os=True, flatten_y=False):
     shape_node = None
     if get_os:
         OSSS = "os"
@@ -382,7 +382,7 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
                         Top_data_node,
                         Top_substract_node)
         
-        weighted_jet_fake = Analysis.FF_Node("JetFakes", qcd_ff_estimate, W_ff_estimate, Top_ff_estimate, frac_QCD, frac_W, frac_top)
+        weighted_jet_fake = Analysis.FF_Node("JetFakes", qcd_ff_estimate, W_ff_estimate, Top_ff_estimate, frac_QCD, frac_W, frac_top, flatten_y=flatten_y)
         ana.nodes[nodename].AddNode(weighted_jet_fake)
 
 
