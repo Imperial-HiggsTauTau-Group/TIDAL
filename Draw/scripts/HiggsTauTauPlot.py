@@ -140,7 +140,7 @@ if args.channel not in available_channels:
     raise ValueError(
         "Invalid channel. Please choose from: {}".format(available_channels)
     )
-available_methods = ["1", "2", "3", "4", "5"]
+available_methods = ["1", "2", "3", "4", "5", "6"]
 if args.method not in available_methods:
     raise ValueError("Invalid method. Please choose from: {}".format(available_methods))
 
@@ -188,8 +188,13 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         )
         if args.do_aiso:
             categories["baseline"] = re.sub(
-                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
-            )
+                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.2", categories["baseline"] # aiso cut based on what is used for the FF DR
+            
+        categories["lt_ff_AR"] = categories["baseline"].replace(
+            "idDeepTau2018v2p5VSjet_2 >= 7",
+            "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+        )
+        
     if args.channel == "et":
         # et_cross_only = "(trg_et_cross && pt_1 > 25 && pt_1 < 31 && abs(eta_1) < 2.1 && pt_2 > 35 && abs(eta_2) < 2.1)"
         single_electron_only = "(trg_singleelectron && pt_1 >= 31 && abs(eta_1) < 2.1 )"
@@ -200,8 +205,13 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         )
         if args.do_aiso:
             categories["baseline"] = re.sub(
-                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
+                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.2", categories["baseline"]  # aiso cut based on what is used for the FF DR
             )
+
+        categories["lt_ff_AR"] = categories["baseline"].replace(
+            "idDeepTau2018v2p5VSjet_2 >= 7",
+            "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+        )
 
     if args.channel == "tt":
         doubletau_only_trg = "(trg_doubletau && pt_1 > 40 && pt_2 > 40)"
@@ -876,7 +886,7 @@ def RunPlotting(
     doVVJ = True if "VVJ" not in nodes_to_skip else False
 
 
-    if method in [3,4]: # jet fake estimate so don't include other MC jet fakes:
+    if method in [3,4,6]: # jet fake estimate so don't include other MC jet fakes:
         doTTJ = False
         doZJ = False
         doVVJ = False
@@ -988,7 +998,7 @@ def RunPlotting(
             qcd_factor=qcd_factor,
             get_os=not args.do_ss,
         )
-    elif "JetFakes" not in nodes_to_skip and method in [3, 4]:  # Jet Fakes
+    elif "JetFakes" not in nodes_to_skip and method in [3,4,6]:  # Jet Fakes
         GenerateFakes(
             ana,
             nodename,
@@ -1415,6 +1425,7 @@ if (not is_2d) or (is_2d and args.do_unrolling):
         args.channel,
         args.era,
         args.var,
+        method,
         blind=args.blind,
         log_y=False,
         is2Dunrolled=is_2d,
