@@ -13,6 +13,10 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
     # Muon ID/Isolation systematics
     # ----------------------------------------------------------------------------------------------------
     if specific_systematic == 'Muon_ID_iso':
+
+        nodes_to_skip = [
+             'JetFakes'
+        ]
         for kind in ['ID', 'Isolation']:
             up_var = f'w_Muon_{kind}_Up'
             down_var = f'w_Muon_{kind}_Down'
@@ -40,9 +44,9 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
                     histogram_name = '_' + specific_name.replace("*kind", extension) + updown.split('_')[-1]
 
                 if specific_channel == 'mm':
-                    systematics[systematic_name] = ('nominal', histogram_name, f"weight_to_replace * ({formula_leading}) * ({formula_subleading})", [], None, None)
+                    systematics[systematic_name] = ('nominal', histogram_name, f"weight_to_replace * ({formula_leading}) * ({formula_subleading})", nodes_to_skip, None, None)
                 elif specific_channel == 'mt':
-                    systematics[systematic_name] = ('nominal', histogram_name, f"weight_to_replace * ({formula_leading})", [], None, None)
+                    systematics[systematic_name] = ('nominal', histogram_name, f"weight_to_replace * ({formula_leading})", nodes_to_skip, None, None)
 
             del up_var, down_var
     # ----------------------------------------------------------------------------------------------------
@@ -50,6 +54,10 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
     # Electron ID systematics
     # ----------------------------------------------------------------------------------------------------
     if specific_systematic == 'Electron_ID_Reco':
+
+        nodes_to_skip = [
+             'JetFakes'
+        ]
 
         for kind in ['ID', 'Reco']:
             up_var = f'w_Electron_{kind}_Up'
@@ -66,16 +74,16 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
                     f"(!(genPartFlav_2 == 1 || genPartFlav_2 == 15)))"
                 )
 
-                systematic_name = 'Electron_ID' + updown.split('_')[-1]
+                systematic_name = 'Electron_ID_' + kind + updown.split('_')[-1]
                 if specific_name == '':
                     histogram_name = 'syst_electron_id' + updown.split('_')[-1]
                 else:
                     histogram_name = '_' + specific_name.replace('*kind', kind.lower()) + updown.split('_')[-1]
 
                 if specific_channel == 'ee':
-                    systematics[systematic_name] = ('nominal', histogram_name, f"weight_to_replace * ({formula_leading}) * ({formula_subleading})", [], None, None)
+                    systematics[systematic_name] = ('nominal', histogram_name, f"weight_to_replace * ({formula_leading}) * ({formula_subleading})", nodes_to_skip, None, None)
                 elif specific_channel == 'et':
-                    systematics[systematic_name] = ('nominal', histogram_name, f"weight_to_replace * ({formula_leading})", [], None, None)
+                    systematics[systematic_name] = ('nominal', histogram_name, f"weight_to_replace * ({formula_leading})", nodes_to_skip, None, None)
 
             del up_var, down_var
     # ----------------------------------------------------------------------------------------------------
@@ -209,8 +217,8 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
                 histogram_name = '_' + specific_name.replace("*year", era).replace('*eta', eta.replace('.','p'))
 
             if specific_channel in ["et","mt","tt"]:
-                systematics[systematic_name + '_up'] = ('nominal', '_' + histogram_name + 'Up', 'weight_to_replace*' + '*'.join(up_weights), nodes_to_skip, None, None)
-                systematics[systematic_name + '_down'] = ('nominal', '_' + histogram_name + 'Down', 'weight_to_replace*' + '*'.join(down_weights), nodes_to_skip, None, None)
+                systematics[systematic_name + '_up'] = ('nominal', histogram_name + 'Up', 'weight_to_replace*' + '*'.join(up_weights), nodes_to_skip, None, None)
+                systematics[systematic_name + '_down'] = ('nominal', histogram_name + 'Down', 'weight_to_replace*' + '*'.join(down_weights), nodes_to_skip, None, None)
 
         del up_weights, down_weights
     # ----------------------------------------------------------------------------------------------------
@@ -445,6 +453,11 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
     # Electron Energy Scale + Smearing systematics
     # ----------------------------------------------------------------------------------------------------
     if specific_systematic == 'Electron_Scale_Smearing':
+
+        nodes_to_skip = [
+             'JetFakes'
+        ]
+
         for kind in ['Scale', 'Smearing']:
             for updown in ['up', 'down']:
                 systematic_name = 'syst_electron_' + kind.lower() + '_' + updown
@@ -461,7 +474,7 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
                     histogram_name = '_' + specific_name.replace('*kind', extension) + updown.capitalize()
 
                 if specific_channel in ["ee","et"]:
-                    systematics[systematic_name] = (folder_name, histogram_name, 'weight_to_replace', [], None, None)
+                    systematics[systematic_name] = (folder_name, histogram_name, 'weight_to_replace', nodes_to_skip, None, None)
 
     # ----------------------------------------------------------------------------------------------------
 
@@ -673,6 +686,8 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
         variables_to_consider = [
             "aco_pi_pi", "aco_pi_rho", "aco_pi_a1_FASTMTT_MassConstraint",
             "aco_rho_pi", "aco_a1_pi_FASTMTT_MassConstraint",
+            "aco_mu_pi", "aco_mu_rho", "aco_mu_a1_FASTMTT_MassConstraint",
+            "aco_e_pi", "aco_e_rho", "aco_e_a1_FASTMTT_MassConstraint"
         ]
 
         for var in variables_to_consider:
@@ -701,6 +716,7 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
             "aco_pi_a1_FASTMTT_MassConstraint", "aco_a1_pi_FASTMTT_MassConstraint",
             "aco_a1_rho_FASTMTT_MassConstraint", "aco_rho_a1_FASTMTT_MassConstraint",
             "aco_a1_a1",
+            "aco_mu_a1_FASTMTT_MassConstraint", "aco_e_a1_FASTMTT_MassConstraint"
         ]
 
         for var in variables_to_consider:
