@@ -73,6 +73,15 @@ def GetTTTNode(ana, add_name='', samples=[], plot='', wt='', sel='', cat='', top
   return ana.SummedFactory('TTT'+add_name, samples, plot, full_selection)
 
 
+def GetWNode(ana, add_name='', samples=[], plot='', wt='', sel='', cat='', w_sels={}, get_os=True):
+  if get_os:
+      OSSS = 'os'
+  else:
+      OSSS = '!os'
+  full_selection = BuildCutString(wt, sel, cat, OSSS, '')
+  return ana.SummedFactory('W'+add_name, samples, plot, full_selection)
+
+
 def GetVVTNode(ana, add_name ='', samples=[], plot='', wt='', sel='', cat='', vv_sels={}, get_os=True):
   if get_os:
       OSSS = 'os'
@@ -91,66 +100,72 @@ def GetVVJNode(ana, add_name ='', samples=[], plot='', wt='', sel='', cat='', vv
   return ana.SummedFactory('VVJ'+add_name, samples, plot, full_selection)
 
 
-def GetSubtractNode(ana, add_name, plot, plot_unmodified, wt, sel, cat_name, categories, categories_unmodified, method, qcd_factor, OSSS, samples_dict, gen_sels_dict, includeW=False, w_shift=None):
+def GetSubtractNode(ana, add_name, plot, plot_unmodified, wt, sel, cat_name, categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=False, w_shift=None):
     cat = categories[cat_name]
     cat_data = categories_unmodified[cat_name]
     subtract_node = Analysis.SummedNode('total_bkg'+add_name)
     if includeW:
-        if w_shift is not None:
-            w_wt = '%s*%f' %(wt,w_shift)
-        else:
-            w_wt = wt
-        w_node = GetWNode(ana, 'W', samples_dict, gen_sels_dict, plot, plot_unmodified, w_wt, sel, cat_name, categories, categories_unmodified,  method, qcd_factor, OSSS)
+        w_wt = wt
+        w_node = GetWNode(ana, "", samples_dict['wjets_samples'], plot, wt, sel, cat, "", get_os)
         subtract_node.AddNode(w_node)
-    ttt_node = GetTTTNode(ana, "", samples_dict['top_samples'], plot, wt, sel, cat, gen_sels_dict['top_sels'], OSSS)
-    ttj_node = GetTTJNode(ana, "", samples_dict['top_samples'], plot, wt, sel, cat, gen_sels_dict['top_sels'], OSSS)
-    vvt_node = GetVVTNode(ana, "", samples_dict['vv_samples'], plot, wt, sel, cat, gen_sels_dict['vv_sels'], OSSS)
-    vvj_node = GetVVJNode(ana, "", samples_dict['vv_samples'], plot, wt, sel, cat, gen_sels_dict['vv_sels'], OSSS)
+    ttt_node = GetTTTNode(ana, "", samples_dict['top_samples'], plot, wt, sel, cat, gen_sels_dict['top_sels'], get_os)
+    ttj_node = GetTTJNode(ana, "", samples_dict['top_samples'], plot, wt, sel, cat, gen_sels_dict['top_sels'], get_os)
+    vvt_node = GetVVTNode(ana, "", samples_dict['vv_samples'], plot, wt, sel, cat, gen_sels_dict['vv_sels'], get_os)
+    vvj_node = GetVVJNode(ana, "", samples_dict['vv_samples'], plot, wt, sel, cat, gen_sels_dict['vv_sels'], get_os)
     subtract_node.AddNode(ttt_node)
     subtract_node.AddNode(ttj_node)
     subtract_node.AddNode(vvt_node)
     subtract_node.AddNode(vvj_node)
 
-    ztt_node = GetZTTNode(ana, "", samples_dict['ztt_samples'], plot, wt, sel, cat, gen_sels_dict['z_sels'], OSSS)
+    ztt_node = GetZTTNode(ana, "", samples_dict['ztt_samples'], plot, wt, sel, cat, gen_sels_dict['z_sels'], get_os)
     subtract_node.AddNode(ztt_node)
 
-    zl_node = GetZLNode(ana, "", samples_dict['ztt_samples']+samples_dict["zll_samples"], plot, wt, sel, cat, gen_sels_dict['z_sels'], OSSS)
-    zj_node = GetZJNode(ana, "", samples_dict['ztt_samples']+samples_dict["zll_samples"], plot, wt, sel, cat, gen_sels_dict['z_sels'], OSSS)
+    zl_node = GetZLNode(ana, "", samples_dict['ztt_samples']+samples_dict["zll_samples"], plot, wt, sel, cat, gen_sels_dict['z_sels'], get_os)
+    zj_node = GetZJNode(ana, "", samples_dict['ztt_samples']+samples_dict["zll_samples"], plot, wt, sel, cat, gen_sels_dict['z_sels'], get_os)
     subtract_node.AddNode(zl_node)
     subtract_node.AddNode(zj_node)
 
     return subtract_node
 
-def GetFakeFractionNode(ana, add_name, plot, plot_unmodified, wt, sel, cat_name, categories, categories_unmodified, method, qcd_factor, OSSS, samples_dict, gen_sels_dict):
+def GetFakeFractionNode(ana, add_name, plot, plot_unmodified, wt, sel, cat_name, categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict):
+    if get_os:
+        OSSS = 'os'
+    else:
+        OSSS = '!os'
+
     cat = categories[cat_name]
     cat_data = categories_unmodified[cat_name]
     
-    # total MC background
-    subtract_node = Analysis.SummedNode('total_bkg'+add_name)
+    # Get QCD yield in AR
+    AR_sel =  BuildCutString(("weight"), sel, categories[cat_name], OSSS) # do this to make sure correct selection passed to data
+    total_mc_bkg = GetSubtractNode(ana, '', plot, plot_unmodified, wt, sel, 'jetfake_estimate', categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=True)
+    data_node = ana.SummedFactory('data_AR', samples_dict['data_samples'], plot_unmodified, AR_sel)  # data
     
+    # Fraction for QCD
+    QCD_frac_node = Analysis.SubtractNode('ff_qcd_frac'+add_name,
+            data_node,
+            total_mc_bkg)
     
-    w_node = GetWNode(ana, 'W', samples_dict, gen_sels_dict, plot, plot_unmodified, w_wt, sel, cat_name, categories, categories_unmodified,  method, qcd_factor, OSSS)
-    ttt_node = GetTTTNode(ana, "", samples_dict['top_samples'], plot, wt, sel, cat, gen_sels_dict['top_sels'], OSSS)
-    ttj_node = GetTTJNode(ana, "", samples_dict['top_samples'], plot, wt, sel, cat, gen_sels_dict['top_sels'], OSSS)
-    vvt_node = GetVVTNode(ana, "", samples_dict['vv_samples'], plot, wt, sel, cat, gen_sels_dict['vv_sels'], OSSS)
-    vvj_node = GetVVJNode(ana, "", samples_dict['vv_samples'], plot, wt, sel, cat, gen_sels_dict['vv_sels'], OSSS)
-    subtract_node.AddNode(ttt_node)
-    subtract_node.AddNode(ttj_node)
-    subtract_node.AddNode(vvt_node)
-    subtract_node.AddNode(vvj_node)
+    # Get W yield in AR
+    w_node = GetWNode(ana, "_AR", samples_dict['wjets_samples'], plot, wt, sel, cat, "", get_os)
+    vvj_node = GetVVJNode(ana, "_AR", samples_dict['vv_samples'], plot, wt, sel, cat, gen_sels_dict['vv_sels'], get_os)
+    zj_node = GetZJNode(ana, "_AR", samples_dict['ztt_samples']+samples_dict["zll_samples"], plot, wt, sel, cat, gen_sels_dict['z_sels'], get_os)
 
-    ztt_node = GetZTTNode(ana, "", samples_dict['ztt_samples'], plot, wt, sel, cat, gen_sels_dict['z_sels'], OSSS)
-    subtract_node.AddNode(ztt_node)
+    # Fraction for W fakes
+    W_frac_node = Analysis.SummedNode('ff_W_frac'+add_name)
+    W_frac_node.AddNode(w_node)
+    W_frac_node.AddNode(vvj_node)
+    W_frac_node.AddNode(zj_node)
+    
+    # Fraction for top
+    top_frac_node = Analysis.SummedNode('ff_top_frac'+add_name)
+    TTJ_frac = GetTTJNode(ana, "_AR", samples_dict['top_samples'], plot, wt, sel, cat, gen_sels_dict['top_sels'], get_os)
+    top_frac_node.AddNode(TTJ_frac)
 
-    zl_node = GetZLNode(ana, "", samples_dict['ztt_samples']+samples_dict["zll_samples"], plot, wt, sel, cat, gen_sels_dict['z_sels'], OSSS)
-    zj_node = GetZJNode(ana, "", samples_dict['ztt_samples']+samples_dict["zll_samples"], plot, wt, sel, cat, gen_sels_dict['z_sels'], OSSS)
-    subtract_node.AddNode(zl_node)
-    subtract_node.AddNode(zj_node)
-
-    return subtract_node
+    return QCD_frac_node, W_frac_node, top_frac_node
 
 
-def GetWNode(ana, name='W', samples_dict={}, gen_sels_dict={}, plot='',plot_unmodified='', wt='', sel='', cat_name='', categories={}, categories_unmodified={}, method=1, qcd_factor=1.0, get_os=True):
+def GetWNodeHighmT(ana, name='W', samples_dict={}, gen_sels_dict={}, plot='',plot_unmodified='', wt='', sel='', cat_name='', categories={}, categories_unmodified={}, method=1, qcd_factor=1.0, get_os=True):
     cat = categories['cat']
     cat_data = categories_unmodified['cat']
     if get_os:
@@ -163,42 +178,41 @@ def GetWNode(ana, name='W', samples_dict={}, gen_sels_dict={}, plot='',plot_unmo
     else:
         shape_cat = cat
     shape_selection = BuildCutString(wt, sel, shape_cat, OSSS, '')
-    if method in [1,3,4,5]:
-        w_node = ana.SummedFactory(name, samples_dict['wjets_samples'], plot, full_selection)
-    elif method in [2]:
-        full_selection = BuildCutString(wt, sel, cat, OSSS)
-        ss_selection = BuildCutString(wt, '', cat, '!os', '')
-        os_selection = BuildCutString(wt, '', cat, 'os', '')
-        control_sel = categories['w_sdb']
-        w_control_full_selection = BuildCutString(wt, control_sel, cat, OSSS)
-        # TODO Weight for data
-        # HERE
-        w_control_full_selection_os_data = BuildCutString("weight", control_sel, cat_data)
-        w_control_full_selection_ss_data = BuildCutString("weight", control_sel, cat_data, '!os')
-        btag_extrap_num_node = None
-        btag_extrap_den_node = None
-        subtract_node_os = GetSubtractNode(ana, '_os', plot, plot_unmodified, wt,control_sel, 'cat', categories, categories_unmodified, method, qcd_factor, True, samples_dict, gen_sels_dict, False)
-        subtract_node_ss = GetSubtractNode(ana, '_ss', plot, plot_unmodified, wt,control_sel, 'cat', categories, categories_unmodified, method, qcd_factor, False, samples_dict, gen_sels_dict, False)
 
-        if shape_selection == full_selection:
-            w_shape = None
-        else:
-            w_shape = ana.SummedFactory('w_shape', samples_dict['wjets_samples'], plot, shape_selection)
+    if method != 2:
+        raise ValueError("GetWNodeHighmT only works for method 2 (high mT W control region)")
 
-        w_node = Analysis.HttWOSSSNode(name,
-        ana.SummedFactory('data_os', samples_dict['data_samples'], plot_unmodified, w_control_full_selection_os_data),
-        subtract_node_os,
-        ana.SummedFactory('data_ss', samples_dict['data_samples'], plot_unmodified, w_control_full_selection_ss_data),
-        subtract_node_ss,
-        ana.SummedFactory('W_cr', samples_dict['wjets_samples'], plot, w_control_full_selection),
-        ana.SummedFactory('W_sr', samples_dict['wjets_samples'], plot, full_selection),
-        ana.SummedFactory('W_os', samples_dict['wjets_samples'], plot, os_selection),
-        ana.SummedFactory('W_ss', samples_dict['wjets_samples'], plot, ss_selection),
-        w_shape,
-        qcd_factor,
-        get_os,
-        btag_extrap_num_node,
-        btag_extrap_den_node)
+    full_selection = BuildCutString(wt, sel, cat, OSSS)
+    ss_selection = BuildCutString(wt, '', cat, '!os', '')
+    os_selection = BuildCutString(wt, '', cat, 'os', '')
+    control_sel = categories['w_sdb']
+    w_control_full_selection = BuildCutString(wt, control_sel, cat, OSSS)
+    w_control_full_selection_os_data = BuildCutString("weight", control_sel, cat_data)
+    w_control_full_selection_ss_data = BuildCutString("weight", control_sel, cat_data, '!os')
+    btag_extrap_num_node = None
+    btag_extrap_den_node = None
+    subtract_node_os = GetSubtractNode(ana, '_os', plot, plot_unmodified, wt,control_sel, 'cat', categories, categories_unmodified, method, qcd_factor, True, samples_dict, gen_sels_dict, False)
+    subtract_node_ss = GetSubtractNode(ana, '_ss', plot, plot_unmodified, wt,control_sel, 'cat', categories, categories_unmodified, method, qcd_factor, False, samples_dict, gen_sels_dict, False)
+
+    if shape_selection == full_selection:
+        w_shape = None
+    else:
+        w_shape = ana.SummedFactory('w_shape', samples_dict['wjets_samples'], plot, shape_selection)
+
+    w_node = Analysis.HttWOSSSNode(name,
+    ana.SummedFactory('data_os', samples_dict['data_samples'], plot_unmodified, w_control_full_selection_os_data),
+    subtract_node_os,
+    ana.SummedFactory('data_ss', samples_dict['data_samples'], plot_unmodified, w_control_full_selection_ss_data),
+    subtract_node_ss,
+    ana.SummedFactory('W_cr', samples_dict['wjets_samples'], plot, w_control_full_selection),
+    ana.SummedFactory('W_sr', samples_dict['wjets_samples'], plot, full_selection),
+    ana.SummedFactory('W_os', samples_dict['wjets_samples'], plot, os_selection),
+    ana.SummedFactory('W_ss', samples_dict['wjets_samples'], plot, ss_selection),
+    w_shape,
+    qcd_factor,
+    get_os,
+    btag_extrap_num_node,
+    btag_extrap_den_node)
 
     return w_node
 
@@ -243,7 +257,12 @@ def GenerateVV(ana, nodename, add_name ='', samples=[], plot='', wt='', sel='', 
 
 def GenerateW(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={}, plot='', plot_unmodified='', wt='', sel='', cat_name='', categories={}, categories_unmodified={}, method=1, qcd_factor=1.0, get_os=True):
   w_node_name = 'W'
-  ana.nodes[nodename].AddNode(GetWNode(ana, w_node_name+add_name, samples_dict, gen_sels_dict, plot, plot_unmodified, wt, sel, cat_name, categories, categories_unmodified,  method, qcd_factor, get_os))
+  if method == 2: # high mt W control region
+    w_node = GetWNodeHighmT(ana, w_node_name+add_name, samples_dict, gen_sels_dict, plot, plot_unmodified, wt, sel, cat_name, categories, categories_unmodified,  method, qcd_factor, get_os)
+  else:
+    cat = categories['cat']
+    w_node = GetWNode(ana, add_name, samples_dict['wjets_samples'], plot, wt, sel, cat, "", get_os)
+  ana.nodes[nodename].AddNode(w_node)
 
 def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={}, systematic='', plot='', plot_unmodified='', wt='', sel='', cat_name='', categories={}, categories_unmodified={}, method=3, qcd_factor=1.0, get_os=True):
     shape_node = None
@@ -325,6 +344,46 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
             fake_sublead_selection = BuildCutString(f"(weight)*({syst_weight})", sel, categories['sublead_fakes_estimate'], OSSS)
             fake_sublead_node = ana.SummedFactory('JetFakesSublead'+add_name, samples_dict['ztt_samples']+samples_dict['zll_samples']+samples_dict['wjets_samples']+samples_dict['vv_samples']+samples_dict['top_samples'], plot_unmodified, fake_sublead_selection)
             ana.nodes[nodename].AddNode(fake_sublead_node)
+            
+    if method == 6: # lt fake factor method
+        
+        categories['jetfake_estimate'] = categories[cat_name]+'&&'+categories['lt_ff_AR']
+        categories_unmodified['jetfake_estimate'] = categories_unmodified[cat_name]+'&&'+categories_unmodified['lt_ff_AR']
+        
+        # get fractions of different contributions in the AR
+        frac_QCD, frac_W, frac_top = GetFakeFractionNode(ana, '', plot, plot_unmodified, '(weight)'+sub_wt, sel, 'jetfake_estimate', categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict)
+        
+        # get MC in the AR that is not a jet fake
+        ff_qcd_wt = (f'(weight) * (FF_qcd_noipcut_nom)')
+        ff_QCD_selection = BuildCutString(ff_qcd_wt, sel, categories['jetfake_estimate'], OSSS)
+        ff_W_wt = (f'(weight) * (FF_wj_noipcut_nom)')
+        ff_W_selection = BuildCutString(ff_W_wt, sel, categories['jetfake_estimate'], OSSS)
+        ff_top_wt = (f'(weight) * (FF_mc_top_noipcut_nom)')
+        ff_top_selection = BuildCutString(ff_top_wt, sel, categories['jetfake_estimate'], OSSS)
+        
+        # QCD contribution
+        qcd_substract_node = GetSubtractNode(ana, '', plot, plot_unmodified, ff_qcd_wt+sub_wt, sel+'*(genPartFlav_2 != 0)', 'jetfake_estimate', categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=True)
+        qcd_data_node = ana.SummedFactory('data_AR_qcdFF', samples_dict['data_samples'], plot_unmodified, ff_QCD_selection)
+        qcd_ff_estimate = Analysis.SubtractNode('qcd_jetfakes'+add_name,
+                        qcd_data_node,
+                        qcd_substract_node)
+   
+        # W contribution
+        W_substract_node = GetSubtractNode(ana, '', plot, plot_unmodified, ff_W_wt+sub_wt, sel+'*(genPartFlav_2 != 0)', 'jetfake_estimate', categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=True)
+        W_data_node = ana.SummedFactory('data_AR_wjFF', samples_dict['data_samples'], plot_unmodified, ff_W_selection)
+        W_ff_estimate = Analysis.SubtractNode('wj_jetfakes'+add_name,
+                        W_data_node,
+                        W_substract_node)
+        
+        # Top contribution
+        Top_substract_node = GetSubtractNode(ana, '', plot, plot_unmodified, ff_top_wt+sub_wt, sel+'*(genPartFlav_2 != 0)', 'jetfake_estimate', categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=True)
+        Top_data_node = ana.SummedFactory('data_AR_topFF', samples_dict['data_samples'], plot_unmodified, ff_top_selection)
+        Top_ff_estimate = Analysis.SubtractNode('top_jetfakes'+add_name,
+                        Top_data_node,
+                        Top_substract_node)
+        
+        weighted_jet_fake = Analysis.FF_Node("JetFakes", qcd_ff_estimate, W_ff_estimate, Top_ff_estimate, frac_QCD, frac_W, frac_top)
+        ana.nodes[nodename].AddNode(weighted_jet_fake)
 
 
 def GenerateQCD(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={}, systematic='', plot='', plot_unmodified='', wt='', sel='', cat_name='', categories={}, categories_unmodified={}, method=1, qcd_factor=1.0, get_os=True,w_shift=None):
