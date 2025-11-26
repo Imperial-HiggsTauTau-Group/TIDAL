@@ -149,29 +149,31 @@ def hadd_root_files(input_files, output_file, dir_combinations, channel, exp_num
         hist.SetName(hist_name)
         hist.Write(hist_name)
 
-    if channel in ['mt', 'et']: # manually create jet fakes while without FFs
-        for key in output.GetListOfKeys():
-            if key.GetClassName() != "TDirectoryFile":
-                continue
-            dirname = key.GetName()
-            print(f"Processing directory: {dirname}")
-            dir_obj = output.GetDirectory(dirname)
-            hists = [dir_obj.Get(hn) for hn in ["TTJ", "VVJ", "W", "QCD", "ZJ"]]
-            hists_to_sum = [h for h in hists if h is not None]
-            if not hists_to_sum:
-                continue
-            # Clone first histo and add others
-            h_sum = hists_to_sum[0].Clone("JetFakes")
-            h_sum.Reset() # clear
-            for h in hists_to_sum:
-                h_sum.Add(h)
-            # Write to directory
-            dir_obj.cd()
-            h_sum.Write("JetFakes")
+    # Uncomment the below if you want to manually create 'JetFakes' histograms by summing MC jet backgrounds
+    # if channel in ['mt', 'et']: # manually create jet fakes while without FFs
+    #     for key in output.GetListOfKeys():
+    #         if key.GetClassName() != "TDirectoryFile":
+    #             continue
+    #         dirname = key.GetName()
+    #         print(f"Processing directory: {dirname}")
+    #         dir_obj = output.GetDirectory(dirname)
+    #         hists = [dir_obj.Get(hn) for hn in ["TTJ", "VVJ", "W", "QCD", "ZJ"]]
+    #         hists_to_sum = [h for h in hists if h is not None]
+    #         if not hists_to_sum:
+    #             continue
+    #         # Clone first histo and add others
+    #         h_sum = hists_to_sum[0].Clone("JetFakes")
+    #         h_sum.Reset() # clear
+    #         for h in hists_to_sum:
+    #             h_sum.Add(h)
+    #         # Write to directory
+    #         dir_obj.cd()
+    #         h_sum.Write("JetFakes")
 
 
     # Close the output file
     output.Close()
+
 
     print("Written output file:", output_file)
 
@@ -187,6 +189,7 @@ def hadd_root_files(input_files, output_file, dir_combinations, channel, exp_num
         elif 'aiso' in dir_name or dir_name == 'tt_higgs_pipi_ss':
             var_name = r"$\phi_{CP}$"
     
+        method = 6 # method that plots jetfakes
         # make a plot of the combined histograms
         Histo_Plotter = HTT_Histogram(
             output_file,
@@ -194,11 +197,11 @@ def hadd_root_files(input_files, output_file, dir_combinations, channel, exp_num
             channel,
             '...',
             var_name,
+            method,
             blind=blind,
             log_y=False,
             is2Dunrolled=False,
-            save_name=output_file.replace('.root', f'_{dir_name}',),
-            for_combine=True,
+            save_name=output_file.replace('.root', f'_{dir_name}',)
         )
         Histo_Plotter.plot_1D_histo()
 
