@@ -189,6 +189,7 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         if args.do_aiso:
             categories["baseline"] = re.sub(
                 "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.2", categories["baseline"] # aiso cut based on what is used for the FF DR
+            )
             
         categories["lt_ff_AR"] = categories["baseline"].replace(
             "idDeepTau2018v2p5VSjet_2 >= 7",
@@ -398,17 +399,6 @@ elif args.channel == "mt":
             categories[f'BDTinc_aminus_mu_rho_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['sel_murho']}))"
             categories[f'BDTinc_aminus_mu_a11pr_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['sel_mua11pr']}))"
             categories[f'BDTinc_aminus_mu_a1_{obj}_{opt}'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['sel_mua1']}))"
-
-    # for obj in [1, 2]:
-    #     categories[f'aminus_mu_pi_{obj}_high'] = f"(alphaAngle_mu_pi_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mupi']}))"
-    #     categories[f'aminus_mu_rho_{obj}_high'] = f"(alphaAngle_mu_rho_{obj} > {np.pi/4 + 0.2} && ({categories['tau_murho']}))"
-    #     categories[f'aminus_mu_a11pr_{obj}_high'] = f"(alphaAngle_mu_rho_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mua11pr']}))"
-    #     categories[f'aminus_mu_a1_{obj}_high'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mua1']}))"
-    #     categories[f'aminus_mu_pi_{obj}_low'] = f"(alphaAngle_mu_pi_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mupi']}))"
-    #     categories[f'aminus_mu_rho_{obj}_low'] = f"(alphaAngle_mu_rho_{obj} < {np.pi/4 - 0.2} && ({categories['tau_murho']}))"
-    #     categories[f'aminus_mu_a11pr_{obj}_low'] = f"(alphaAngle_mu_rho_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mua11pr']}))"
-    #     categories[f'aminus_mu_a1_{obj}_low'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mua1']}))"
-
 
 
 elif args.channel == "et":
