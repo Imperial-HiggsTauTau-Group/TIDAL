@@ -18,7 +18,7 @@ def combine_histos(root_files, output_file):
     print("Combining histograms")
     os.system(command)
 
-def plot_combined(cmb_file, tree_name, channel, era, variable, blind, unrolled):
+def plot_combined(cmb_file, tree_name, channel, method, era, variable, blind, unrolled):
     # Plot the combined root files
     print(f"\n>> PLOTTING FILE: {cmb_file}")
     Histo_Plotter = HTT_Histogram(
@@ -27,6 +27,7 @@ def plot_combined(cmb_file, tree_name, channel, era, variable, blind, unrolled):
         channel,
         era,
         variable,
+        method,
         blind=blind,
         log_y=False,
         is2Dunrolled=unrolled,
@@ -147,7 +148,7 @@ def main(args, eras):
                             if variable_name.count(",") > 1 and not unroll: # check if unrolled (for CP)
                                 print("2D variable cannot be plotted directly, skipping plotting step.")
                             else:
-                                plot_combined(cmb_file, tree_name, channel, era_name, variable, blind, unroll)
+                                plot_combined(cmb_file, tree_name, channel, method, era_name, variable, blind, unroll)
 
 
 def get_args():
