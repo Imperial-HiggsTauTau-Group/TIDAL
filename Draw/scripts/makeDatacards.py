@@ -49,6 +49,7 @@ def create_condor_submit_file(
 ):
     condor_template = f"""
 executable = {script_path}
+priority = 15
 output = {logs_path}/condor_{variable_name}.out
 error = {logs_path}/condor_{variable_name}.err
 log = {logs_path}/condor_{variable_name}.log
