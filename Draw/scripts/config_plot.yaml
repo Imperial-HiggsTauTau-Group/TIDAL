@@ -1,10 +1,10 @@
-input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Nov_brokenaco_syst_run #nominal_new_angular_systs #control_noMETRecoil
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/Control/SystematicTests/et_except_FES #Nov6_BDT_distribution #Nov6_highmT_base #Nov6_highmT_bveto
-channels: [ et]
-eras: [Run3_2022]
+input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Nov_systematics_run
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/Control/Nov21_FFs
+channels: [ mt, et ]
+eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix ]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [control]
-run_systematics: true
+run_systematics: false
 
 control:
 
@@ -12,37 +12,36 @@ control:
     per_era:
       default:
         tt:
-         - [ "systematic_Fake_Factors", "ff_*channel"]
-         - [ "systematic_Trigger", "CMS_trig_*obj_*trigger_*group" ]
+         - [ "systematic_Fake_Factors", "CMS_HIG25012_fake_t"]
+         - [ "systematic_Trigger", "CMS_HIG25012_trig_*obj_*trigger_*group" ]
 
         mt:
-        # - [ "systematic_Tau_EnergyScale_PNet_MUSCALE", "CMS_scale_mu_DeepTau2018v2p5_*group_*year_genMuon" ]
-        - [ "systematic_Muon_ID_iso", "CMS_eff_m_*kind_syst" ]
+        - [ "systematic_Tau_EnergyScale_PNet_MUSCALE", "CMS_scale_mu_DeepTau2018v2p5_*group_*year_genMuon" ]
+        - [ "systematic_Muon_ID_iso", "CMS_eff_m_*kind" ]
         - [ "systematic_Tau_FakeRate_mu", "CMS_fake_t_DeepTau2018v2p5_VSmu_*year_eta_*eta"]
-        - [ "systematic_Trigger", "CMS_eff_m_trigger_syst"]
-        - [ 'systematic_IP_Significance', "CMS_eff_IPSigCut_*obj_eta_*eta"]
+        - [ "systematic_Trigger", "CMS_eff_m_trigger"]
+        - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
 
         et:
-        # - [ "systematic_Tau_EnergyScale_PNet_ESCALE", "CMS_scale_e_DeepTau2018v2p5_*group_*year_genElectron" ]
+        - [ "systematic_Tau_EnergyScale_PNet_ESCALE", "CMS_scale_e_DeepTau2018v2p5_*group_*year_genElectron" ]
         - [ "systematic_Tau_FakeRate_e", "CMS_fake_t_DeepTau2018v2p5_VSe_*year_eta_*eta"]
         - [ "systematic_Electron_Scale_Smearing", "CMS_*kind_e_13p6TeV"]
         - [ "systematic_Electron_ID_Reco", "CMS_eff_e_*kind_13p6TeV"]
-        - [ 'systematic_IP_Significance', "CMS_eff_IPSigCut_*obj_eta_*eta"]
+        - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
+        - [ "systematic_Trigger", "CMS_eff_e_trigger"]
 
         common:
-         - [ "systematic_DY_Shape", "CMS_Z_pt_reweighting" ]
+         - [ "systematic_DY_Shape", "CMS_HIG25012_Z_pt_reweighting" ]
          - [ "systematic_TTbar_Shape", "CMS_Top_pt_reweighting" ]
-         - [ "systematic_Tau_ID_PNet", "CMS_eff_t_DeepTau2018v2p5_VSjet_dm_*group" ]
-         - [ "systematic_Tau_EnergyScale_PNet_TSCALE", "CMS_scale_t_DeepTau2018v2p5_*group_*year_genTau" ]
-         - [ "systematic_MET_Recoil", "CMS_*type_met" ]
+         - [ "systematic_Tau_ID_PNet", "CMS_HIG25012_eff_t_DeepTau2018v2p5_VSjet_*group"]
+         - [ "systematic_Tau_EnergyScale_PNet_TSCALE", "CMS_HIG25012_scale_t_DeepTau2018v2p5_*group_*year_genTau" ]
+         - [ "systematic_MET_Recoil", "CMS_HIG25012_*type_met" ]
          - [ "systematic_Jet_EnergyScale_Total", "CMS_scale_j_13p6TeV" ]
          - [ "systematic_Jet_EnergyResolution", "CMS_res_j_13p6TeV" ]
          - [ 'systematic_Pileup', 'CMS_pileup']
-         - [ "systematic_IP_Calibration", "CMS_res_IP"]
-         - [ "systematic_SV_Resolution", "CMS_res_SV"]
+         - [ "systematic_IP_Calibration", "CMS_HIG25012_res_IP"]
+         - [ "systematic_SV_Resolution", "CMS_HIG25012_res_SV"]
          - [ "systematic_Signal_Theory", "*type_signal"]
-
-
 
   variable_definitions:
     # CONTROL PLOTS
@@ -62,11 +61,13 @@ control:
 
   mt:
   # GENERAL CONTROL
-  - { method: "5", category:  [ cp_inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt], additional_selections: ["(mt_1<65)"]}
+  - { method: "6", category:  [ cp_inclusive ], plotting_variable: [ m_vis], additional_selections: ["(mt_1<65)"]}
+  # - { method: "5", category:  [ cp_inclusive ], plotting_variable: [ m_vis], additional_selections: ["(mt_1<65)"]}
 
   et:
   # GENERAL CONTROL
-  - { method: "5", category:  [ cp_inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt], additional_selections: ["(mt_1<65)"]}
+  - { method: "6", category:  [ cp_inclusive ], plotting_variable: [ m_vis], additional_selections: ["(mt_1<65)"]}
+  # - { method: "5", category:  [ cp_inclusive ], plotting_variable: [ m_vis], additional_selections: ["(mt_1<65)"]}
 
   tt:
   # GENERAL CONTROL
