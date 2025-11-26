@@ -115,7 +115,19 @@ class Shape(object):
         return self
 
     def __imul__(self, other):
-        self.rate *= other
+        if isinstance(other, Shape):
+            self.hist.Multiply(other.hist)
+            self.rate *= other.rate
+        else:
+            self.rate *= other
+        return self
+
+    def __itruediv__(self, other):
+        if isinstance(other, Shape):
+            self.hist.Divide(other.hist)
+            self.rate /= other.rate
+        else:
+            self.rate /= other
         return self
 
     def __add__(self, other):
@@ -131,6 +143,10 @@ class Shape(object):
     def __mul__(self, other):
         cpy = self.copy()
         return cpy.__imul__(other)
+
+    def __truediv__(self, other):
+        cpy = self.copy()
+        return cpy.__itruediv__(other)
 
     __rmul__ = __mul__
 
@@ -306,6 +322,39 @@ class SubtractNode(BaseNode):
     def AddRequests(self, manifest):
         for node in self.SubNodes():
             node.AddRequests(manifest)
+            
+class FF_Node(BaseNode):
+    def __init__(self, name, QCD_node, W_node, Top_node, QCD_frac, W_frac, Top_frac):
+        BaseNode.__init__(self, name)
+        self.shape = None
+        self.QCD_node = QCD_node
+        self.W_node = W_node
+        self.Top_node = Top_node
+        self.QCD_frac = QCD_frac
+        self.W_frac = W_frac
+        self.Top_frac = Top_frac
+
+    def RunSelf(self):
+        for i in range(1, self.QCD_frac.shape.hist.GetNbinsX() + 1):
+            # set errors for fractions to 0 so don't influence bbb uncertainties of final templates
+            self.QCD_frac.shape.hist.SetBinError(i, 0.0)
+            self.W_frac.shape.hist.SetBinError(i, 0.0)
+            self.Top_frac.shape.hist.SetBinError(i, 0.0)
+        total_jet = self.QCD_frac.shape + self.W_frac.shape + self.Top_frac.shape
+        self.shape = self.QCD_node.shape * self.QCD_frac.shape / total_jet + self.W_node.shape * self.W_frac.shape/total_jet + self.Top_node.shape * self.Top_frac.shape / total_jet
+
+    def Objects(self):
+        return {self.name: self.shape.hist}
+
+    def OutputPrefix(self, node=None):
+        return self.name + '.subnodes'
+
+    def SubNodes(self):
+        return [self.QCD_node, self.W_node, self.Top_node, self.QCD_frac, self.W_frac, self.Top_frac]
+
+    def AddRequests(self, manifest):
+        for node in self.SubNodes():
+            node.AddRequests(manifest)
 
 
 class Analysis(object):
@@ -320,6 +369,8 @@ class Analysis(object):
     def Run(self):
         manifest = []
         self.nodes.AddRequests(manifest)
+        if len(manifest) != len(set(manifest)):
+            raise ValueError('Duplicate requests in manifest!')
         drawdict = defaultdict(list)
         outdict = defaultdict(list)
         for entry in manifest:
