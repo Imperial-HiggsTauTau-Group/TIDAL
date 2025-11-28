@@ -348,13 +348,26 @@ class FF_Node(BaseNode):
                     self.W_frac.shape.hist.SetBinContent(x_bin, y_bin, avg_Wj)
                     self.Top_frac.shape.hist.SetBinContent(x_bin, y_bin, avg_Top)
 
-        for i in range(1, self.QCD_frac.shape.hist.GetNbinsX() + 1):
-            # set errors for fractions to 0 so don't influence bbb uncertainties of final templates
-            self.QCD_frac.shape.hist.SetBinError(i, 0.0)
-            self.W_frac.shape.hist.SetBinError(i, 0.0)
-            self.Top_frac.shape.hist.SetBinError(i, 0.0)
         total_jet = self.QCD_frac.shape + self.W_frac.shape + self.Top_frac.shape
         self.shape = self.QCD_node.shape * self.QCD_frac.shape / total_jet + self.W_node.shape * self.W_frac.shape/total_jet + self.Top_node.shape * self.Top_frac.shape / total_jet
+
+        for x in range(1, self.shape.hist.GetNbinsX() + 1):
+            for y in range(1, self.shape.hist.GetNbinsY() + 1):
+                if self.shape.hist.GetNbinsY() == 1:
+                    print("HERE, global bin is:", x)
+                    global_bin = x
+                else:
+                    global_bin = self.shape.hist.GetBin(x, y)
+                # check that the total jet bin content is not zero to avoid division by zero
+                if total_jet.hist.GetBinContent(global_bin) == 0:
+                    self.shape.hist.SetBinError(global_bin, 0)
+                    continue
+                else: # set bin error to sum of the weighted components' bin errors
+                    w_err_qcd = self.QCD_node.shape.hist.GetBinError(global_bin) * self.QCD_frac.shape.hist.GetBinContent(global_bin) / total_jet.hist.GetBinContent(global_bin)
+                    w_err_w = self.W_node.shape.hist.GetBinError(global_bin) * self.W_frac.shape.hist.GetBinContent(global_bin) / total_jet.hist.GetBinContent(global_bin)
+                    w_err_top = self.Top_node.shape.hist.GetBinError(global_bin) * self.Top_frac.shape.hist.GetBinContent(global_bin) / total_jet.hist.GetBinContent(global_bin)
+                    self.shape.hist.SetBinError(global_bin, w_err_qcd+w_err_w+w_err_top)
+
 
     def Objects(self):
         return {self.name: self.shape.hist}
