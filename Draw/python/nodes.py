@@ -347,6 +347,24 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
             
     if method == 6: # lt fake factor method
         
+        # use nominal FF weights, which are overwritten for some systematics
+        ff_qcd_wt = f'(weight) * (FF_qcd_noipcut_nom)' # apply the nominal fake factor weight
+        ff_W_wt = f'(weight) * (FF_wj_noipcut_nom)' # apply the nominal fake factor weight
+        ff_top_wt = f'(weight) * (FF_mc_top_noipcut_nom)' # apply the nominal fake factor weight
+
+        if 'FF_uct_qcd_stat:' in systematic: # statistical unct on QCD
+            ff_qcd_wt = f'(weight) * ({systematic.replace("FF_uct_qcd_stat:", "")})'
+        if 'FF_uct_wj_stat:' in systematic: # statistical unct on W+jets
+            ff_W_wt = f'(weight) * ({systematic.replace("FF_uct_wj_stat:", "")})'
+        if 'FF_uct_mc_top_stat:' in systematic: # statistical unct on top
+            ff_top_wt = f'(weight) * ({systematic.replace("FF_uct_mc_top_stat:", "")})'
+        if 'FF_uct_qcd_syst:' in systematic: # systematic unct on QCD (placeholder)
+            ff_qcd_wt = f'(weight) * ({systematic.replace("FF_uct_qcd_syst:", "")})'
+        if 'FF_uct_wj_syst:' in systematic: # systematic unct on W+jets (placeholder)
+            ff_W_wt = f'(weight) * ({systematic.replace("FF_uct_wj_syst:", "")})'
+        if 'FF_uct_mc_top_syst:' in systematic: # systematic unct on top (placeholder)
+            ff_top_wt = f'(weight) * ({systematic.replace("FF_uct_mc_top_syst:", "")})'
+
         categories['jetfake_estimate'] = categories[cat_name]+'&&'+categories['lt_ff_AR']
         categories_unmodified['jetfake_estimate'] = categories_unmodified[cat_name]+'&&'+categories_unmodified['lt_ff_AR']
         
@@ -354,11 +372,8 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
         frac_QCD, frac_W, frac_top = GetFakeFractionNode(ana, '', plot, plot_unmodified, '(weight)'+sub_wt, sel, 'jetfake_estimate', categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict)
         
         # get MC in the AR that is not a jet fake
-        ff_qcd_wt = (f'(weight) * (FF_qcd_noipcut_nom)')
         ff_QCD_selection = BuildCutString(ff_qcd_wt, sel, categories['jetfake_estimate'], OSSS)
-        ff_W_wt = (f'(weight) * (FF_wj_noipcut_nom)')
         ff_W_selection = BuildCutString(ff_W_wt, sel, categories['jetfake_estimate'], OSSS)
-        ff_top_wt = (f'(weight) * (FF_mc_top_noipcut_nom)')
         ff_top_selection = BuildCutString(ff_top_wt, sel, categories['jetfake_estimate'], OSSS)
         
         # QCD contribution
@@ -382,7 +397,7 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
                         Top_data_node,
                         Top_substract_node)
         
-        weighted_jet_fake = Analysis.FF_Node("JetFakes", qcd_ff_estimate, W_ff_estimate, Top_ff_estimate, frac_QCD, frac_W, frac_top, flatten_y=flatten_y)
+        weighted_jet_fake = Analysis.FF_Node("JetFakes"+add_name, qcd_ff_estimate, W_ff_estimate, Top_ff_estimate, frac_QCD, frac_W, frac_top, flatten_y=flatten_y)
         ana.nodes[nodename].AddNode(weighted_jet_fake)
 
 

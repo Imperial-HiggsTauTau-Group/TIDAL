@@ -556,23 +556,74 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
             "W","signal"
         ]
 
-        if specific_name == '':
-            name_prefix = 'ff'
-        else:
-            name_prefix = specific_name
 
-        for updown in ["up", "down"]:
+        if specific_channel == 'tt':
 
-            # we split the stat error by the dm of the leading tau as this is how the FFs are measured
-            for dm in [0,1,2,10]:
-                systematic_name = f'ff_stat_dm{dm}{updown}'
-                histogram_name = f'_{name_prefix}_stat_dm{dm}{updown.capitalize()}'
-                systematics[systematic_name] = ('nominal', histogram_name, "weight_to_replace", nodes_to_skip, f"FF_syst:(*ff_nom*(decayModePNet_1 != {dm}) + *ff_nom_{updown}*(decayModePNet_1 == {dm}))", None)
+            if specific_name == '':
+                name_prefix = 'ff'
+            else:
+                name_prefix = specific_name
 
-            # subtraction unceratinty
-            systematic_name = 'ff_sub_syst_'+ updown
-            histogram_name = f'_{name_prefix}_sub_syst' + updown.capitalize()
-            systematics[systematic_name] = ('nominal', histogram_name, "weight_to_replace", nodes_to_skip, None, None)
+            for updown in ["up", "down"]:
+
+                # we split the stat error by the dm of the leading tau as this is how the FFs are measured
+                for dm in [0,1,2,10]:
+                    for njets in [0,1,2]:
+                        systematic_name = f'ff_stat_dm{dm}_{njets}j_{updown}'
+                        histogram_name = f'_{name_prefix}_stat_dm{dm}_{njets}j{updown.capitalize()}'
+
+                        if njets in [0,1]:
+                            jet_selection = f'n_jets=={njets}'
+                            anti_jet_selection = f'n_jets!={njets}'
+                        elif njets == 2: # greater or equal
+                            jet_selection = f'n_jets>=2'
+                            anti_jet_selection = f'n_jets<2'
+
+                        systematics[systematic_name] = ('nominal', histogram_name, "weight_to_replace", nodes_to_skip, f"FF_syst:(*ff_nom*((decayModePNet_1 != {dm}) || ({anti_jet_selection})) + *ff_nom_{updown}*(decayModePNet_1 == {dm} && {jet_selection}))", None)
+
+        elif specific_channel in ['mt','et']:
+            # three fake factors to vary in this case:
+            if specific_name == '':
+                name_prefix = 'ff_' + specific_channel
+            else:
+                name_prefix = specific_name
+
+            # Statistical uncertainties, uncorrelated across DM and Njets
+            for updown in ["up", "down"]:
+                for ff_type in ['wj','qcd','mc_top']:
+                    nominal_weight = f"FF_{ff_type}_noipcut_nom" # nominal weight in jet fake calculation
+                    alternative_weight = f"FF_{ff_type}_noipcut_{updown}" # weight to replace in jet fake calculation
+                    for dm in [0,1,2,10]:
+                        for njets in [0,1,2]:
+                            if njets in [0,1]:
+                                jet_selection = f'n_jets=={njets}'
+                                anti_jet_selection = f'n_jets!={njets}'
+                            elif njets == 2: # greater or equal
+                                jet_selection = f'n_jets>=2'
+                                anti_jet_selection = f'n_jets<2'
+
+                            systematic_name = f'ff_{ff_type}_stat_dm{dm}_{njets}j_{updown}'
+                            histogram_name = f'_{name_prefix}_{ff_type}_stat_dm{dm}_{njets}j{updown.capitalize()}'
+
+                            ff_string = f"FF_uct_{ff_type}_stat:({nominal_weight}*((decayModePNet_2 != {dm}) || ({anti_jet_selection})) + {alternative_weight}*(decayModePNet_2 == {dm} && {jet_selection}))"
+                            systematics[systematic_name] = ('nominal', histogram_name, "weight_to_replace", nodes_to_skip, ff_string, None)
+
+            # Systematic uncertainties
+            for updown in ["up", "down"]:
+                for ff_type in ['wj','qcd','mc_top']:
+                    if updown == 'up': # placeholder systematic uncertainties
+                        alternative_weight = f"1.1*FF_{ff_type}_noipcut_nom" # weight to replace in jet fake calculation
+                    elif updown == 'down': # placeholder systematic uncertainties
+                        alternative_weight = f"0.9*FF_{ff_type}_noipcut_nom" # weight to replace in jet fake calculation
+                    systematic_name = f'ff_{ff_type}_syst_{updown}'
+                    histogram_name = f'_{name_prefix}_{ff_type}_syst{updown.capitalize()}'
+                    ff_string = f"FF_uct_{ff_type}_syst:{alternative_weight}"
+                    systematics[systematic_name] = ('nominal', histogram_name, "weight_to_replace", nodes_to_skip, ff_string, None)
+
+        # subtraction uncertainty
+        systematic_name = 'ff_sub_syst_' + updown
+        histogram_name = f'_{name_prefix}_sub_syst' + updown.capitalize()
+        systematics[systematic_name] = ('nominal', histogram_name, "weight_to_replace", nodes_to_skip, None, None)
 
     # ----------------------------------------------------------------------------------------------------
 
