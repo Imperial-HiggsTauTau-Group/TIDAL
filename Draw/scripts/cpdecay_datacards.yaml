@@ -1,5 +1,5 @@
-input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Nov_systematics_run # fully_corrected_nominal
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/CPDatacards/Nov25_Datacards_withFF #
+input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Nov_systematics_run
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/CPDatacards/Nov28_NewFF_systs
 channels: [ tt, et, mt]
 eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix ]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
@@ -12,7 +12,6 @@ cpdecay:
     per_era:
       default:
         tt:
-         - [ "systematic_Fake_Factors", "CMS_HIG25012_fake_t"]
          - [ "systematic_Trigger", "CMS_HIG25012_trig_*obj_*trigger_*group" ]
 
         mt:
@@ -31,6 +30,7 @@ cpdecay:
         - [ "systematic_Trigger", "CMS_eff_e_trigger"]
 
         common:
+         - [ "systematic_Fake_Factors", "CMS_HIG25012_fake_t"]
          - [ "systematic_DY_Shape", "CMS_HIG25012_Z_pt_reweighting" ]
          - [ "systematic_TTbar_Shape", "CMS_Top_pt_reweighting" ]
          - [ "systematic_Tau_ID_PNet", "CMS_HIG25012_eff_t_DeepTau2018v2p5_VSjet_*group"]
