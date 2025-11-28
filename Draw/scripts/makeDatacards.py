@@ -45,7 +45,7 @@ def create_bins(variable: str) -> str:
 
 
 def create_condor_submit_file(
-    logs_path: str, variable_name: str, submit_file: str, script_path: str, era: str = "", run_systematics: bool = False
+    logs_path: str, variable_name: str, submit_file: str, script_path: str, era: str = "", channel: str = "", run_systematics: bool = False
 ):
     condor_template = f"""
 executable = {script_path}
@@ -59,9 +59,14 @@ getenv = True
 +MaxRuntime = 10500
 queue
 """
-    if run_systematics and (era == "Run3_2022EE" or era == "Run3_2023"):
-        print("ASSIGNING EXTRA RUNTIME")
-        condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 30000")
+    if run_systematics and channel in ["et", "mt"]:
+        print("ASSIGNING EXTRA RUNTIME AND MEMORY (et/mt with systematics)")
+        condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 35800")
+        condor_template = condor_template.replace("request_memory = 8000", "request_memory = 16000")
+        condor_template = condor_template.replace("request_cpus = 1", "request_cpus = 2")
+    elif run_systematics and channel in ['tt']:
+        print("ASSIGNING EXTRA RUNTIME AND MEMORY (tt with systematics)")
+        condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 35800") # one core should still be enough
     with open(submit_file, "w") as f:
         f.write(condor_template)
     os.system(f"chmod +x {submit_file}")
@@ -350,7 +355,7 @@ if __name__ == "__main__":
                                 logs, f"submit_{filename}.sub"
                                 )
                                 create_condor_submit_file(
-                                logs, filename, submit_file, script_path, era, run_systematics
+                                logs, filename, submit_file, script_path, era, channel, run_systematics
                                 )
                                 if args.batch:
                                     subprocess.run(["condor_submit", submit_file])
