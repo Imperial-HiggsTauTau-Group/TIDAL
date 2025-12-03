@@ -591,8 +591,8 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
             # Statistical uncertainties, uncorrelated across DM and Njets
             for updown in ["up", "down"]:
                 for ff_type in ['wj','qcd','mc_top']:
-                    nominal_weight = f"FF_{ff_type}_noipcut_nom" # nominal weight in jet fake calculation
-                    alternative_weight = f"FF_{ff_type}_noipcut_{updown}" # weight to replace in jet fake calculation
+                    nominal_weight = f"FF_{ff_type}_ipcut_nom" # nominal weight in jet fake calculation
+                    alternative_weight = f"FF_{ff_type}_ipcut_{updown}" # weight to replace in jet fake calculation
                     for dm in [0,1,2,10]:
                         for njets in [0,1,2]:
                             if njets in [0,1]:
@@ -611,19 +611,17 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
             # Systematic uncertainties
             for updown in ["up", "down"]:
                 for ff_type in ['wj','qcd','mc_top']:
-                    if updown == 'up': # placeholder systematic uncertainties
-                        alternative_weight = f"1.1*FF_{ff_type}_noipcut_nom" # weight to replace in jet fake calculation
-                    elif updown == 'down': # placeholder systematic uncertainties
-                        alternative_weight = f"0.9*FF_{ff_type}_noipcut_nom" # weight to replace in jet fake calculation
+                    alternative_weight = f"FF_{ff_type}_ipcut_syst_{updown}" # weight to replace in jet fake calculation
                     systematic_name = f'ff_{ff_type}_syst_{updown}'
                     histogram_name = f'_{name_prefix}_{ff_type}_syst{updown.capitalize()}'
                     ff_string = f"FF_uct_{ff_type}_syst:{alternative_weight}"
                     systematics[systematic_name] = ('nominal', histogram_name, "weight_to_replace", nodes_to_skip, ff_string, None)
 
-        # subtraction uncertainty
-        systematic_name = 'ff_sub_syst_' + updown
-        histogram_name = f'_{name_prefix}_sub_syst' + updown.capitalize()
-        systematics[systematic_name] = ('nominal', histogram_name, "weight_to_replace", nodes_to_skip, None, None)
+        for updown in ["up", "down"]:
+            # subtraction uncertainty
+            systematic_name = 'ff_sub_syst_' + updown
+            histogram_name = f'_{name_prefix}_sub_syst' + updown.capitalize()
+            systematics[systematic_name] = ('nominal', histogram_name, "weight_to_replace", nodes_to_skip, None, None)
 
     # ----------------------------------------------------------------------------------------------------
 
