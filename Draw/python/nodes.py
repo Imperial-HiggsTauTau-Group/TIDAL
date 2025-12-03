@@ -348,9 +348,9 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
     if method == 6: # lt fake factor method
         
         # use nominal FF weights, which are overwritten for some systematics
-        ff_qcd_wt = f'(weight) * (FF_qcd_noipcut_nom)' # apply the nominal fake factor weight
-        ff_W_wt = f'(weight) * (FF_wj_noipcut_nom)' # apply the nominal fake factor weight
-        ff_top_wt = f'(weight) * (FF_mc_top_noipcut_nom)' # apply the nominal fake factor weight
+        ff_qcd_wt = f'(weight) * (FF_qcd_ipcut_nom)' # apply the nominal fake factor weight
+        ff_W_wt = f'(weight) * (FF_wj_ipcut_nom)' # apply the nominal fake factor weight
+        ff_top_wt = f'(weight) * (FF_mc_top_ipcut_nom)' # apply the nominal fake factor weight
 
         if 'FF_uct_qcd_stat:' in systematic: # statistical unct on QCD
             ff_qcd_wt = f'(weight) * ({systematic.replace("FF_uct_qcd_stat:", "")})'
@@ -459,14 +459,16 @@ def GenerateReweightedCPSignal(ana, nodename='', add_name='', samples={}, masses
                 if key.split("_")[1] == name:
                     non_cp=False
                     weight=wt+"*"+weights[name]
+                    valid_spinner = '&& (' + weights[name] + '>= 0)' # avoid issues with Nan broadcast to -9999
+                    print("Ensuring tau spinner weights are valid")
                     # this part takes care of scaling to the LHE weight to take care of the CP in production
                     # currently reweighting the different samples is not fully implemted
                     # this is because the weights appear to change the cross sections slightly which isn't expected (need to check gridpack setup to understand why)
                     # if we want to combine SM, CPodd and MM samples then we would also need to modify the params file to ensure we don't triple count the events
-                    if 'prod_sm' in key:   weight+='*'+'LHEReweightingWeight_SM'
-                    elif 'prod_ps' in key: weight+='*'+'LHEReweightingWeight_PS'
-                    elif 'prod_mm' in key: weight+='*'+'LHEReweightingWeight_MM'
-                    full_selection = BuildCutString(weight, sel, cat, OSSS)
+                    # if 'prod_sm' in key:   weight+='*'+'LHEReweightingWeight_SM'
+                    # elif 'prod_ps' in key: weight+='*'+'LHEReweightingWeight_PS'
+                    # elif 'prod_mm' in key: weight+='*'+'LHEReweightingWeight_MM'
+                    full_selection = BuildCutString(weight, sel + valid_spinner, cat, OSSS)
                     name = key
 
                     sample_names=[]
