@@ -1,5 +1,5 @@
 input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Nov_systematics_run
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/Control/Nov28_FullSyst
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/Control/Test_Closure_FullSyst
 channels: [ et, mt, tt ]
 eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
@@ -69,7 +69,7 @@ control:
 
   tt:
   # GENERAL CONTROL
-  - { method: "6", category:  [ cp_inclusive ], plotting_variable: [ m_vis_tt, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ], additional_selections: ["(mt_1<65)"]}
+  - { method: "4", category:  [ cp_inclusive ], plotting_variable: [ m_vis_tt, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
 
   mm:
   # GENERAL CONTROL

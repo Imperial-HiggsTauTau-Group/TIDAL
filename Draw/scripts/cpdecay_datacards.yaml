@@ -1,5 +1,5 @@
 input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Nov_systematics_run
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/CPDatacards/Nov28_NewFF_systs
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/CPDatacards/Dec3_fixedWeights
 channels: [ tt, et, mt]
 eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix ]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
@@ -91,7 +91,6 @@ cpdecay:
       aco_a1_pi_FASTMTT_MassConstraint: "aco_a1_pi_FASTMTT_MassConstraint(4,0,2pi)"
       aco_pi_a1_FASTMTT_MassConstraint: "aco_pi_a1_FASTMTT_MassConstraint(4,0,2pi)"
 
-
   tt:
     # Nominal plots
      - { method: '4', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: true}
@@ -149,6 +148,131 @@ cpdecay:
      - { method: '6', category:  ['higgs_ea11pr'], plotting_variable: [ MVA_vs_aco_e_a11pr], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
      - { method: '6', category:  ['higgs_ea1'], plotting_variable: [ MVA_vs_aco_e_a1], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
 
+cp_chi2_tests:
+
+  variable_definitions:
+      MVA_score: "BDT_pred_score[0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]"
+
+      # Fully hadronic
+      MVA_vs_aco_rho_rho: "BDT_pred_score,aco_rho_rho[0.,0.7,0.8,0.9,1.0],(10,0,2pi)"
+      MVA_vs_aco_pi_pi: "BDT_pred_score,aco_pi_pi[0.,0.7,0.8,1.0],(4,0,2pi)"
+      MVA_vs_aco_a1_a1: "BDT_pred_score,aco_a1_a1[0.,0.7,0.8,0.9,1.0],(4,0,2pi)"
+      MVA_vs_aco_pi_rho: "BDT_pred_score,aco_pi_rho[0.,0.7,0.8,0.9,1.0],(10,0,2pi)"
+      MVA_vs_aco_rho_pi: "BDT_pred_score,aco_rho_pi[0.,0.7,0.8,0.9,1.0],(10,0,2pi)"
+      MVA_vs_aco_pi_a11pr: "BDT_pred_score,aco_pi_rho[0.,0.7,0.8,0.9,1.0],(4,0,2pi)"
+      MVA_vs_aco_a11pr_pi: "BDT_pred_score,aco_rho_pi[0.,0.7,0.8,0.9,1.0],(4,0,2pi)"
+      MVA_vs_aco_rho_a11pr: "BDT_pred_score,aco_rho_rho[0.,0.7,0.8,0.9,1.0],(10,0,2pi)"
+      MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint: "BDT_pred_score,aco_a1_rho_FASTMTT_MassConstraint[0.,0.7,0.8,0.9,1.0],(4,0,2pi)"
+      MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint: "BDT_pred_score,aco_rho_a1_FASTMTT_MassConstraint[0.,0.7,0.8,0.9,1.0],(4,0,2pi)"
+      MVA_vs_aco_a1_rho_FASTMTT_MassConstraint: "BDT_pred_score,aco_a1_rho_FASTMTT_MassConstraint[0.,0.7,0.8,0.9,1.0],(10,0,2pi)"
+      MVA_vs_aco_rho_a1_FASTMTT_MassConstraint: "BDT_pred_score,aco_rho_a1_FASTMTT_MassConstraint[0.,0.7,0.8,0.9,1.0],(10,0,2pi)"
+      MVA_vs_aco_a1_pi_FASTMTT_MassConstraint: "BDT_pred_score,aco_a1_pi_FASTMTT_MassConstraint[0.,0.7,0.8,0.9,1.0],(4,0,2pi)"
+      MVA_vs_aco_pi_a1_FASTMTT_MassConstraint: "BDT_pred_score,aco_pi_a1_FASTMTT_MassConstraint[0.,0.7,0.8,0.9,1.0],(4,0,2pi)"
+
+      # Semileptonic (mt)
+      MVA_vs_aco_mu_pi: "BDT_pred_score,aco_mu_pi[0.33,0.57,0.68,0.77,0.85,1.0],(8,0,2pi)"
+      MVA_vs_aco_mu_rho: "BDT_pred_score,aco_mu_rho[0.33,0.57,0.68,0.77,0.85,1.0],(10,0,2pi)"
+      MVA_vs_aco_mu_a11pr: "BDT_pred_score,aco_mu_rho[0.33,0.57,0.68,0.77,0.85,1.0],(8,0,2pi)"
+      MVA_vs_aco_mu_a1: "BDT_pred_score,aco_mu_a1_FASTMTT_MassConstraint[0.33,0.57,0.68,0.77,0.85,1.0],(10,0,2pi)"
+
+      # Semileptonic (et)
+      MVA_vs_aco_e_pi: "BDT_pred_score,aco_e_pi[0.33,0.57,0.71,1.0],(8,0,2pi)"
+      MVA_vs_aco_e_rho: "BDT_pred_score,aco_e_rho[0.33,0.57,0.71,1.0],(10,0,2pi)"
+      MVA_vs_aco_e_a11pr: "BDT_pred_score,aco_e_rho[0.33,0.57,0.71,1.0],(8,0,2pi)"
+      MVA_vs_aco_e_a1: "BDT_pred_score,aco_e_a1_FASTMTT_MassConstraint[0.33,0.57,0.71,1.0],(10,0,2pi)"
+
+
+      # Aco variables alone for cross checks
+      aco_rho_rho: "aco_rho_rho(10,0,2pi)"
+      aco_pi_pi: "aco_pi_pi(4,0,2pi)"
+      aco_a1_a1: "aco_a1_a1(4,0,2pi)"
+      aco_pi_rho: "aco_pi_rho(10,0,2pi)"
+      aco_rho_pi: "aco_rho_pi(10,0,2pi)"
+      aco_pi_a11pr: "aco_pi_rho(4,0,2pi)"
+      aco_a11pr_pi: "aco_rho_pi(4,0,2pi)"
+      aco_rho_a11pr: "aco_rho_rho(10,0,2pi)"
+      aco_a1_a11pr_FASTMTT_MassConstraint: "aco_a1_rho_FASTMTT_MassConstraint(4,0,2pi)"
+      aco_a11pr_a1_FASTMTT_MassConstraint: "aco_rho_a1_FASTMTT_MassConstraint(4,0,2pi)"
+      aco_a1_rho_FASTMTT_MassConstraint: "aco_a1_rho_FASTMTT_MassConstraint(10,0,2pi)"
+      aco_rho_a1_FASTMTT_MassConstraint: "aco_rho_a1_FASTMTT_MassConstraint(10,0,2pi)"
+      aco_a1_pi_FASTMTT_MassConstraint: "aco_a1_pi_FASTMTT_MassConstraint(4,0,2pi)"
+      aco_pi_a1_FASTMTT_MassConstraint: "aco_pi_a1_FASTMTT_MassConstraint(4,0,2pi)"
+
+      aco_mu_pi: "aco_mu_pi(8,0,2pi)"
+      aco_mu_rho: "aco_mu_rho(10,0,2pi)"
+      aco_mu_a11pr: "aco_mu_rho(8,0,2pi)"
+      aco_mu_a1: "aco_mu_a1_FASTMTT_MassConstraint(10,0,2pi)"
+
+      aco_e_pi: "aco_e_pi(8,0,2pi)"
+      aco_e_rho: "aco_e_rho(10,0,2pi)"
+      aco_e_a11pr: "aco_e_rho(8,0,2pi)"
+      aco_e_a1: "aco_e_a1_FASTMTT_MassConstraint(10,0,2pi)"
+
+
+
+  tt:
+    # Nominal plots
+     - { method: '4', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: true}
+     - { method: '4', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: true}
+     - { method: '4', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_rhorho'], plotting_variable: [ MVA_vs_aco_rho_rho], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_pipi'], plotting_variable: [ MVA_vs_aco_pi_pi], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_a1a1'], plotting_variable: [ MVA_vs_aco_a1_a1], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_pirho'], plotting_variable: [ MVA_vs_aco_pi_rho], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_rhopi'], plotting_variable: [ MVA_vs_aco_rho_pi], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_pia11pr'], plotting_variable: [ MVA_vs_aco_pi_a11pr], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_a11prpi'], plotting_variable: [ MVA_vs_aco_a11pr_pi], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_rhoa11pr'], plotting_variable: [ MVA_vs_aco_rho_a11pr], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_a1a11pr'], plotting_variable: [ MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_a11pra1'], plotting_variable: [ MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_a1rho'], plotting_variable: [ MVA_vs_aco_a1_rho_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_rhoa1'], plotting_variable: [ MVA_vs_aco_rho_a1_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_a1pi'], plotting_variable: [ MVA_vs_aco_a1_pi_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  ['higgs_pia1'], plotting_variable: [ MVA_vs_aco_pi_a1_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_rhorho', 'fake_rhorho'], plotting_variable: [ aco_rho_rho], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_pipi', 'fake_pipi'], plotting_variable: [ aco_pi_pi], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_a1a1', 'fake_a1a1'], plotting_variable: [ aco_a1_a1], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_pirho', 'fake_pirho'], plotting_variable: [ aco_pi_rho], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_rhopi', 'fake_rhopi'], plotting_variable: [ aco_rho_pi], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_pia11pr', 'fake_pia11pr'], plotting_variable: [ aco_pi_a11pr], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_a11prpi', 'fake_a11prpi'], plotting_variable: [ aco_a11pr_pi], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_rhoa11pr', 'fake_rhoa11pr'], plotting_variable: [ aco_rho_a11pr], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_a1a11pr', 'fake_a1a11pr'], plotting_variable: [ aco_a1_a11pr_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_a11pra1', 'fake_a11pra1'], plotting_variable: [ aco_a11pr_a1_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_a1rho', 'fake_a1rho'], plotting_variable: [ aco_a1_rho_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_rhoa1', 'fake_rhoa1'], plotting_variable: [ aco_rho_a1_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_a1pi', 'fake_a1pi'], plotting_variable: [ aco_a1_pi_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+     - { method: '4', category:  [ 'tau_pia1', 'fake_pia1'], plotting_variable: [ aco_pi_a1_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
+
+  mt:
+    # Nominal plots
+    #  - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['higgs_mupi'], plotting_variable: [ MVA_vs_aco_mu_pi], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['higgs_murho'], plotting_variable: [ MVA_vs_aco_mu_rho], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['higgs_mua11pr'], plotting_variable: [ MVA_vs_aco_mu_a11pr], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['higgs_mua1'], plotting_variable: [ MVA_vs_aco_mu_a1], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['tau_mupi', 'fake_mupi'], plotting_variable: [ aco_mu_pi], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['tau_murho', 'fake_murho'], plotting_variable: [ aco_mu_rho], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+     - { method: '6', category:  ['tau_mua11pr', 'fake_mua11pr'], plotting_variable: [ aco_mu_a11pr], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['tau_mua1', 'fake_mua1'], plotting_variable: [ aco_mu_a1], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+
+  et:
+    # Nominal plots
+    #  - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['higgs_epi'], plotting_variable: [ MVA_vs_aco_e_pi], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['higgs_erho'], plotting_variable: [ MVA_vs_aco_e_rho], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['higgs_ea11pr'], plotting_variable: [ MVA_vs_aco_e_a11pr], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['higgs_ea1'], plotting_variable: [ MVA_vs_aco_e_a1], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['tau_epi', 'fake_epi'], plotting_variable: [ aco_e_pi], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['tau_erho', 'fake_erho'], plotting_variable: [ aco_e_rho], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+     - { method: '6', category:  ['tau_ea11pr', 'fake_ea11pr'], plotting_variable: [ aco_e_a11pr], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    #  - { method: '6', category:  ['tau_ea1', 'fake_ea1'], plotting_variable: [ aco_e_a1], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+
+
 cp_acoplanarity:
 
   variable_definitions:
@@ -182,7 +306,6 @@ cp_acoplanarity:
     - { method: '4', category:  ['higgs_rhoa1'], plotting_variable: [ aco_rho_a1], blind: true, use_filtered_DY: true}
     - { method: '4', category:  ['higgs_a1pi'], plotting_variable: [ aco_a1_pi], blind: true, use_filtered_DY: true}
     - { method: '4', category:  ['higgs_pia1'], plotting_variable: [ aco_pi_a1], blind: true, use_filtered_DY: true}
-
 
 
 cp_alpha_angles:
@@ -251,297 +374,6 @@ cp_alpha_angles:
     - { method: '4', category:  ['tau_a1pi', 'aminus_a1_pi_1_low',  'aminus_a1_pi_1_high'], plotting_variable: [ aco_a1_pi], blind: false, use_filtered_DY: true}
     - { method: '4', category:  ['tau_pia1', 'aminus_pi_a1_1_low',  'aminus_pi_a1_1_high'], plotting_variable: [ aco_pi_a1], blind: false, use_filtered_DY: true}
 
-
-
-
-cp_O_star_variables:
-
-  systematics:
-    per_era:
-      default:
-        tt:
-
-  variable_definitions:
-      # Semileptonic (et)
-      "O_e_pi": "Ostar_aco_e_pi(20,-1,1)"
-      "O_e_rho": "Ostar_aco_e_rho(20,-1,1)"
-      "O_e_a1": "Ostar_aco_e_a1_FASTMTT_MassConstraint(20,-1,1)"
-
-      # Semileptonic (mt)
-      "O_mu_pi": "Ostar_aco_mu_pi(20,-1,1)"
-      "O_mu_rho": "Ostar_aco_mu_rho(20,-1,1)"
-      "O_mu_a1": "Ostar_aco_mu_a1_FASTMTT_MassConstraint(20,-1,1)"
-
-      # Hadronic (tt)
-      "O_rho_rho": "Ostar_aco_rho_rho(20,-1,1)"
-      "O_pi_pi": "Ostar_aco_pi_pi(20,-1,1)"
-      "O_a1_a1": "Ostar_aco_a1_a1(20,-0.1,0.1)" # much smaller range here
-      "O_pi_rho": "Ostar_aco_pi_rho(20,-1,1)"
-      "O_rho_pi": "Ostar_aco_rho_pi(20,-1,1)"
-      "O_pi_a11pr": "Ostar_aco_pi_rho(20,-1,1)"
-      "O_a11pr_pi": "Ostar_aco_rho_pi(20,-1,1)"
-      "O_rho_a11pr": "Ostar_aco_rho_rho(20,-1,1)"
-      "O_a1_a11pr": "Ostar_aco_a1_rho_FASTMTT_MassConstraint(20,-1,1)"
-      "O_a11pr_a1": "Ostar_aco_rho_a1_FASTMTT_MassConstraint(20,-1,1)"
-      "O_a1_rho": "Ostar_aco_a1_rho_FASTMTT_MassConstraint(20,-1,1)"
-      "O_rho_a1": "Ostar_aco_rho_a1_FASTMTT_MassConstraint(20,-1,1)"
-      "O_a1_pi": "Ostar_aco_a1_pi_FASTMTT_MassConstraint(20,-1,1)"
-      "O_pi_a1": "Ostar_aco_pi_a1_FASTMTT_MassConstraint(20,-1,1)"
-
-  et:
-    - { method: '5', category:  ['sel_epi'], plotting_variable: [ O_e_pi], blind: false, use_filtered_DY: true}
-    - { method: '5', category:  ['sel_erho'], plotting_variable: [ O_e_rho], blind: false, use_filtered_DY: true}
-    - { method: '5', category:  ['sel_ea11pr'], plotting_variable: [ O_e_rho], blind: false, use_filtered_DY: true}
-    - { method: '5', category:  ['sel_ea1'], plotting_variable: [ O_e_a1], blind: false, use_filtered_DY: true}
-
-  mt:
-    - { method: '5', category:  ['sel_mupi'], plotting_variable: [ O_mu_pi], blind: false, use_filtered_DY: true}
-    - { method: '5', category:  ['sel_murho'], plotting_variable: [ O_mu_rho], blind: false, use_filtered_DY: true}
-    - { method: '5', category:  ['sel_mua11pr'], plotting_variable: [ O_mu_rho], blind: false, use_filtered_DY: true}
-    - { method: '5', category:  ['sel_mua1'], plotting_variable: [ O_mu_a1], blind: false, use_filtered_DY: true}
-
-  tt:
-    - { method: '4', category:  ['inclusive_PNet_rhorho'], plotting_variable: [ O_rho_rho], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_pipi'], plotting_variable: [ O_pi_pi], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_a1a1'], plotting_variable: [ O_a1_a1], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_pirho'], plotting_variable: [ O_pi_rho], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_rhopi'], plotting_variable: [ O_rho_pi], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_pia11pr'], plotting_variable: [ O_pi_a11pr], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_a11prpi'], plotting_variable: [ O_a11pr_pi], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_rhoa11pr'], plotting_variable: [ O_rho_a11pr], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_a1a11pr'], plotting_variable: [ O_a1_a11pr], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_a11pra1'], plotting_variable: [ O_a11pr_a1], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_a1rho'], plotting_variable: [ O_a1_rho], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_rhoa1'], plotting_variable: [ O_rho_a1], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_a1pi'], plotting_variable: [ O_a1_pi], blind: false, use_filtered_DY: true}
-    - { method: '4', category:  ['inclusive_PNet_pia1'], plotting_variable: [ O_pi_a1], blind: false, use_filtered_DY: true}
-
-cp_angular_systematics:
-
-  variable_definitions:
-    dR_mu_IP: "dR_mu_IP(20,0,4)"
-    dR_tau_IP: "dR_tau_IP(20,0,4)"
-    dPhi_mu_IP: "dPhi_mu_IP(20,0,pi)"
-    dPhi_tau_IP: "dPhi_tau_IP(20,0,pi)"
-    dEta_mu_IP: "dEta_mu_IP(20,0,4)"
-    dEta_tau_IP: "dEta_tau_IP(20,0,4)"
-
-    dPhi_tau_SV: "dPhi_tau_SV(20,0,0.10)"
-    dR_tau_SV: "dR_tau_SV(20,0,0.10)"
-    dEta_tau_SV: "dEta_tau_SV(20,0,0.10)"
-
-    dPhi_tau_SV_0p025_up: "dPhi_tau_SV_0p025_up(20,0,0.10)"
-    dEta_tau_SV_0p025_up: "dEta_tau_SV_0p025_up(20,0,0.10)"
-    dR_tau_SV_0p025_up: "dR_tau_SV_0p025_up(20,0,0.10)"
-    dPhi_tau_SV_0p025_down: "dPhi_tau_SV_0p025_down(20,0,0.10)"
-    dEta_tau_SV_0p025_down: "dEta_tau_SV_0p025_down(20,0,0.10)"
-    dR_tau_SV_0p025_down: "dR_tau_SV_0p025_down(20,0,0.10)"
-
-    dPhi_tau_SV_0p05_up: "dPhi_tau_SV_0p05_up(20,0,0.10)"
-    dEta_tau_SV_0p05_up: "dEta_tau_SV_0p05_up(20,0,0.10)"
-    dR_tau_SV_0p05_up: "dR_tau_SV_0p05_up(20,0,0.10)"
-    dPhi_tau_SV_0p05_down: "dPhi_tau_SV_0p05_down(20,0,0.10)"
-    dEta_tau_SV_0p05_down: "dEta_tau_SV_0p05_down(20,0,0.10)"
-    dR_tau_SV_0p05_down: "dR_tau_SV_0p05_down(20,0,0.10)"
-
-    dPhi_tau_SV_0p075_up: "dPhi_tau_SV_0p075_up(20,0,0.10)"
-    dEta_tau_SV_0p075_up: "dEta_tau_SV_0p075_up(20,0,0.10)"
-    dR_tau_SV_0p075_up: "dR_tau_SV_0p075_up(20,0,0.10)"
-    dPhi_tau_SV_0p075_down: "dPhi_tau_SV_0p075_down(20,0,0.10)"
-    dEta_tau_SV_0p075_down: "dEta_tau_SV_0p075_down(20,0,0.10)"
-    dR_tau_SV_0p075_down: "dR_tau_SV_0p075_down(20,0,0.10)"
-
-
-    dPhi_tau_SV_0p1_up: "dPhi_tau_SV_0p1_up(20,0,0.10)"
-    dEta_tau_SV_0p1_up: "dEta_tau_SV_0p1_up(20,0,0.10)"
-    dR_tau_SV_0p1_up: "dR_tau_SV_0p1_up(20,0,0.10)"
-    dPhi_tau_SV_0p1_down: "dPhi_tau_SV_0p1_down(20,0,0.10)"
-    dEta_tau_SV_0p1_down: "dEta_tau_SV_0p1_down(20,0,0.10)"
-    dR_tau_SV_0p1_down: "dR_tau_SV_0p1_down(20,0,0.10)"
-
-    dPhi_tau_SV_0p15_up: "dPhi_tau_SV_0p15_up(20,0,0.10)"
-    dEta_tau_SV_0p15_up: "dEta_tau_SV_0p15_up(20,0,0.10)"
-    dR_tau_SV_0p15_up: "dR_tau_SV_0p15_up(20,0,0.10)"
-    dPhi_tau_SV_0p15_down: "dPhi_tau_SV_0p15_down(20,0,0.10)"
-    dEta_tau_SV_0p15_down: "dEta_tau_SV_0p15_down(20,0,0.10)"
-    dR_tau_SV_0p15_down: "dR_tau_SV_0p15_down(20,0,0.10)"
-
-    dPhi_tau_SV_0p2_up: "dPhi_tau_SV_0p2_up(20,0,0.10)"
-    dEta_tau_SV_0p2_up: "dEta_tau_SV_0p2_up(20,0,0.10)"
-    dR_tau_SV_0p2_up: "dR_tau_SV_0p2_up(20,0,0.10)"
-    dPhi_tau_SV_0p2_down: "dPhi_tau_SV_0p2_down(20,0,0.10)"
-    dEta_tau_SV_0p2_down: "dEta_tau_SV_0p2_down(20,0,0.10)"
-    dR_tau_SV_0p2_down: "dR_tau_SV_0p2_down(20,0,0.10)"
-
-    dPhi_tau_SV_0p25_up: "dPhi_tau_SV_0p25_up(20,0,0.10)"
-    dEta_tau_SV_0p25_up: "dEta_tau_SV_0p25_up(20,0,0.10)"
-    dR_tau_SV_0p25_up: "dR_tau_SV_0p25_up(20,0,0.10)"
-    dPhi_tau_SV_0p25_down: "dPhi_tau_SV_0p25_down(20,0,0.10)"
-    dEta_tau_SV_0p25_down: "dEta_tau_SV_0p25_down(20,0,0.10)"
-    dR_tau_SV_0p25_down: "dR_tau_SV_0p25_down(20,0,0.10)"
-
-    dPhi_mu_IP_0p025_up: "dPhi_mu_IP_0p025_up(20,0,pi)"
-    dEta_mu_IP_0p025_up: "dEta_mu_IP_0p025_up(20,0,4)"
-    dR_mu_IP_0p025_up: "dR_mu_IP_0p025_up(20,0,4)"
-    dPhi_mu_IP_0p025_down: "dPhi_mu_IP_0p025_down(20,0,pi)"
-    dEta_mu_IP_0p025_down: "dEta_mu_IP_0p025_down(20,0,4)"
-    dR_mu_IP_0p025_down: "dR_mu_IP_0p025_down(20,0,4)"
-    dPhi_tau_IP_0p025_up: "dPhi_tau_IP_0p025_up(20,0,pi)"
-    dEta_tau_IP_0p025_up: "dEta_tau_IP_0p025_up(20,0,4)"
-    dR_tau_IP_0p025_up: "dR_tau_IP_0p025_up(20,0,4)"
-    dPhi_tau_IP_0p025_down: "dPhi_tau_IP_0p025_down(20,0,pi)"
-    dEta_tau_IP_0p025_down: "dEta_tau_IP_0p025_down(20,0,4)"
-    dR_tau_IP_0p025_down: "dR_tau_IP_0p025_down(20,0,4)"
-
-
-    dPhi_mu_IP_0p05_up: "dPhi_mu_IP_0p05_up(20,0,pi)"
-    dEta_mu_IP_0p05_up: "dEta_mu_IP_0p05_up(20,0,4)"
-    dR_mu_IP_0p05_up: "dR_mu_IP_0p05_up(20,0,4)"
-    dPhi_mu_IP_0p05_down: "dPhi_mu_IP_0p05_down(20,0,pi)"
-    dEta_mu_IP_0p05_down: "dEta_mu_IP_0p05_down(20,0,4)"
-    dR_mu_IP_0p05_down: "dR_mu_IP_0p05_down(20,0,4)"
-    dPhi_tau_IP_0p05_up: "dPhi_tau_IP_0p05_up(20,0,pi)"
-    dEta_tau_IP_0p05_up: "dEta_tau_IP_0p05_up(20,0,4)"
-    dR_tau_IP_0p05_up: "dR_tau_IP_0p05_up(20,0,4)"
-    dPhi_tau_IP_0p05_down: "dPhi_tau_IP_0p05_down(20,0,pi)"
-    dEta_tau_IP_0p05_down: "dEta_tau_IP_0p05_down(20,0,4)"
-    dR_tau_IP_0p05_down: "dR_tau_IP_0p05_down(20,0,4)"
-
-
-    dPhi_mu_IP_0p075_up: "dPhi_mu_IP_0p075_up(20,0,pi)"
-    dEta_mu_IP_0p075_up: "dEta_mu_IP_0p075_up(20,0,4)"
-    dR_mu_IP_0p075_up: "dR_mu_IP_0p075_up(20,0,4)"
-    dPhi_mu_IP_0p075_down: "dPhi_mu_IP_0p075_down(20,0,pi)"
-    dEta_mu_IP_0p075_down: "dEta_mu_IP_0p075_down(20,0,4)"
-    dR_mu_IP_0p075_down: "dR_mu_IP_0p075_down(20,0,4)"
-    dPhi_tau_IP_0p075_up: "dPhi_tau_IP_0p075_up(20,0,pi)"
-    dEta_tau_IP_0p075_up: "dEta_tau_IP_0p075_up(20,0,4)"
-    dR_tau_IP_0p075_up: "dR_tau_IP_0p075_up(20,0,4)"
-    dPhi_tau_IP_0p075_down: "dPhi_tau_IP_0p075_down(20,0,pi)"
-    dEta_tau_IP_0p075_down: "dEta_tau_IP_0p075_down(20,0,4)"
-    dR_tau_IP_0p075_down: "dR_tau_IP_0p075_down(20,0,4)"
-
-    dPhi_mu_IP_0p1_up: "dPhi_mu_IP_0p1_up(20,0,pi)"
-    dEta_mu_IP_0p1_up: "dEta_mu_IP_0p1_up(20,0,4)"
-    dR_mu_IP_0p1_up: "dR_mu_IP_0p1_up(20,0,4)"
-    dPhi_mu_IP_0p1_down: "dPhi_mu_IP_0p1_down(20,0,pi)"
-    dEta_mu_IP_0p1_down: "dEta_mu_IP_0p1_down(20,0,4)"
-    dR_mu_IP_0p1_down: "dR_mu_IP_0p1_down(20,0,4)"
-    dPhi_tau_IP_0p1_up: "dPhi_tau_IP_0p1_up(20,0,pi)"
-    dEta_tau_IP_0p1_up: "dEta_tau_IP_0p1_up(20,0,4)"
-    dR_tau_IP_0p1_up: "dR_tau_IP_0p1_up(20,0,4)"
-    dPhi_tau_IP_0p1_down: "dPhi_tau_IP_0p1_down(20,0,pi)"
-    dEta_tau_IP_0p1_down: "dEta_tau_IP_0p1_down(20,0,4)"
-    dR_tau_IP_0p1_down: "dR_tau_IP_0p1_down(20,0,4)"
-
-    dPhi_mu_IP_0p15_up: "dPhi_mu_IP_0p15_up(20,0,pi)"
-    dEta_mu_IP_0p15_up: "dEta_mu_IP_0p15_up(20,0,4)"
-    dR_mu_IP_0p15_up: "dR_mu_IP_0p15_up(20,0,4)"
-    dPhi_mu_IP_0p15_down: "dPhi_mu_IP_0p15_down(20,0,pi)"
-    dEta_mu_IP_0p15_down: "dEta_mu_IP_0p15_down(20,0,4)"
-    dR_mu_IP_0p15_down: "dR_mu_IP_0p15_down(20,0,4)"
-    dPhi_tau_IP_0p15_up: "dPhi_tau_IP_0p15_up(20,0,pi)"
-    dEta_tau_IP_0p15_up: "dEta_tau_IP_0p15_up(20,0,4)"
-    dR_tau_IP_0p15_up: "dR_tau_IP_0p15_up(20,0,4)"
-    dPhi_tau_IP_0p15_down: "dPhi_tau_IP_0p15_down(20,0,pi)"
-    dEta_tau_IP_0p15_down: "dEta_tau_IP_0p15_down(20,0,4)"
-    dR_tau_IP_0p15_down: "dR_tau_IP_0p15_down(20,0,4)"
-
-    dPhi_mu_IP_0p2_up: "dPhi_mu_IP_0p2_up(20,0,pi)"
-    dEta_mu_IP_0p2_up: "dEta_mu_IP_0p2_up(20,0,4)"
-    dR_mu_IP_0p2_up: "dR_mu_IP_0p2_up(20,0,4)"
-    dPhi_mu_IP_0p2_down: "dPhi_mu_IP_0p2_down(20,0,pi)"
-    dEta_mu_IP_0p2_down: "dEta_mu_IP_0p2_down(20,0,4)"
-    dR_mu_IP_0p2_down: "dR_mu_IP_0p2_down(20,0,4)"
-    dPhi_tau_IP_0p2_up: "dPhi_tau_IP_0p2_up(20,0,pi)"
-    dEta_tau_IP_0p2_up: "dEta_tau_IP_0p2_up(20,0,4)"
-    dR_tau_IP_0p2_up: "dR_tau_IP_0p2_up(20,0,4)"
-    dPhi_tau_IP_0p2_down: "dPhi_tau_IP_0p2_down(20,0,pi)"
-    dEta_tau_IP_0p2_down: "dEta_tau_IP_0p2_down(20,0,4)"
-    dR_tau_IP_0p2_down: "dR_tau_IP_0p2_down(20,0,4)"
-
-    dPhi_mu_IP_0p25_up: "dPhi_mu_IP_0p25_up(20,0,pi)"
-    dEta_mu_IP_0p25_up: "dEta_mu_IP_0p25_up(20,0,4)"
-    dR_mu_IP_0p25_up: "dR_mu_IP_0p25_up(20,0,4)"
-    dPhi_mu_IP_0p25_down: "dPhi_mu_IP_0p25_down(20,0,pi)"
-    dEta_mu_IP_0p25_down: "dEta_mu_IP_0p25_down(20,0,4)"
-    dR_mu_IP_0p25_down: "dR_mu_IP_0p25_down(20,0,4)"
-    dPhi_tau_IP_0p25_up: "dPhi_tau_IP_0p25_up(20,0,pi)"
-    dEta_tau_IP_0p25_up: "dEta_tau_IP_0p25_up(20,0,4)"
-    dR_tau_IP_0p25_up: "dR_tau_IP_0p25_up(20,0,4)"
-    dPhi_tau_IP_0p25_down: "dPhi_tau_IP_0p25_down(20,0,pi)"
-    dEta_tau_IP_0p25_down: "dEta_tau_IP_0p25_down(20,0,4)"
-    dR_tau_IP_0p25_down: "dR_tau_IP_0p25_down(20,0,4)"
-
-    dPhi_mu_IP_0p3_up: "dPhi_mu_IP_0p3_up(20,0,pi)"
-    dEta_mu_IP_0p3_up: "dEta_mu_IP_0p3_up(20,0,4)"
-    dR_mu_IP_0p3_up: "dR_mu_IP_0p3_up(20,0,4)"
-    dPhi_mu_IP_0p3_down: "dPhi_mu_IP_0p3_down(20,0,pi)"
-    dEta_mu_IP_0p3_down: "dEta_mu_IP_0p3_down(20,0,4)"
-    dR_mu_IP_0p3_down: "dR_mu_IP_0p3_down(20,0,4)"
-    dPhi_tau_IP_0p3_up: "dPhi_tau_IP_0p3_up(20,0,pi)"
-    dEta_tau_IP_0p3_up: "dEta_tau_IP_0p3_up(20,0,4)"
-    dR_tau_IP_0p3_up: "dR_tau_IP_0p3_up(20,0,4)"
-    dPhi_tau_IP_0p3_down: "dPhi_tau_IP_0p3_down(20,0,pi)"
-    dEta_tau_IP_0p3_down: "dEta_tau_IP_0p3_down(20,0,4)"
-    dR_tau_IP_0p3_down: "dR_tau_IP_0p3_down(20,0,4)"
-
-    dPhi_mu_IP_0p4_up: "dPhi_mu_IP_0p4_up(20,0,pi)"
-    dEta_mu_IP_0p4_up: "dEta_mu_IP_0p4_up(20,0,4)"
-    dR_mu_IP_0p4_up: "dR_mu_IP_0p4_up(20,0,4)"
-    dPhi_mu_IP_0p4_down: "dPhi_mu_IP_0p4_down(20,0,pi)"
-    dEta_mu_IP_0p4_down: "dEta_mu_IP_0p4_down(20,0,4)"
-    dR_mu_IP_0p4_down: "dR_mu_IP_0p4_down(20,0,4)"
-    dPhi_tau_IP_0p4_up: "dPhi_tau_IP_0p4_up(20,0,pi)"
-    dEta_tau_IP_0p4_up: "dEta_tau_IP_0p4_up(20,0,4)"
-    dR_tau_IP_0p4_up: "dR_tau_IP_0p4_up(20,0,4)"
-    dPhi_tau_IP_0p4_down: "dPhi_tau_IP_0p4_down(20,0,pi)"
-    dEta_tau_IP_0p4_down: "dEta_tau_IP_0p4_down(20,0,4)"
-    dR_tau_IP_0p4_down: "dR_tau_IP_0p4_down(20,0,4)"
-
-    dPhi_mu_IP_0p5_up: "dPhi_mu_IP_0p5_up(20,0,pi)"
-    dEta_mu_IP_0p5_up: "dEta_mu_IP_0p5_up(20,0,4)"
-    dR_mu_IP_0p5_up: "dR_mu_IP_0p5_up(20,0,4)"
-    dPhi_mu_IP_0p5_down: "dPhi_mu_IP_0p5_down(20,0,pi)"
-    dEta_mu_IP_0p5_down: "dEta_mu_IP_0p5_down(20,0,4)"
-    dR_mu_IP_0p5_down: "dR_mu_IP_0p5_down(20,0,4)"
-    dPhi_tau_IP_0p5_up: "dPhi_tau_IP_0p5_up(20,0,pi)"
-    dEta_tau_IP_0p5_up: "dEta_tau_IP_0p5_up(20,0,4)"
-    dR_tau_IP_0p5_up: "dR_tau_IP_0p5_up(20,0,4)"
-    dPhi_tau_IP_0p5_down: "dPhi_tau_IP_0p5_down(20,0,pi)"
-    dEta_tau_IP_0p5_down: "dEta_tau_IP_0p5_down(20,0,4)"
-    dR_tau_IP_0p5_down: "dR_tau_IP_0p5_down(20,0,4)"
-
-    dPhi_mu_IP_0p75_up: "dPhi_mu_IP_0p75_up(20,0,pi)"
-    dEta_mu_IP_0p75_up: "dEta_mu_IP_0p75_up(20,0,4)"
-    dR_mu_IP_0p75_up: "dR_mu_IP_0p75_up(20,0,4)"
-    dPhi_mu_IP_0p75_down: "dPhi_mu_IP_0p75_down(20,0,pi)"
-    dEta_mu_IP_0p75_down: "dEta_mu_IP_0p75_down(20,0,4)"
-    dR_mu_IP_0p75_down: "dR_mu_IP_0p75_down(20,0,4)"
-    dPhi_tau_IP_0p75_up: "dPhi_tau_IP_0p75_up(20,0,pi)"
-    dEta_tau_IP_0p75_up: "dEta_tau_IP_0p75_up(20,0,4)"
-    dR_tau_IP_0p75_up: "dR_tau_IP_0p75_up(20,0,4)"
-    dPhi_tau_IP_0p75_down: "dPhi_tau_IP_0p75_down(20,0,pi)"
-    dEta_tau_IP_0p75_down: "dEta_tau_IP_0p75_down(20,0,4)"
-    dR_tau_IP_0p75_down: "dR_tau_IP_0p75_down(20,0,4)"
-
-    dPhi_mu_IP_1p0_up: "dPhi_mu_IP_1p0_up(20,0,pi)"
-    dEta_mu_IP_1p0_up: "dEta_mu_IP_1p0_up(20,0,4)"
-    dR_mu_IP_1p0_up: "dR_mu_IP_1p0_up(20,0,4)"
-    dPhi_mu_IP_1p0_down: "dPhi_mu_IP_1p0_down(20,0,pi)"
-    dEta_mu_IP_1p0_down: "dEta_mu_IP_1p0_down(20,0,4)"
-    dR_mu_IP_1p0_down: "dR_mu_IP_1p0_down(20,0,4)"
-    dPhi_tau_IP_1p0_up: "dPhi_tau_IP_1p0_up(20,0,pi)"
-    dEta_tau_IP_1p0_up: "dEta_tau_IP_1p0_up(20,0,4)"
-    dR_tau_IP_1p0_up: "dR_tau_IP_1p0_up(20,0,4)"
-    dPhi_tau_IP_1p0_down: "dPhi_tau_IP_1p0_down(20,0,pi)"
-    dEta_tau_IP_1p0_down: "dEta_tau_IP_1p0_down(20,0,4)"
-    dR_tau_IP_1p0_down: "dR_tau_IP_1p0_down(20,0,4)"
-
-
-  mt:
-    - { method: '5', category:  ['sel_mupi'], plotting_variable: [ dR_mu_IP, dR_tau_IP, dPhi_mu_IP, dPhi_tau_IP, dEta_mu_IP, dEta_tau_IP, dPhi_mu_IP_0p025_up, dEta_mu_IP_0p025_up, dR_mu_IP_0p025_up, dPhi_mu_IP_0p025_down, dEta_mu_IP_0p025_down, dR_mu_IP_0p025_down, dPhi_tau_IP_0p025_up, dEta_tau_IP_0p025_up, dR_tau_IP_0p025_up, dPhi_tau_IP_0p025_down, dEta_tau_IP_0p025_down, dR_tau_IP_0p025_down, dPhi_mu_IP_0p05_up, dEta_mu_IP_0p05_up, dR_mu_IP_0p05_up, dPhi_mu_IP_0p05_down, dEta_mu_IP_0p05_down, dR_mu_IP_0p05_down, dPhi_tau_IP_0p05_up, dEta_tau_IP_0p05_up, dR_tau_IP_0p05_up, dPhi_tau_IP_0p05_down, dEta_tau_IP_0p05_down, dR_tau_IP_0p05_down, dPhi_mu_IP_0p075_up, dEta_mu_IP_0p075_up, dR_mu_IP_0p075_up, dPhi_mu_IP_0p075_down, dEta_mu_IP_0p075_down, dR_mu_IP_0p075_down, dPhi_tau_IP_0p075_up, dEta_tau_IP_0p075_up, dR_tau_IP_0p075_up, dPhi_tau_IP_0p075_down, dEta_tau_IP_0p075_down, dR_tau_IP_0p075_down, dPhi_mu_IP_0p1_up, dEta_mu_IP_0p1_up, dR_mu_IP_0p1_up, dPhi_mu_IP_0p1_down, dEta_mu_IP_0p1_down, dR_mu_IP_0p1_down, dPhi_tau_IP_0p1_up, dEta_tau_IP_0p1_up, dR_tau_IP_0p1_up, dPhi_tau_IP_0p1_down, dEta_tau_IP_0p1_down, dR_tau_IP_0p1_down, dPhi_mu_IP_0p15_up, dEta_mu_IP_0p15_up, dR_mu_IP_0p15_up, dPhi_mu_IP_0p15_down, dEta_mu_IP_0p15_down, dR_mu_IP_0p15_down, dPhi_tau_IP_0p15_up, dEta_tau_IP_0p15_up, dR_tau_IP_0p15_up, dPhi_tau_IP_0p15_down, dEta_tau_IP_0p15_down, dR_tau_IP_0p15_down, dPhi_mu_IP_0p2_up, dEta_mu_IP_0p2_up, dR_mu_IP_0p2_up, dPhi_mu_IP_0p2_down, dEta_mu_IP_0p2_down, dR_mu_IP_0p2_down, dPhi_tau_IP_0p2_up, dEta_tau_IP_0p2_up, dR_tau_IP_0p2_up, dPhi_tau_IP_0p2_down, dEta_tau_IP_0p2_down, dR_tau_IP_0p2_down, dPhi_mu_IP_0p25_up, dEta_mu_IP_0p25_up, dR_mu_IP_0p25_up, dPhi_mu_IP_0p25_down, dEta_mu_IP_0p25_down, dR_mu_IP_0p25_down, dPhi_tau_IP_0p25_up, dEta_tau_IP_0p25_up, dR_tau_IP_0p25_up, dPhi_tau_IP_0p25_down, dEta_tau_IP_0p25_down, dR_tau_IP_0p25_down, dPhi_mu_IP_0p3_up, dEta_mu_IP_0p3_up, dR_mu_IP_0p3_up, dPhi_mu_IP_0p3_down, dEta_mu_IP_0p3_down, dR_mu_IP_0p3_down, dPhi_tau_IP_0p3_up, dEta_tau_IP_0p3_up, dR_tau_IP_0p3_up, dPhi_tau_IP_0p3_down, dEta_tau_IP_0p3_down, dR_tau_IP_0p3_down, dPhi_mu_IP_0p4_up, dEta_mu_IP_0p4_up, dR_mu_IP_0p4_up, dPhi_mu_IP_0p4_down, dEta_mu_IP_0p4_down, dR_mu_IP_0p4_down, dPhi_tau_IP_0p4_up, dEta_tau_IP_0p4_up, dR_tau_IP_0p4_up, dPhi_tau_IP_0p4_down, dEta_tau_IP_0p4_down, dR_tau_IP_0p4_down, dPhi_mu_IP_0p5_up, dEta_mu_IP_0p5_up, dR_mu_IP_0p5_up, dPhi_mu_IP_0p5_down, dEta_mu_IP_0p5_down, dR_mu_IP_0p5_down, dPhi_tau_IP_0p5_up, dEta_tau_IP_0p5_up, dR_tau_IP_0p5_up, dPhi_tau_IP_0p5_down, dEta_tau_IP_0p5_down, dR_tau_IP_0p5_down, dPhi_mu_IP_0p75_up, dEta_mu_IP_0p75_up, dR_mu_IP_0p75_up, dPhi_mu_IP_0p75_down, dEta_mu_IP_0p75_down, dR_mu_IP_0p75_down, dPhi_tau_IP_0p75_up, dEta_tau_IP_0p75_up, dR_tau_IP_0p75_up, dPhi_tau_IP_0p75_down, dEta_tau_IP_0p75_down, dR_tau_IP_0p75_down, dPhi_mu_IP_1p0_up, dEta_mu_IP_1p0_up, dR_mu_IP_1p0_up, dPhi_mu_IP_1p0_down, dEta_mu_IP_1p0_down, dR_mu_IP_1p0_down, dPhi_tau_IP_1p0_up, dEta_tau_IP_1p0_up, dR_tau_IP_1p0_up, dPhi_tau_IP_1p0_down, dEta_tau_IP_1p0_down, dR_tau_IP_1p0_down], blind: false, additional_selections: [ "(mt_1<65)"]}
-    - { method: '5', category:  ['sel_mua1'], plotting_variable: [ dR_tau_SV, dPhi_tau_SV, dEta_tau_SV, dPhi_tau_SV_0p025_up, dEta_tau_SV_0p025_up, dR_tau_SV_0p025_up, dPhi_tau_SV_0p025_down, dEta_tau_SV_0p025_down, dR_tau_SV_0p025_down, dPhi_tau_SV_0p05_up, dEta_tau_SV_0p05_up, dR_tau_SV_0p05_up, dPhi_tau_SV_0p05_down, dEta_tau_SV_0p05_down, dR_tau_SV_0p05_down, dPhi_tau_SV_0p075_up, dEta_tau_SV_0p075_up, dR_tau_SV_0p075_up, dPhi_tau_SV_0p075_down, dEta_tau_SV_0p075_down, dR_tau_SV_0p075_down, dPhi_tau_SV_0p1_up, dEta_tau_SV_0p1_up, dR_tau_SV_0p1_up, dPhi_tau_SV_0p1_down, dEta_tau_SV_0p1_down, dR_tau_SV_0p1_down, dPhi_tau_SV_0p15_up, dEta_tau_SV_0p15_up, dR_tau_SV_0p15_up, dPhi_tau_SV_0p15_down, dEta_tau_SV_0p15_down, dR_tau_SV_0p15_down, dPhi_tau_SV_0p2_up, dEta_tau_SV_0p2_up, dR_tau_SV_0p2_up, dPhi_tau_SV_0p2_down, dEta_tau_SV_0p2_down, dR_tau_SV_0p2_down, dPhi_tau_SV_0p25_up, dEta_tau_SV_0p25_up, dR_tau_SV_0p25_up, dPhi_tau_SV_0p25_down, dEta_tau_SV_0p25_down, dR_tau_SV_0p25_down], blind: false, additional_selections: [ "(mt_1<65)"]}
 
 cpdecay_fakefactors_control:
 
