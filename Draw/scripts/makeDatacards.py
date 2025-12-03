@@ -64,7 +64,7 @@ queue
         condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 35800")
         condor_template = condor_template.replace("request_memory = 8000", "request_memory = 16000")
         condor_template = condor_template.replace("request_cpus = 1", "request_cpus = 2")
-    elif run_systematics and channel in ['tt']:
+    elif run_systematics and channel in ['tt'] and era in ["Run3_2022EE", "Run3_2023"]:
         print("ASSIGNING EXTRA RUNTIME AND MEMORY (tt with systematics)")
         condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 35800") # one core should still be enough
     with open(submit_file, "w") as f:
@@ -207,7 +207,8 @@ if __name__ == "__main__":
                 f"Era {era} is not a valid era. Please choose from {available_eras}"
             )
 
-    available_schemes = ["sf_calculation", "control", "cpdecay", "cp_acoplanarity", "cpdecay_fakefactors_control", "cp_alpha_angles", "cp_O_star_variables", "cp_angular_systematics"]
+    available_schemes = ["sf_calculation", "control", "cpdecay", "cp_acoplanarity", "cpdecay_fakefactors_control", "cp_alpha_angles", "cp_chi2_tests"]
+
     for scheme in schemes:
         if scheme not in available_schemes:
             raise ValueError(
