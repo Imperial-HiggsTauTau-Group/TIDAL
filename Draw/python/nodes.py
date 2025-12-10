@@ -460,7 +460,6 @@ def GenerateReweightedCPSignal(ana, nodename='', add_name='', samples={}, masses
                     non_cp=False
                     weight=wt+"*"+weights[name]
                     valid_spinner = '&& (' + weights[name] + '>= 0)' # avoid issues with Nan broadcast to -9999
-                    print("Ensuring tau spinner weights are valid")
                     # this part takes care of scaling to the LHE weight to take care of the CP in production
                     # currently reweighting the different samples is not fully implemted
                     # this is because the weights appear to change the cross sections slightly which isn't expected (need to check gridpack setup to understand why)
