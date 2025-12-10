@@ -337,7 +337,6 @@ class FF_Node(BaseNode):
 
     def RunSelf(self):
         if self.flatten_y:
-            print("WARNING: Fractions for FF contributions are being flattened across y (2D histogram)" )
             for y_bin in range(1, self.QCD_frac.shape.hist.GetNbinsY()+1):
                 # set fraction to average across the given y (BDT bin for Higgs CP)
                 avg_QCD = sum(self.QCD_frac.shape.hist.GetBinContent(x_bin, y_bin) for x_bin in range(1, self.QCD_frac.shape.hist.GetNbinsX()+1))/ self.QCD_frac.shape.hist.GetNbinsX()
@@ -354,7 +353,6 @@ class FF_Node(BaseNode):
         for x in range(1, self.shape.hist.GetNbinsX() + 1):
             for y in range(1, self.shape.hist.GetNbinsY() + 1):
                 if self.shape.hist.GetNbinsY() == 1:
-                    print("HERE, global bin is:", x)
                     global_bin = x
                 else:
                     global_bin = self.shape.hist.GetBin(x, y)
