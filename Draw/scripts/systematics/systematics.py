@@ -648,7 +648,7 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
         ]
 
         up_var = 'w_Pileup_Up'
-        down_var = 'w_Pileup_Up'
+        down_var = 'w_Pileup_Down'
 
         for updown in ["up", "down"]:
             systematic_name = 'syst_pileup_' + updown
