@@ -45,10 +45,11 @@ def create_bins(variable: str) -> str:
 
 
 def create_condor_submit_file(
-    logs_path: str, variable_name: str, submit_file: str, script_path: str, era: str = "", run_systematics: bool = False
+    logs_path: str, variable_name: str, submit_file: str, script_path: str, era: str = "", channel: str = "", run_systematics: bool = False
 ):
     condor_template = f"""
 executable = {script_path}
+priority = 15
 output = {logs_path}/condor_{variable_name}.out
 error = {logs_path}/condor_{variable_name}.err
 log = {logs_path}/condor_{variable_name}.log
@@ -58,9 +59,19 @@ getenv = True
 +MaxRuntime = 10500
 queue
 """
-    if run_systematics and (era == "Run3_2022EE" or era == "Run3_2023"):
-        print("ASSIGNING EXTRA RUNTIME")
-        condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 30000")
+    if run_systematics and channel in ["et", "mt"]:
+        print("ASSIGNING EXTRA RUNTIME AND MEMORY (et/mt with systematics)")
+        condor_template = condor_template.replace("request_cpus = 1", "request_cpus = 3")
+        condor_template = condor_template.replace("request_memory = 8000", "request_memory = 12000")
+        if era in ['Run3_2022EE']:
+            condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 50000")
+        else:
+            condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 35800")
+    elif run_systematics and channel in ['tt'] and era in ["Run3_2022EE", "Run3_2023"]:
+        print("ASSIGNING EXTRA RUNTIME AND MEMORY (tt with systematics)")
+        condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 35800") # one core should still be enough
+    elif not run_systematics: # limit runtime to 7000 s to get in the shorter queues
+        condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 7000")
     with open(submit_file, "w") as f:
         f.write(condor_template)
     os.system(f"chmod +x {submit_file}")
@@ -201,7 +212,8 @@ if __name__ == "__main__":
                 f"Era {era} is not a valid era. Please choose from {available_eras}"
             )
 
-    available_schemes = ["sf_calculation", "control", "cpdecay", "cpdecay_fakefactors_control", "cp_alpha_angles", "cp_O_star_variables", "cp_angular_systematics"]
+    available_schemes = ["sf_calculation", "control", "cpdecay", "cp_acoplanarity", "cpdecay_fakefactors_control", "cp_alpha_angles", "cp_chi2_tests"]
+
     for scheme in schemes:
         if scheme not in available_schemes:
             raise ValueError(
@@ -349,7 +361,7 @@ if __name__ == "__main__":
                                 logs, f"submit_{filename}.sub"
                                 )
                                 create_condor_submit_file(
-                                logs, filename, submit_file, script_path, era, run_systematics
+                                logs, filename, submit_file, script_path, era, channel, run_systematics
                                 )
                                 if args.batch:
                                     subprocess.run(["condor_submit", submit_file])
