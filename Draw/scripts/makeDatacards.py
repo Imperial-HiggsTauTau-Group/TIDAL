@@ -61,12 +61,17 @@ queue
 """
     if run_systematics and channel in ["et", "mt"]:
         print("ASSIGNING EXTRA RUNTIME AND MEMORY (et/mt with systematics)")
-        condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 35800")
-        condor_template = condor_template.replace("request_memory = 8000", "request_memory = 16000")
-        condor_template = condor_template.replace("request_cpus = 1", "request_cpus = 2")
+        condor_template = condor_template.replace("request_cpus = 1", "request_cpus = 3")
+        condor_template = condor_template.replace("request_memory = 8000", "request_memory = 12000")
+        if era in ['Run3_2022EE']:
+            condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 50000")
+        else:
+            condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 35800")
     elif run_systematics and channel in ['tt'] and era in ["Run3_2022EE", "Run3_2023"]:
         print("ASSIGNING EXTRA RUNTIME AND MEMORY (tt with systematics)")
         condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 35800") # one core should still be enough
+    elif not run_systematics: # limit runtime to 7000 s to get in the shorter queues
+        condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 7000")
     with open(submit_file, "w") as f:
         f.write(condor_template)
     os.system(f"chmod +x {submit_file}")
