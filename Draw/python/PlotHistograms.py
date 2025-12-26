@@ -10,7 +10,7 @@ plt.rcParams.update({"font.size": 16})
 
 class HTT_Histogram:
 
-    def __init__(self, file, category, channel, era, variable,blind=False, log_y=False, is2Dunrolled=False, save_name=None, for_combine=False):
+    def __init__(self, file, category, channel, era, variable, method, blind=False, log_y=False, is2Dunrolled=False, save_name=None):
         self.file = uproot.open(file)
         self.file_name = file
         self.directory = os.path.dirname(file)
@@ -22,7 +22,7 @@ class HTT_Histogram:
         self.log_y = log_y
         self.is2Dunrolled = is2Dunrolled
         self.save_name = save_name
-        self.for_combine = for_combine
+        self.method = int(method)
         self.initialize_plotting()
         self.initialize_nodes()
         self.get_labels()
@@ -149,43 +149,50 @@ class HTT_Histogram:
             "down": "total_bkg_full_uncerts_down",
         }
         if self.channel == "tt":
-            self.backgrounds = {
-                                "Jet$\\to\\tau_h$": {"nodes": ["JetFakes", "JetFakesSublead"], "color": "green"},
-                                "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
-                                "Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT", "qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "yellow"},
-                            }
+            if self.method in [3, 4, 6]:
+                self.backgrounds = {
+                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes", "JetFakesSublead"], "color": "green"},
+                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
+                                    "Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT", "qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "yellow"},
+                                }
             self.lep1 = "\\tau_1"
             self.lep2 = "\\tau_2"
         elif self.channel == "mt":
-            self.backgrounds = {
-                                "QCD": {"nodes": ["QCD"], "color": "pink"},
-                                "Electroweak": {"nodes": ["VVJ", "W", "VVT"], "color": "red"},
-                                "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
-                                "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
-                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                            }
-            if self.for_combine: # Jet Fake Cat test
+            if self.method == 6:
                 self.backgrounds = {
-                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes",], "color": "green"},
+                                    "$t\\bar{t}$": {"nodes": ["TTT"], "color": "violet"},
+                                    "Electroweak": {"nodes": ["VVT"], "color": "red"},
+                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
-                                    "Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT"], "color": "yellow"},
+                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"}
+                                }
+            else:
+                self.backgrounds = {
+                                    "QCD": {"nodes": ["QCD"], "color": "pink"},
+                                    "Electroweak": {"nodes": ["VVJ", "W", "VVT"], "color": "red"},
+                                    "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
+                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
+                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
                                 }
             self.lep1 = "\\mu"
             self.lep2 = "\\tau"
 
         elif self.channel == "et":
-            self.backgrounds = {
-                                "QCD": {"nodes": ["QCD"], "color": "pink"},
-                                "Electroweak": {"nodes": ["VVJ", "W", "VVT"], "color": "red"},
-                                "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
-                                "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
-                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                            }
-            if self.for_combine: # Jet Fake Cat test
+            if self.method == 6:
                 self.backgrounds = {
-                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes",], "color": "green"},
+                                    "$t\\bar{t}$": {"nodes": ["TTT"], "color": "violet"},
+                                    "Electroweak": {"nodes": ["VVT"], "color": "red"},
+                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
-                                    "Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT"], "color": "yellow"},
+                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"}
+                                }
+            else:
+                self.backgrounds = {
+                                    "QCD": {"nodes": ["QCD"], "color": "pink"},
+                                    "Electroweak": {"nodes": ["VVJ", "W", "VVT"], "color": "red"},
+                                    "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
+                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
+                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
                                 }
             self.lep1 = "e"
             self.lep2 = "\\tau"
@@ -455,20 +462,4 @@ class HTT_Histogram:
 
         plt.savefig(save_path_pdf, bbox_inches='tight')
         print(f'Saved histogram to {save_path_pdf}')
-
-
-if __name__ == "__main__":
-    # histo = HTT_Histogram("/vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/ZpT_Recoil_v4_TEST/Run3_2022/control/mm/datacard_pt_tt_inclusive_mm_Run3_2022.root", "mm_inclusive", "mm", "Run3_2022", "pt_tt", log_y=False, blind=False)
-    # histo.plot_1D_histo()
-
-
-
-    histo = HTT_Histogram("/vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/test_datacards_newBDT/Run3_2022/cpdecay/tt/datacard_BDT_pred_score_vs_aco_rho_rho_higgs_rhorho_tt_Run3_2022.root", "tt_higgs_rhorho", "tt", "Run3_2022", "BDT_pred_score,aco_rho_rho[0.,0.7,0.8,0.9,1.0],[0.0,0.6283185307179586,1.2566370614359172,1.8849555921538759,2.5132741228718345,3.141592653589793,3.7699111843077517,4.39822971502571,5.026548245743669,5.654866776461628,6.283185307179586]", log_y=False, blind=True, is2Dunrolled=True)
-    histo.plot_1D_histo()
-
-    # histo = HTT_Histogram("/vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/DeriveIDSFs_May25/AntiIso_0p3/Run3_2022/sf_calculation/mt/datacard_m_vis_mTLt65_aiso_inclusive_mt_Run3_2022.root", "mt_inclusive_mTLt65_aiso", "mt", "Run3_2022", "m_vis", log_y=False, blind=False)
-
-    # histo = HTT_Histogram("/vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/3104/BinnedSFs_DoubleTauJet/Run3_2023/control/tt/datacard_m_vis_1_cp_inclusive_tt_Run3_2023.root", "tt_higgs_rhorho", "tt", "Run3_2022", "BDT_pred_score,aco_rho_rho[0.,0.7,0.8,0.9,1.0],[0.0,0.6283185307179586,1.2566370614359172,1.8849555921538759,2.5132741228718345,3.141592653589793,3.7699111843077517,4.39822971502571,5.026548245743669,5.654866776461628,6.283185307179586]", blind=True, is2Dunrolled=True)
-    # histo.plot_1D_histo()
-
 

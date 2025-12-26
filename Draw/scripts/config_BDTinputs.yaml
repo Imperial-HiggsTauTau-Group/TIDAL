@@ -1,6 +1,6 @@
 input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Nov_systematics_run #SF_templates_CP #control_noMETRecoil
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/Control/Nov6_QCD
-channels: [ mt]
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/BDTPlots/Dec1_BDTforAN_lt
+channels: [ tt, mt, et]
 eras: [Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [control]
@@ -37,19 +37,15 @@ control:
 
   mt:
   # GENERAL CONTROL
-  - { method: "5", category:  [ cp_inclusive ], plotting_variable: [ "pt_1", "pt_2", "eta_1", "met_pt", "met_dphi_1", "met_dphi_2", "dR", "dphi", "pt_tt", "m_vis", "pt_vis","FastMTT_mass", "mt_1", "mt_2", "mt_lep", "mt_tot", "jpt_1", "jpt_2", "jeta_1", "jeta_2", "mjj", "jdeta", "dijetpt", "n_jets" ], additional_selections: ["(mt_1<65)"]}
-
-  # - { method: "5", category:  [ cp_inclusive,  DM0_tau_cp, DM1_tau_cp, DM2_tau_cp, DM10_tau_cp], plotting_variable: [ m_vis], additional_selections: ["(mt_1<65)"]}
+  - { method: "6", category:  [ cp_inclusive ], plotting_variable: [ "pt_1", "pt_2", "eta_1", "met_pt", "met_dphi_1", "met_dphi_2", "dR", "dphi", "pt_tt", "m_vis", "pt_vis","FastMTT_mass", "mt_1", "mt_2", "mt_lep", "mt_tot", "jpt_1", "jpt_2", "jeta_1", "jeta_2", "mjj", "jdeta", "dijetpt", "n_jets" ], additional_selections: ["(mt_1<65)"]}
 
   et:
   # GENERAL CONTROL
-  - { method: "5", category:  [ cp_inclusive ], plotting_variable: [ "pt_1", "pt_2", "eta_1", "met_pt", "met_dphi_1", "met_dphi_2", "dR", "dphi", "pt_tt", "m_vis", "pt_vis","FastMTT_mass", "mt_1", "mt_2", "mt_lep", "mt_tot", "jpt_1", "jpt_2", "jeta_1", "jeta_2", "mjj", "jdeta", "dijetpt", "n_jets" ], additional_selections: ["(mt_1<65)"]}
+  - { method: "6", category:  [ cp_inclusive ], plotting_variable: [ "pt_1", "pt_2", "eta_1", "met_pt", "met_dphi_1", "met_dphi_2", "dR", "dphi", "pt_tt", "m_vis", "pt_vis","FastMTT_mass", "mt_1", "mt_2", "mt_lep", "mt_tot", "jpt_1", "jpt_2", "jeta_1", "jeta_2", "mjj", "jdeta", "dijetpt", "n_jets" ], additional_selections: ["(mt_1<65)"]}
 
   tt:
   # GENERAL CONTROL
   - { method: "4", category:  [ cp_inclusive ], plotting_variable: [ "pt_1", "pt_2", "eta_1", "met_pt", "met_dphi_1", "met_dphi_2", "dR", "dphi", "pt_tt", "pt_vis","FastMTT_mass", "mt_1", "mt_2", "mt_lep", "mt_tot", "jpt_1", "jpt_2", "jeta_1", "jeta_2", "mjj", "jdeta", "dijetpt", "n_jets" ]}
-
-  # - { method: "4", category:  [ cp_inclusive ], plotting_variable: [ "m_vis" ]}
 
   mm:
   # GENERAL CONTROL

@@ -115,7 +115,19 @@ class Shape(object):
         return self
 
     def __imul__(self, other):
-        self.rate *= other
+        if isinstance(other, Shape):
+            self.hist.Multiply(other.hist)
+            self.rate *= other.rate
+        else:
+            self.rate *= other
+        return self
+
+    def __itruediv__(self, other):
+        if isinstance(other, Shape):
+            self.hist.Divide(other.hist)
+            self.rate /= other.rate
+        else:
+            self.rate /= other
         return self
 
     def __add__(self, other):
@@ -131,6 +143,10 @@ class Shape(object):
     def __mul__(self, other):
         cpy = self.copy()
         return cpy.__imul__(other)
+
+    def __truediv__(self, other):
+        cpy = self.copy()
+        return cpy.__itruediv__(other)
 
     __rmul__ = __mul__
 
@@ -306,6 +322,63 @@ class SubtractNode(BaseNode):
     def AddRequests(self, manifest):
         for node in self.SubNodes():
             node.AddRequests(manifest)
+            
+class FF_Node(BaseNode):
+    def __init__(self, name, QCD_node, W_node, Top_node, QCD_frac, W_frac, Top_frac, flatten_y=False):
+        BaseNode.__init__(self, name)
+        self.shape = None
+        self.QCD_node = QCD_node
+        self.W_node = W_node
+        self.Top_node = Top_node
+        self.QCD_frac = QCD_frac
+        self.W_frac = W_frac
+        self.Top_frac = Top_frac
+        self.flatten_y = flatten_y
+
+    def RunSelf(self):
+        if self.flatten_y:
+            for y_bin in range(1, self.QCD_frac.shape.hist.GetNbinsY()+1):
+                # set fraction to average across the given y (BDT bin for Higgs CP)
+                avg_QCD = sum(self.QCD_frac.shape.hist.GetBinContent(x_bin, y_bin) for x_bin in range(1, self.QCD_frac.shape.hist.GetNbinsX()+1))/ self.QCD_frac.shape.hist.GetNbinsX()
+                avg_Wj = sum(self.W_frac.shape.hist.GetBinContent(x_bin, y_bin) for x_bin in range(1, self.W_frac.shape.hist.GetNbinsX()+1))/ self.W_frac.shape.hist.GetNbinsX()
+                avg_Top = sum(self.Top_frac.shape.hist.GetBinContent(x_bin, y_bin) for x_bin in range(1, self.Top_frac.shape.hist.GetNbinsX()+1))/ self.Top_frac.shape.hist.GetNbinsX()
+                for x_bin in range(1, self.QCD_frac.shape.hist.GetNbinsX()+1):
+                    self.QCD_frac.shape.hist.SetBinContent(x_bin, y_bin, avg_QCD)
+                    self.W_frac.shape.hist.SetBinContent(x_bin, y_bin, avg_Wj)
+                    self.Top_frac.shape.hist.SetBinContent(x_bin, y_bin, avg_Top)
+
+        total_jet = self.QCD_frac.shape + self.W_frac.shape + self.Top_frac.shape
+        self.shape = self.QCD_node.shape * self.QCD_frac.shape / total_jet + self.W_node.shape * self.W_frac.shape/total_jet + self.Top_node.shape * self.Top_frac.shape / total_jet
+
+        for x in range(1, self.shape.hist.GetNbinsX() + 1):
+            for y in range(1, self.shape.hist.GetNbinsY() + 1):
+                if self.shape.hist.GetNbinsY() == 1:
+                    global_bin = x
+                else:
+                    global_bin = self.shape.hist.GetBin(x, y)
+                # check that the total jet bin content is not zero to avoid division by zero
+                if total_jet.hist.GetBinContent(global_bin) == 0:
+                    self.shape.hist.SetBinError(global_bin, 0)
+                    continue
+                else: # set bin error to sum of the weighted components' bin errors
+                    w_err_qcd = self.QCD_node.shape.hist.GetBinError(global_bin) * self.QCD_frac.shape.hist.GetBinContent(global_bin) / total_jet.hist.GetBinContent(global_bin)
+                    w_err_w = self.W_node.shape.hist.GetBinError(global_bin) * self.W_frac.shape.hist.GetBinContent(global_bin) / total_jet.hist.GetBinContent(global_bin)
+                    w_err_top = self.Top_node.shape.hist.GetBinError(global_bin) * self.Top_frac.shape.hist.GetBinContent(global_bin) / total_jet.hist.GetBinContent(global_bin)
+                    self.shape.hist.SetBinError(global_bin, w_err_qcd+w_err_w+w_err_top)
+
+
+    def Objects(self):
+        return {self.name: self.shape.hist}
+
+    def OutputPrefix(self, node=None):
+        return self.name + '.subnodes'
+
+    def SubNodes(self):
+        return [self.QCD_node, self.W_node, self.Top_node, self.QCD_frac, self.W_frac, self.Top_frac]
+
+    def AddRequests(self, manifest):
+        for node in self.SubNodes():
+            node.AddRequests(manifest)
 
 
 class Analysis(object):
@@ -320,6 +393,8 @@ class Analysis(object):
     def Run(self):
         manifest = []
         self.nodes.AddRequests(manifest)
+        if len(manifest) != len(set(manifest)):
+            raise ValueError('Duplicate requests in manifest!')
         drawdict = defaultdict(list)
         outdict = defaultdict(list)
         for entry in manifest:

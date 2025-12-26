@@ -61,37 +61,19 @@ parser.add_argument("--run_systematics", action="store_true", help="Run systemat
 # Available Systematic Options:
 # ------------------------------------------------------------------------------------------------------------------------
 systematic_options = [
-    ["Muon_ID", "Muon ID systematic"],
-    ["Muon_Isolation", "Muon Isolation systematic"],
-    ["Electron_ID", "Electron ID systematic"],
+    ["Muon_ID_iso", "Muon ID and isolation systematics"],
+    ["Electron_ID_Reco", "Electron ID and Reconstruction systematic"],
     ["Tau_ID", "Tau ID systematic"],
-    [
-        "Tau_FakeRate_e",
-        "Tau Fake Rate systematic for genuine electrons misidentified as taus",
-    ],
-    [
-        "Tau_FakeRate_mu",
-        "Tau Fake Rate systematic for genuine muons misidentified as taus",
-    ],
-    [
-        "Tau_EnergyScale_PNet_JSCALE",
-        "Tau Energy Scale systematic for jets misidentified as taus",
-    ],
+    ["Tau_FakeRate_e","Tau Fake Rate systematic for genuine electrons misidentified as taus"],
+    ["Tau_FakeRate_mu","Tau Fake Rate systematic for genuine muons misidentified as taus"],
     ["Tau_EnergyScale_PNet_TSCALE", "Tau Energy Scale systematic for genuine taus"],
-    [
-        "Tau_EnergyScale_PNet_ESCALE",
-        "Tau Energy Scale systematic for genuine electrons misidentified as taus",
-    ],
-    [
-        "Tau_EnergyScale_PNet_MUSCALE",
-        "Tau Energy Scale systematic for genuine muons misidentified as taus",
-    ],
+    ["Tau_EnergyScale_PNet_ESCALE", "Tau Energy Scale systematic for genuine electrons misidentified as taus"],
+    ["Tau_EnergyScale_PNet_MUSCALE", "Tau Energy Scale systematic for genuine muons misidentified as taus"],
     ['MET_Recoil', 'MET Recoil systematic'],
     ['Trigger', 'Trigger efficiency systematic'],
     ["Jet_EnergyScale_Total", "Jet Energy Scale Total systematic"],
     ["Jet_EnergyResolution", "Jet Energy Resolution systematic"],
-    ["Electron_Scale", "Electron Scale systematic"],
-    ["Electron_Smearing", "Electron Smearing systematic"],
+    ["Electron_Scale_Smearing", "Electron Scale and Smearing systematics"],
     ["QCD_Background", "QCD Background systematic"],
     ["DY_Shape", "DY Shape systematic from ZpT reweighting"],
     ["DY_Shape_Imperial", "DY Shape systematic from ZpT reweighting (Imperial)"],
@@ -99,9 +81,11 @@ systematic_options = [
     ["Fake_Flat_Uncertainty", "flat fake uncertainty"],
     ["Tau_ID_PNet", "Tau ID systematic"],
     ["Fake_Factors", "fake factor related uncertainties"],
+    ["Pileup", "pileup systematic"],
     ["Signal_Theory", "theoretical uncertainties on the signal"],
     ["IP_Calibration", "Uncertainty on the IP calibration"],
-    ["SV_Resolution", "Uncertainty on the SV resolution"]
+    ["SV_Resolution", "Uncertainty on the SV resolution"],
+    ['IP_Significance', 'Uncertainty on the IP significance cut SFs']
 ]
 
 
@@ -156,7 +140,7 @@ if args.channel not in available_channels:
     raise ValueError(
         "Invalid channel. Please choose from: {}".format(available_channels)
     )
-available_methods = ["1", "2", "3", "4", "5"]
+available_methods = ["1", "2", "3", "4", "5", "6"]
 if args.method not in available_methods:
     raise ValueError("Invalid method. Please choose from: {}".format(available_methods))
 
@@ -204,11 +188,17 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         )
         if args.do_aiso:
             categories["baseline"] = re.sub(
-                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
+                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.2", categories["baseline"] # aiso cut based on what is used for the FF DR
             )
+            
+        categories["lt_ff_AR"] = categories["baseline"].replace(
+            "idDeepTau2018v2p5VSjet_2 >= 7",
+            "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+        )
+        
     if args.channel == "et":
         # et_cross_only = "(trg_et_cross && pt_1 > 25 && pt_1 < 31 && abs(eta_1) < 2.1 && pt_2 > 35 && abs(eta_2) < 2.1)"
-        single_electron_only = "(trg_singleelectron && pt_1 >= 31 && abs(eta_1) < 2.1 )"
+        single_electron_only = "(trg_singleelectron && pt_1 >= 32 && abs(eta_1) < 2.1 )"
         trg_full = single_electron_only # remove et cross trigger until Nanoprod v3
         categories["baseline"] = ( # Tight VSe for et
             "(m_vis>40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 6 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
@@ -216,8 +206,13 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         )
         if args.do_aiso:
             categories["baseline"] = re.sub(
-                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.3", categories["baseline"] # NB: cut in HiggsDNA on iso is 0.3
+                "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.2", categories["baseline"]  # aiso cut based on what is used for the FF DR
             )
+
+        categories["lt_ff_AR"] = categories["baseline"].replace(
+            "idDeepTau2018v2p5VSjet_2 >= 7",
+            "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+        )
 
     if args.channel == "tt":
         doubletau_only_trg = "(trg_doubletau && pt_1 > 40 && pt_2 > 40)"
@@ -404,17 +399,6 @@ elif args.channel == "mt":
             categories[f'BDTinc_aminus_mu_rho_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['sel_murho']}))"
             categories[f'BDTinc_aminus_mu_a11pr_{obj}_{opt}'] = f"(alphaAngle_mu_rho_{obj} {opt_cut} {np.pi/4} && ({categories['sel_mua11pr']}))"
             categories[f'BDTinc_aminus_mu_a1_{obj}_{opt}'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['sel_mua1']}))"
-
-    # for obj in [1, 2]:
-    #     categories[f'aminus_mu_pi_{obj}_high'] = f"(alphaAngle_mu_pi_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mupi']}))"
-    #     categories[f'aminus_mu_rho_{obj}_high'] = f"(alphaAngle_mu_rho_{obj} > {np.pi/4 + 0.2} && ({categories['tau_murho']}))"
-    #     categories[f'aminus_mu_a11pr_{obj}_high'] = f"(alphaAngle_mu_rho_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mua11pr']}))"
-    #     categories[f'aminus_mu_a1_{obj}_high'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} > {np.pi/4 + 0.2} && ({categories['tau_mua1']}))"
-    #     categories[f'aminus_mu_pi_{obj}_low'] = f"(alphaAngle_mu_pi_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mupi']}))"
-    #     categories[f'aminus_mu_rho_{obj}_low'] = f"(alphaAngle_mu_rho_{obj} < {np.pi/4 - 0.2} && ({categories['tau_murho']}))"
-    #     categories[f'aminus_mu_a11pr_{obj}_low'] = f"(alphaAngle_mu_rho_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mua11pr']}))"
-    #     categories[f'aminus_mu_a1_{obj}_low'] = f"(alphaAngle_mu_a1_FASTMTT_MassConstraint_{obj} < {np.pi/4 - 0.2} && ({categories['tau_mua1']}))"
-
 
 
 elif args.channel == "et":
@@ -892,7 +876,7 @@ def RunPlotting(
     doVVJ = True if "VVJ" not in nodes_to_skip else False
 
 
-    if method in [3,4]: # jet fake estimate so don't include other MC jet fakes:
+    if method in [3,4,6]: # jet fake estimate so don't include other MC jet fakes:
         doTTJ = False
         doZJ = False
         doVVJ = False
@@ -1004,7 +988,12 @@ def RunPlotting(
             qcd_factor=qcd_factor,
             get_os=not args.do_ss,
         )
-    elif "JetFakes" not in nodes_to_skip and method in [3, 4]:  # Jet Fakes
+    elif "JetFakes" not in nodes_to_skip and method in [3,4,6]:  # Jet Fakes
+        if method == 6 and "BDT_pred_score,aco" in args.var:
+            print("WARNING: For CP datacards with variable names matching: `BDT_pred_score,aco*`, jet fake fractions are computed per BDT bin")
+            flatten_y = True
+        else:
+            flatten_y = False
         GenerateFakes(
             ana,
             nodename,
@@ -1022,7 +1011,8 @@ def RunPlotting(
             method=method,
             qcd_factor=qcd_factor,
             get_os=not args.do_ss,
-        )
+            flatten_y = flatten_y
+            )
 
     if "signal" not in nodes_to_skip:
         # generate correct signal
@@ -1431,6 +1421,7 @@ if (not is_2d) or (is_2d and args.do_unrolling):
         args.channel,
         args.era,
         args.var,
+        method,
         blind=args.blind,
         log_y=False,
         is2Dunrolled=is_2d,
