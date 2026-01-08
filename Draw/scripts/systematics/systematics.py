@@ -429,6 +429,28 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
                 histogram_name = '_' + specific_name + updown.capitalize()
             systematics[systematic_name] = (folder_name, histogram_name, 'weight_to_replace', nodes_to_skip, None, None)
 
+
+    # Jet Energy Scale systematics (Regrouped)
+    # ----------------------------------------------------------------------------------------------------
+    if specific_systematic == 'Jet_EnergyScale_Regrouped':
+
+        nodes_to_skip = ['JetFakes', 'QCD']
+
+        era_suffix = specific_era.split("Run3_")[1]
+        jec_variations = [f'Absolute_{era_suffix}', 'Absolute', f'BBEC1_{era_suffix}', 'BBEC1', f'EC2_{era_suffix}', 'EC2', 'FlavorQCD', f'HF_{era_suffix}', 'HF', 'RelativeBal', f'RelativeSample_{era_suffix}']
+
+        for jec_type in jec_variations:
+            prefix = 'jec_syst_' + jec_type
+            name = 'syst_jet_scale_' + jec_type
+            for updown in ['up', 'down']:
+                systematic_name = name + '_' + updown
+                folder_name = prefix + '_' + updown
+                if specific_name == '':
+                    histogram_name = '_' + prefix + updown.capitalize()
+                else:
+                    histogram_name = '_' + specific_name.replace('*type', jec_type) + updown.capitalize()
+                systematics[systematic_name] = (folder_name, histogram_name, 'weight_to_replace', nodes_to_skip, None, None)
+
     # ----------------------------------------------------------------------------------------------------
 
     # Jet Energy Resolution systematics
@@ -438,14 +460,14 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
         nodes_to_skip = ['JetFakes', 'QCD']
 
         prefix = 'jer_syst'
-        name = 'syst_jet_resolution'
+        name = f'syst_jet_resolution_{specific_era.split("Run3_")[1]}'
         for updown in ['up', 'down']:
             systematic_name = name + '_' + updown
             folder_name = prefix + '_' + updown
             if specific_name == '':
                 histogram_name = '_' + prefix + updown.capitalize()
             else:
-                histogram_name = '_' + specific_name + updown.capitalize()
+                histogram_name = '_' + specific_name.replace("*year", specific_era.split("Run3_")[1]) + updown.capitalize()
             systematics[systematic_name] = (folder_name, histogram_name, 'weight_to_replace', nodes_to_skip, None, None)
 
     # ----------------------------------------------------------------------------------------------------
@@ -712,9 +734,9 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
                     histogram_name = f'_signal_theory_{var}{updown.capitalize()}'
                 else:
                     if var == "Scale_muR":
-                        histogram_name = '_'+ specific_name.replace("*type", "QCDscale_ren") + '_ACCEPT' + updown.capitalize()
+                        histogram_name = '_'+ specific_name.replace("*type", "QCDscale_ren") + updown.capitalize()
                     elif var == "Scale_muF":
-                        histogram_name = '_'+ specific_name.replace("*type", "QCDscale_fac") + '_ACCEPT' + updown.capitalize()
+                        histogram_name = '_'+ specific_name.replace("*type", "QCDscale_fac") + updown.capitalize()
                     elif var == "PS_ISR":
                         histogram_name = '_'+ specific_name.replace("*type", "ps_isr")+ updown.capitalize()
                     elif var == "PS_FSR":
