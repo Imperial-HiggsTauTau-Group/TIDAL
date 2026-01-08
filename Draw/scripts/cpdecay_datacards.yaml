@@ -1,6 +1,6 @@
-input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Nov_systematics_run
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/CPDatacards/Dec10_FullSyst
-channels: [ tt, mt, et]
+input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Jan_PreApp
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/2026/CPDatacards/Jan1_ForPreApp
+channels: [ et,mt,tt]
 eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix ]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [cpdecay]
@@ -15,29 +15,29 @@ cpdecay:
          - [ "systematic_Trigger", "CMS_HIG25012_trig_*obj_*trigger_*group" ]
 
         mt:
-        - [ "systematic_Tau_EnergyScale_PNet_MUSCALE", "CMS_scale_mu_DeepTau2018v2p5_*group_*year_genMuon" ]
+        - [ "systematic_Tau_EnergyScale_PNet_MUSCALE", "CMS_HIG25012_scale_t_muFake_*group_*year" ]
         - [ "systematic_Muon_ID_iso", "CMS_eff_m_*kind" ]
         - [ "systematic_Tau_FakeRate_mu", "CMS_fake_t_DeepTau2018v2p5_VSmu_*year_eta_*eta"]
-        - [ "systematic_Trigger", "CMS_eff_m_trigger"]
+        - [ "systematic_Trigger", "CMS_HIG25012_eff_m_trigger"]
         - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
 
         et:
-        - [ "systematic_Tau_EnergyScale_PNet_ESCALE", "CMS_scale_e_DeepTau2018v2p5_*group_*year_genElectron" ]
+        - [ "systematic_Tau_EnergyScale_PNet_ESCALE", "CMS_HIG25012_scale_t_eFake_*group_*year" ]
         - [ "systematic_Tau_FakeRate_e", "CMS_fake_t_DeepTau2018v2p5_VSe_*year_eta_*eta"]
-        - [ "systematic_Electron_Scale_Smearing", "CMS_*kind_e_13p6TeV"]
-        - [ "systematic_Electron_ID_Reco", "CMS_eff_e_*kind_13p6TeV"]
+        - [ "systematic_Electron_Scale_Smearing", "CMS_*kind_e"]
+        - [ "systematic_Electron_ID_Reco", "CMS_eff_e_*kind"]
         - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
-        - [ "systematic_Trigger", "CMS_eff_e_trigger"]
+        - [ "systematic_Trigger", "CMS_HIG25012_eff_e_trigger"]
 
         common:
          - [ "systematic_Fake_Factors", "CMS_HIG25012_fake_t"]
          - [ "systematic_DY_Shape", "CMS_HIG25012_Z_pt_reweighting" ]
-         - [ "systematic_TTbar_Shape", "CMS_Top_pt_reweighting" ]
+         - [ "systematic_TTbar_Shape", "top_pt_reweighting" ]
          - [ "systematic_Tau_ID_PNet", "CMS_HIG25012_eff_t_DeepTau2018v2p5_VSjet_*group"]
-         - [ "systematic_Tau_EnergyScale_PNet_TSCALE", "CMS_HIG25012_scale_t_DeepTau2018v2p5_*group_*year_genTau" ]
+         - [ "systematic_Tau_EnergyScale_PNet_TSCALE", "CMS_HIG25012_scale_t_*group_*year" ]
          - [ "systematic_MET_Recoil", "CMS_HIG25012_*type_met" ]
-         - [ "systematic_Jet_EnergyScale_Total", "CMS_scale_j_13p6TeV" ]
-         - [ "systematic_Jet_EnergyResolution", "CMS_res_j_13p6TeV" ]
+         - [ "systematic_Jet_EnergyScale_Regrouped", "CMS_scale_j_*type" ]
+         - [ "systematic_Jet_EnergyResolution", "CMS_res_j_*year" ]
          - [ 'systematic_Pileup', 'CMS_pileup']
          - [ "systematic_IP_Calibration", "CMS_HIG25012_res_IP"]
          - [ "systematic_SV_Resolution", "CMS_HIG25012_res_SV"]

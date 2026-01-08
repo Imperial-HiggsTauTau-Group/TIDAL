@@ -64,7 +64,7 @@ queue
         condor_template = condor_template.replace("request_cpus = 1", "request_cpus = 3")
         condor_template = condor_template.replace("request_memory = 8000", "request_memory = 12000")
         if era in ['Run3_2022EE']:
-            condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 50000")
+            condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 100000")
         else:
             condor_template = condor_template.replace("+MaxRuntime = 10500", "+MaxRuntime = 35800")
     elif run_systematics and channel in ['tt'] and era in ["Run3_2022EE", "Run3_2023"]:

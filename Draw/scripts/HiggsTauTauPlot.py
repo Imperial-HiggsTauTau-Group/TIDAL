@@ -72,6 +72,7 @@ systematic_options = [
     ['MET_Recoil', 'MET Recoil systematic'],
     ['Trigger', 'Trigger efficiency systematic'],
     ["Jet_EnergyScale_Total", "Jet Energy Scale Total systematic"],
+    ["Jet_EnergyScale_Regrouped", "Jet Energy Scale Regrouped systematics"],
     ["Jet_EnergyResolution", "Jet Energy Resolution systematic"],
     ["Electron_Scale_Smearing", "Electron Scale and Smearing systematics"],
     ["QCD_Background", "QCD Background systematic"],
