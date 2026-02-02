@@ -102,67 +102,14 @@ cpdecay:
 
 
   tt:
-    # Nominal plots
      - { method: '4', category:  ['mva_higgs'], plotting_variable: [ higgs_tt], blind: false, use_filtered_DY: true, additional_selections: ['(n_jets>1)']}
-
-    #  - { method: '4', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: true}
-    #  - { method: '4', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_rhorho'], plotting_variable: [ MVA_vs_aco_rho_rho], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_pipi'], plotting_variable: [ MVA_vs_aco_pi_pi], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a1a1'], plotting_variable: [ MVA_vs_aco_a1_a1], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_pirho'], plotting_variable: [ MVA_vs_aco_pi_rho], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_rhopi'], plotting_variable: [ MVA_vs_aco_rho_pi], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_pia11pr'], plotting_variable: [ MVA_vs_aco_pi_a11pr], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a11prpi'], plotting_variable: [ MVA_vs_aco_a11pr_pi], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_rhoa11pr'], plotting_variable: [ MVA_vs_aco_rho_a11pr], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a1a11pr'], plotting_variable: [ MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a11pra1'], plotting_variable: [ MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a1rho'], plotting_variable: [ MVA_vs_aco_a1_rho_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_rhoa1'], plotting_variable: [ MVA_vs_aco_rho_a1_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a1pi'], plotting_variable: [ MVA_vs_aco_a1_pi_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_pia1'], plotting_variable: [ MVA_vs_aco_pi_a1_FASTMTT_MassConstraint], blind: true, unroll: true, use_filtered_DY: true}
-    # aiso (for fake factor systematics)
-    #  - { method: '4', category:  ['mva_tau'], plotting_variable: [ MVA_score], aiso: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['mva_fake'], plotting_variable: [ MVA_score], aiso: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_rhorho'], plotting_variable: [ MVA_vs_aco_rho_rho], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_pipi'], plotting_variable: [ MVA_vs_aco_pi_pi], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a1a1'], plotting_variable: [ MVA_vs_aco_a1_a1], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_pirho'], plotting_variable: [ MVA_vs_aco_pi_rho], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_rhopi'], plotting_variable: [ MVA_vs_aco_rho_pi], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_pia11pr'], plotting_variable: [ MVA_vs_aco_pi_a11pr], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a11prpi'], plotting_variable: [ MVA_vs_aco_a11pr_pi], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_rhoa11pr'], plotting_variable: [ MVA_vs_aco_rho_a11pr], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a1a11pr'], plotting_variable: [ MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a11pra1'], plotting_variable: [ MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a1rho'], plotting_variable: [ MVA_vs_aco_a1_rho_FASTMTT_MassConstraint], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_rhoa1'], plotting_variable: [ MVA_vs_aco_rho_a1_FASTMTT_MassConstraint], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_a1pi'], plotting_variable: [ MVA_vs_aco_a1_pi_FASTMTT_MassConstraint], aiso: true, unroll: true, use_filtered_DY: true}
-    #  - { method: '4', category:  ['higgs_pia1'], plotting_variable: [ MVA_vs_aco_pi_a1_FASTMTT_MassConstraint], aiso: true, unroll: true, use_filtered_DY: true}
-
-
 
   mt:
 
     - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_mt], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1)"]}
-    # Nominal plots
-    #  - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['higgs_mupi'], plotting_variable: [ MVA_vs_aco_mu_pi], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['higgs_murho'], plotting_variable: [ MVA_vs_aco_mu_rho], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['higgs_mua11pr'], plotting_variable: [ MVA_vs_aco_mu_a11pr], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['higgs_mua1'], plotting_variable: [ MVA_vs_aco_mu_a1], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
 
   et:
-    # Nominal plots
     - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1)"]}
-    #  - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['higgs_epi'], plotting_variable: [ MVA_vs_aco_e_pi], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['higgs_erho'], plotting_variable: [ MVA_vs_aco_e_rho], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['higgs_ea11pr'], plotting_variable: [ MVA_vs_aco_e_a11pr], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
-    #  - { method: '6', category:  ['higgs_ea1'], plotting_variable: [ MVA_vs_aco_e_a1], blind: true, unroll: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
 
 cp_chi2_tests:
 
