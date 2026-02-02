@@ -1,6 +1,6 @@
 input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Jan_PreApp
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/VBFChecks/NJets_GT1/   #BDTSplit # SSPlots # BDTSplitLocal
-channels: [ et, mt,et]
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/VBFChecks/NJets_GT1_HighETA/   #NJets_GT1
+channels: [ et, mt,tt]
 eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix ]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [cpdecay]
@@ -102,14 +102,17 @@ cpdecay:
 
 
   tt:
-     - { method: '4', category:  ['mva_higgs'], plotting_variable: [ higgs_tt], blind: false, use_filtered_DY: true, additional_selections: ['(n_jets>1)']}
+    #  - { method: '4', category:  ['mva_higgs'], plotting_variable: [ higgs_tt], blind: false, use_filtered_DY: true, additional_selections: ['(n_jets>1)']}
+     - { method: '4', category:  ['mva_higgs'], plotting_variable: [ higgs_tt], blind: false, use_filtered_DY: true, additional_selections: ['(n_jets>1 && (fabs(jeta_1)>3 || fabs(jeta_2)>3))']}
 
   mt:
 
-    - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_mt], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1)"]}
+    # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_mt], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1)"]}
+    - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_mt], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1 && (fabs(jeta_1)>3 || fabs(jeta_2)>3))"]}
 
   et:
-    - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1)"]}
+    # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1)"]}
+    - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1 && (fabs(jeta_1)>3 || fabs(jeta_2)>3))"]}
 
 cp_chi2_tests:
 
