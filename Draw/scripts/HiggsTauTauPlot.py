@@ -1359,7 +1359,7 @@ for hist in directory.GetListOfKeys():
     if ".subnodes" in hist.GetName():
         continue
 
-    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead"]
+    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead", "ggH_sm_prod_sm_htt125","qqH_sm_htt125","WH_sm_htt125","ZH_sm_htt125"]
     if hist.GetName().endswith("Up") or hist.GetName().endswith("Down"):
         for proc in processes:
             if hist.GetName().startswith(proc + '_'):
