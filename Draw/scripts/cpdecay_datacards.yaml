@@ -1,10 +1,10 @@
 input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Jan_PreApp
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/VBFChecks/NJets_GT1 #NJets_GT1_HighETA/   #NJets_GT1
-channels: [ et, mt,tt]
-eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix ]
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/VBFChecks_SYST/DEBUG_THEORYONLY #Inclusive_Higgs #VBF_Region # NOTVBF_Region
+channels: [ tt]
+eras: [ Run3_2022] #, Run3_2022EE, Run3_2023, Run3_2023BPix ]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [cpdecay]
-run_systematics: false
+run_systematics: true
 
 
 cpdecay:
@@ -12,36 +12,36 @@ cpdecay:
   systematics:
     per_era:
       default:
-        tt:
-         - [ "systematic_Trigger", "CMS_HIG25012_trig_*obj_*trigger_*group" ]
+        # tt:
+        #  - [ "systematic_Trigger", "CMS_HIG25012_trig_*obj_*trigger_*group" ]
 
-        mt:
-        - [ "systematic_Tau_EnergyScale_PNet_MUSCALE", "CMS_HIG25012_scale_t_muFake_*group_*year" ]
-        - [ "systematic_Muon_ID_iso", "CMS_eff_m_*kind" ]
-        - [ "systematic_Tau_FakeRate_mu", "CMS_fake_t_DeepTau2018v2p5_VSmu_*year_eta_*eta"]
-        - [ "systematic_Trigger", "CMS_HIG25012_eff_m_trigger"]
-        - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
+        # mt:
+        # - [ "systematic_Tau_EnergyScale_PNet_MUSCALE", "CMS_HIG25012_scale_t_muFake_*group_*year" ]
+        # - [ "systematic_Muon_ID_iso", "CMS_eff_m_*kind" ]
+        # - [ "systematic_Tau_FakeRate_mu", "CMS_fake_t_DeepTau2018v2p5_VSmu_*year_eta_*eta"]
+        # - [ "systematic_Trigger", "CMS_HIG25012_eff_m_trigger"]
+        # - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
 
-        et:
-        - [ "systematic_Tau_EnergyScale_PNet_ESCALE", "CMS_HIG25012_scale_t_eFake_*group_*year" ]
-        - [ "systematic_Tau_FakeRate_e", "CMS_fake_t_DeepTau2018v2p5_VSe_*year_eta_*eta"]
-        - [ "systematic_Electron_Scale_Smearing", "CMS_*kind_e"]
-        - [ "systematic_Electron_ID_Reco", "CMS_eff_e_*kind"]
-        - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
-        - [ "systematic_Trigger", "CMS_HIG25012_eff_e_trigger"]
+        # et:
+        # - [ "systematic_Tau_EnergyScale_PNet_ESCALE", "CMS_HIG25012_scale_t_eFake_*group_*year" ]
+        # - [ "systematic_Tau_FakeRate_e", "CMS_fake_t_DeepTau2018v2p5_VSe_*year_eta_*eta"]
+        # - [ "systematic_Electron_Scale_Smearing", "CMS_*kind_e"]
+        # - [ "systematic_Electron_ID_Reco", "CMS_eff_e_*kind"]
+        # - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
+        # - [ "systematic_Trigger", "CMS_HIG25012_eff_e_trigger"]
 
         common:
-         - [ "systematic_Fake_Factors", "CMS_HIG25012_fake_t"]
-         - [ "systematic_DY_Shape", "CMS_HIG25012_Z_pt_reweighting" ]
-         - [ "systematic_TTbar_Shape", "top_pt_reweighting" ]
-         - [ "systematic_Tau_ID_PNet", "CMS_HIG25012_eff_t_DeepTau2018v2p5_VSjet_*group"]
-         - [ "systematic_Tau_EnergyScale_PNet_TSCALE", "CMS_HIG25012_scale_t_*group_*year" ]
-         - [ "systematic_MET_Recoil", "CMS_HIG25012_*type_met" ]
-         - [ "systematic_Jet_EnergyScale_Regrouped", "CMS_scale_j_*type" ]
-         - [ "systematic_Jet_EnergyResolution", "CMS_res_j_*year" ]
-         - [ 'systematic_Pileup', 'CMS_pileup']
-         - [ "systematic_IP_Calibration", "CMS_HIG25012_res_IP"]
-         - [ "systematic_SV_Resolution", "CMS_HIG25012_res_SV"]
+        #  - [ "systematic_Fake_Factors", "CMS_HIG25012_fake_t"]
+        #  - [ "systematic_DY_Shape", "CMS_HIG25012_Z_pt_reweighting" ]
+        #  - [ "systematic_TTbar_Shape", "top_pt_reweighting" ]
+        #  - [ "systematic_Tau_ID_PNet", "CMS_HIG25012_eff_t_DeepTau2018v2p5_VSjet_*group"]
+        #  - [ "systematic_Tau_EnergyScale_PNet_TSCALE", "CMS_HIG25012_scale_t_*group_*year" ]
+        #  - [ "systematic_MET_Recoil", "CMS_HIG25012_*type_met" ]
+        #  - [ "systematic_Jet_EnergyScale_Regrouped", "CMS_scale_j_*type" ]
+        #  - [ "systematic_Jet_EnergyResolution", "CMS_res_j_*year" ]
+        #  - [ 'systematic_Pileup', 'CMS_pileup']
+        #  - [ "systematic_IP_Calibration", "CMS_HIG25012_res_IP"]
+        #  - [ "systematic_SV_Resolution", "CMS_HIG25012_res_SV"]
          - [ "systematic_Signal_Theory", "*type_signal"]
 
 
@@ -102,17 +102,23 @@ cpdecay:
 
 
   tt:
-     - { method: '4', category:  ['mva_higgs'], plotting_variable: [ higgs_tt], blind: false, use_filtered_DY: true, additional_selections: ['(n_jets>1)']}
+     - { method: '4', category:  ['mva_higgs'], plotting_variable: [ higgs_tt], blind: false, use_filtered_DY: true}
+    #  - { method: '4', category:  ['mva_higgs'], plotting_variable: [ higgs_tt], blind: false, use_filtered_DY: true, additional_selections: ['(n_jets<2 || mjj<=300)']}
     #  - { method: '4', category:  ['mva_higgs'], plotting_variable: [ higgs_tt], blind: false, use_filtered_DY: true, additional_selections: ['(n_jets>1 && (fabs(jeta_1)>3 || fabs(jeta_2)>3))']}
+    #  - { method: '4', category:  ['mva_higgs'], plotting_variable: [ higgs_tt], blind: false, use_filtered_DY: true, additional_selections: ['(n_jets>1 && mjj>300)']}
+
 
   mt:
-
-    - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_mt], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1)"]}
+    - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_mt], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_mt], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && (n_jets<2 || mjj<=300))"]}
     # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_mt], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1 && (fabs(jeta_1)>3 || fabs(jeta_2)>3))"]}
+    # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_mt], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1 && mjj>300)"]}
 
   et:
-    - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1)"]}
+    - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && (n_jets<2 || mjj<=300))"]}
     # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1 && (fabs(jeta_1)>3 || fabs(jeta_2)>3))"]}
+    # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1 && mjj>300)"]}
 
 cp_chi2_tests:
 
