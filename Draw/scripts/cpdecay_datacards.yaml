@@ -1,6 +1,6 @@
 input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Jan_PreApp
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/2026/CPDatacards/Jan1_ForPreApp
-channels: [ et,mt,tt]
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/2026/CPDatacards/OUTPUT
+channels: [ et, mt, tt ]
 eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix ]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [cpdecay]
@@ -23,7 +23,7 @@ cpdecay:
 
         et:
         - [ "systematic_Tau_EnergyScale_PNet_ESCALE", "CMS_HIG25012_scale_t_eFake_*group_*year" ]
-        - [ "systematic_Tau_FakeRate_e", "CMS_fake_t_DeepTau2018v2p5_VSe_*year_eta_*eta"]
+        - [ "systematic_Tau_FakeRate_e", "CMS_fake_t_DeepTau2018v2p5_VSe_*year_eta_*eta_*group"]
         - [ "systematic_Electron_Scale_Smearing", "CMS_*kind_e"]
         - [ "systematic_Electron_ID_Reco", "CMS_eff_e_*kind"]
         - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]

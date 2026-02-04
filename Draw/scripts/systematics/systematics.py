@@ -192,37 +192,37 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
         eta_bins = ["0.0", "1.5", "2.5"]
         era = specific_era
 
-        for i, eta in enumerate(eta_bins[:-1]):
-            up_weights = []
-            down_weights = []
-            for obj_index, obj_type in enumerate(specific_channel):
-                if obj_type == 't':
-                    up_var = f"w_Tau_e_FakeRate_{obj_index+1}_Up"
-                    down_var = f"w_Tau_e_FakeRate_{obj_index+1}_Down"
+        for dm in [0,1,2,10]:
+            for i, eta in enumerate(eta_bins[:-1]):
+                up_weights = []
+                down_weights = []
+                for obj_index, obj_type in enumerate(specific_channel):
+                    if obj_type == 't':
+                        up_var = f"w_Tau_e_FakeRate_{obj_index+1}_Up"
+                        down_var = f"w_Tau_e_FakeRate_{obj_index+1}_Down"
 
-                    formula = (
-                        f"((variation_to_replace * ((fabs(eta_{obj_index+1}) >= {eta_bins[i]}) && (fabs(eta_{obj_index+1}) < {eta_bins[i+1]}))) + "
-                        f"(!((fabs(eta_{obj_index+1}) >= {eta_bins[i]}) && (fabs(eta_{obj_index+1}) < {eta_bins[i+1]}))))"
-                    )
+                        formula = (
+                            f"((variation_to_replace * ((decayModePNet_{obj_index+1} == {dm}) && (fabs(eta_{obj_index+1}) >= {eta_bins[i]}) && (fabs(eta_{obj_index+1}) < {eta_bins[i+1]}))) + "
+                            f"(!((decayModePNet_{obj_index+1} == {dm}) && ((fabs(eta_{obj_index+1}) >= {eta_bins[i]}) && (fabs(eta_{obj_index+1}) < {eta_bins[i+1]})))))"
+                        )
 
-                    up_weights.append(formula.replace('variation_to_replace', up_var))
-                    down_weights.append(formula.replace('variation_to_replace', down_var))
+                        up_weights.append(formula.replace('variation_to_replace', up_var))
+                        down_weights.append(formula.replace('variation_to_replace', down_var))
 
-                    del up_var, down_var
+                        del up_var, down_var
 
-            systematic_name = f'Tau_e_FakeRate_{era}_eta_{eta}'
-            if specific_name == '':
-                histogram_name = f'syst_etau_fakerate_{era}_eta_{eta}'
-            else:
-                histogram_name = '_' + specific_name.replace("*year", era).replace('*eta', eta.replace('.','p'))
+                systematic_name = f'Tau_e_FakeRate_{era}_eta_{eta}_dm_{dm}'
+                if specific_name == '':
+                    histogram_name = f'syst_etau_fakerate_{era}_eta_{eta}_dm_{dm}'
+                else:
+                    histogram_name = '_' + specific_name.replace("*year", era).replace('*eta', eta.replace('.','p')).replace('*group', f'DM{dm}PNet')
 
-            if specific_channel in ["et","mt","tt"]:
-                systematics[systematic_name + '_up'] = ('nominal', histogram_name + 'Up', 'weight_to_replace*' + '*'.join(up_weights), nodes_to_skip, None, None)
-                systematics[systematic_name + '_down'] = ('nominal', histogram_name + 'Down', 'weight_to_replace*' + '*'.join(down_weights), nodes_to_skip, None, None)
+                if specific_channel in ["et","mt","tt"]:
+                    systematics[systematic_name + '_up'] = ('nominal', histogram_name + 'Up', 'weight_to_replace*' + '*'.join(up_weights), nodes_to_skip, None, None)
+                    systematics[systematic_name + '_down'] = ('nominal', histogram_name + 'Down', 'weight_to_replace*' + '*'.join(down_weights), nodes_to_skip, None, None)
 
-        del up_weights, down_weights
+            del up_weights, down_weights
     # ----------------------------------------------------------------------------------------------------
-
     # Tau Fakerate (mu) systematics
     # ----------------------------------------------------------------------------------------------------
     if specific_systematic == 'Tau_FakeRate_mu':
