@@ -38,6 +38,7 @@ def hadd_root_files(input_files, output_file, dir_combinations, channel, exp_num
                 input_root.cd(dir_name)
                 for hist_key in ROOT.gDirectory.GetListOfKeys():
                     hist_name = hist_key.GetName()
+                    # print(f"Processing histogram: {hist_name} in directory: {dir_name} from file: {file_name}")
                     hist = hist_key.ReadObj()
                         
                     # Check if it's a histogram
@@ -149,7 +150,7 @@ def hadd_root_files(input_files, output_file, dir_combinations, channel, exp_num
         hist.SetName(hist_name)
         hist.Write(hist_name)
 
-    # Uncomment the below if you want to manually create 'JetFakes' histograms by summing MC jet backgrounds
+    # # Uncomment the below if you want to manually create 'JetFakes' histograms by summing MC jet backgrounds
     # if channel in ['mt', 'et']: # manually create jet fakes while without FFs
     #     for key in output.GetListOfKeys():
     #         if key.GetClassName() != "TDirectoryFile":
@@ -195,7 +196,7 @@ def hadd_root_files(input_files, output_file, dir_combinations, channel, exp_num
             output_file,
             dir_name,
             channel,
-            '...',
+            'earlyrun3',
             var_name,
             method,
             blind=blind,
@@ -251,11 +252,18 @@ if __name__ == "__main__":
             'tt_tau_pia1': ['tt_tau_a1pi', 'tt_tau_pia1'],
             'tt_tau_pia11pr': ['tt_tau_pia11pr', 'tt_tau_a11prpi'],
             'tt_tau_a11pra1': ['tt_tau_a11pra1', 'tt_tau_a1a11pr'],
+
+            # 'pirho': ['tt_inclusive_PNet_pirho', 'tt_inclusive_PNet_rhopi'],
+            # 'rhoa1': ['tt_inclusive_PNet_a1rho', 'tt_inclusive_PNet_rhoa1'],
+            # 'pia1': ['tt_inclusive_PNet_a1pi', 'tt_inclusive_PNet_pia1'],
+            # 'pia11pr': ['tt_inclusive_PNet_pia11pr', 'tt_inclusive_PNet_a11prpi'],
+            # 'a11pra1': ['tt_inclusive_PNet_a11pra1', 'tt_inclusive_PNet_a1a11pr'],
         }
         # add aiso directories to the combinations
         dir_combinations_extra = {}
         for dir_name in dir_combinations.keys():
             dir_combinations_extra[dir_name + '_aiso'] = [d + '_aiso' for d in dir_combinations[dir_name]]
+            # dir_combinations_extra[dir_name + '_ss'] = [d + '_ss' for d in dir_combinations[dir_name]]
             dir_combinations_extra[dir_name + '_aco_aiso'] = [d + '_aco_aiso' for d in dir_combinations[dir_name]]
             dir_combinations_extra[dir_name + '_BDT_score_aiso'] = [d + '_BDT_score_aiso' for d in dir_combinations[dir_name]]
         dir_combinations.update(dir_combinations_extra)

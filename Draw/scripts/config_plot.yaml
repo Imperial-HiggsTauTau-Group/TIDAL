@@ -1,10 +1,10 @@
-input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Jan_PreApp
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/2026/Control/TestJetSystematics
-channels: [ et, mt, tt ]
+input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Jan_AngularSystematics
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/2026/L2Comments/Pions/LeadingPion # Angular_pT_Lt40
+channels: [ mt ]
 eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [control]
-run_systematics: true
+run_systematics: false
 
 control:
 
@@ -60,9 +60,35 @@ control:
     pt_tt: "pt_tt(50,0,400)"
     met_phi: "met_phi(32,-pi,pi)"
 
+
+    dR_mu_IP: "dR_mu_IP(20,0,4)"
+    dR_tau_IP: "dR_tau_IP(20,0,4)"
+    dR_tau_SV: "dR_tau_SV(20,0,0.10)"
+    dR_mu_IP_up: "dR_mu_IP_up(20,0,4)"
+    dR_tau_IP_up: "dR_tau_IP_up(20,0,4)"
+    dR_tau_SV_up: "dR_tau_SV_up(20,0,0.10)"
+    dR_mu_IP_down: "dR_mu_IP_down(20,0,4)"
+    dR_tau_IP_down: "dR_tau_IP_down(20,0,4)"
+    dR_tau_SV_down: "dR_tau_SV_down(20,0,0.10)"
+
+    pi0_pt_1: "pi0_pt_1(40,0,50)"
+    pi0_pt_2: "pi0_pt_2(40,0,50)"
+    pi0_Energy_1: "pi0_Energy_1(40,0,100)"
+    pi0_Energy_2: "pi0_Energy_2(40,0,100)"
+
+    pi_pt_2: "pi_pt_2(40,0,50)"
+    pi_Energy_2: "pi_Energy_2(40,0,100)"
+
+
+
+
+
+
   mt:
   # GENERAL CONTROL
-  - { method: "6", category:  [ cp_inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ], additional_selections: ["(mt_1<65)"]}
+  # - { method: "6", category:  [ sel_mupi ], plotting_variable: [ dR_mu_IP, dR_mu_IP_up, dR_mu_IP_down, dR_tau_IP, dR_tau_IP_up, dR_tau_IP_down], additional_selections: ["(mt_1<65)"]}
+  # - { method: "6", category:  [ higgs_mua11pr, higgs_murho ], plotting_variable: [  pi0_pt_2, pi0_Energy_2], additional_selections: ["(mt_1<65)"]}
+  - { method: "6", category:  [ higgs_mua11pr, higgs_murho, higgs_mupi ], plotting_variable: [  pi_pt_2, pi_Energy_2], additional_selections: ["(mt_1<65)"]}
 
   et:
   # GENERAL CONTROL

@@ -663,67 +663,62 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
 
             # VBF samples
             "qqH_sm_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
-            "qqH_ps_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
-            "qqH_mm_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
+            # "qqH_ps_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
+            # "qqH_mm_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
 
             # ggH samples (SM production)
             "ggH_sm_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
-            "ggH_ps_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
-            "ggH_mm_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
-            # ggH samples (PS production)
-            "ggH_sm_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
-            "ggH_ps_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
-            "ggH_mm_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
-            # ggH samples (MM production)
-            "ggH_sm_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
-            "ggH_ps_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
-            "ggH_mm_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+            # "ggH_ps_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+            # "ggH_mm_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+            # # ggH samples (PS production)
+            # "ggH_sm_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+            # "ggH_ps_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+            # "ggH_mm_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+            # # ggH samples (MM production)
+            # "ggH_sm_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+            # "ggH_ps_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+            # "ggH_mm_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
 
             # WH samples
             "WH_sm_htt*": [
                 "WplusHToTauTau_UncorrelatedDecay_Filtered",
                 "WminusHToTauTau_UncorrelatedDecay_Filtered",
             ],
-            "WH_ps_htt*": [
-                "WplusHToTauTau_UncorrelatedDecay_Filtered",
-                "WminusHToTauTau_UncorrelatedDecay_Filtered",
-            ],
-            "WH_mm_htt*": [
-                "WplusHToTauTau_UncorrelatedDecay_Filtered",
-                "WminusHToTauTau_UncorrelatedDecay_Filtered",
-            ],
+            # "WH_ps_htt*": [
+            #     "WplusHToTauTau_UncorrelatedDecay_Filtered",
+            #     "WminusHToTauTau_UncorrelatedDecay_Filtered",
+            # ],
+            # "WH_mm_htt*": [
+            #     "WplusHToTauTau_UncorrelatedDecay_Filtered",
+            #     "WminusHToTauTau_UncorrelatedDecay_Filtered",
+            # ],
 
             # ZH samples
             "ZH_sm_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
-            "ZH_ps_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
-            "ZH_mm_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
+            # "ZH_ps_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
+            # "ZH_mm_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
 
-            # Higgs Flat samples (uncorrelated decay)
-            "Higgs_flat_htt*": [
-                "VBFHToTauTau_UncorrelatedDecay_Filtered",
-                "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
-                "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
-                "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
-                "ZHToTauTau_UncorrelatedDecay_Filtered",
-                "WplusHToTauTau_UncorrelatedDecay_Filtered",
-                "WminusHToTauTau_UncorrelatedDecay_Filtered"
-            ],
-            "qqH_flat_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
-            "ggH_flat_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
-            "ggH_flat_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
-            "ggH_flat_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
-            "WH_flat_htt*": [
-                "WplusHToTauTau_UncorrelatedDecay_Filtered",
-                "WminusHToTauTau_UncorrelatedDecay_Filtered",
-            ],
-            "ZH_flat_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
-
-            # combined ggH (events from all production mechanisms)
-            # "ggH_sm_prod_sm_reweight_htt*": [
-            #     'GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay',
-            #     'GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay',
-            #     'GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay'
+            # # Higgs Flat samples (uncorrelated decay)
+            # "Higgs_flat_htt*": [
+            #     "VBFHToTauTau_UncorrelatedDecay_Filtered",
+            #     "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+            #     "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+            #     "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+            #     "ZHToTauTau_UncorrelatedDecay_Filtered",
+            #     "WplusHToTauTau_UncorrelatedDecay_Filtered",
+            #     "WminusHToTauTau_UncorrelatedDecay_Filtered"
             # ],
+            # "qqH_flat_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
+            # "ggH_flat_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+            # "ggH_flat_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+            # "ggH_flat_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+            # "WH_flat_htt*": [
+            #     "WplusHToTauTau_UncorrelatedDecay_Filtered",
+            #     "WminusHToTauTau_UncorrelatedDecay_Filtered",
+            # ],
+            # "ZH_flat_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
+
+
         }
 
 
@@ -1359,7 +1354,7 @@ for hist in directory.GetListOfKeys():
     if ".subnodes" in hist.GetName():
         continue
 
-    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead"]
+    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead", "ggH_sm_prod_sm_htt125","qqH_sm_htt125","WH_sm_htt125","ZH_sm_htt125"]
     if hist.GetName().endswith("Up") or hist.GetName().endswith("Down"):
         for proc in processes:
             if hist.GetName().startswith(proc + '_'):
