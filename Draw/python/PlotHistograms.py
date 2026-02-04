@@ -447,7 +447,7 @@ class HTT_Histogram:
             self.ax.set_ylabel(f"Events / {round(self.bin_widths[0],2)}")
         if self.log_y:
             self.ax.set_yscale('log')
-            self.ax.set_ylim(0.1, 10*np.max(self.stacked_block))
+            self.ax.set_ylim(1, 20*np.max(self.stacked_block))
         else:
             self.ax.set_ylim(0, 1.9*np.max(self.stacked_block))
         self.ax.set_xlim(self.bin_edges[0], self.bin_edges[-1])

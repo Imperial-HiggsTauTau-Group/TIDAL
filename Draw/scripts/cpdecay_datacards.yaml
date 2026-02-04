@@ -1,10 +1,10 @@
 input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Jan_PreApp
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/VBFChecks_SYST/DEBUG_THEORYONLY #Inclusive_Higgs #VBF_Region # NOTVBF_Region
-channels: [ tt]
-eras: [ Run3_2022] #, Run3_2022EE, Run3_2023, Run3_2023BPix ]
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/2026/DEBUG_ET_CHANNEL/Alt_binning #Inclusive_Higgs #VBF_Region # NOTVBF_Region
+channels: [ et]
+eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix ]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [cpdecay]
-run_systematics: true
+run_systematics: false
 
 
 cpdecay:
@@ -78,7 +78,7 @@ cpdecay:
 
       # Semileptonic (et)
       MVA_vs_aco_e_pi: "BDT_pred_score,aco_e_pi[0.33,0.57,0.71,1.0],(8,0,2pi)"
-      MVA_vs_aco_e_rho: "BDT_pred_score,aco_e_rho[0.33,0.57,0.71,1.0],(10,0,2pi)"
+      MVA_vs_aco_e_rho: "BDT_pred_score,aco_e_rho[0.33,0.57,0.71,0.8,0.9,1.0],(10,0,2pi)"
       MVA_vs_aco_e_a11pr: "BDT_pred_score,aco_e_rho[0.33,0.57,0.71,1.0],(8,0,2pi)"
       MVA_vs_aco_e_a1: "BDT_pred_score,aco_e_a1_FASTMTT_MassConstraint[0.33,0.57,0.71,1.0],(10,0,2pi)"
 
@@ -115,7 +115,7 @@ cpdecay:
     # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_mt], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1 && mjj>300)"]}
 
   et:
-    - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+    - { method: '6', category:  ['higgs_erho'], plotting_variable: [MVA_vs_aco_e_rho ], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
     # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && (n_jets<2 || mjj<=300))"]}
     # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1 && (fabs(jeta_1)>3 || fabs(jeta_2)>3))"]}
     # - { method: '6', category:  ['mva_higgs'], plotting_variable: [ higgs_et], blind: false, use_filtered_DY: true, additional_selections: ["(mt_1<65 && n_jets>1 && mjj>300)"]}
