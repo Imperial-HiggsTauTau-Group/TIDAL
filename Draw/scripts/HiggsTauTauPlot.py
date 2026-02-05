@@ -1305,49 +1305,50 @@ keys = [key.GetName() for key in directory.GetListOfKeys()]
 h0 = directory.Get('total_bkg')
 hists=[]
 
-# first process systematics affecting normalisation
-normalisation_systematics = {}
-normalisation_systematics['lumi'] = ((0.014), ["ZTT", "ZL", "TTT", "VVT"])
-normalisation_systematics['dy_xs'] = ((0.016, 0.013), ["ZTT", "ZL"])
-normalisation_systematics['top_xs'] = ((0.05), ["TTT"])
+# # first process systematics affecting normalisation
+# normalisation_systematics = {}
+# normalisation_systematics['lumi'] = ((0.014), ["ZTT", "ZL", "TTT", "VVT"])
+# normalisation_systematics['dy_xs'] = ((0.016, 0.013), ["ZTT", "ZL"])
+# normalisation_systematics['top_xs'] = ((0.05), ["TTT"])
 
-for norm_syst, (value, processes) in normalisation_systematics.items():
-    if isinstance(value, tuple) and len(value) == 2:
-        down_shift = value[0]
-        up_shift = value[1]
-    else:
-        down_shift = value
-        up_shift = value
+# for norm_syst, (value, processes) in normalisation_systematics.items():
+#     if isinstance(value, tuple) and len(value) == 2:
+#         down_shift = value[0]
+#         up_shift = value[1]
+#     else:
+#         down_shift = value
+#         up_shift = value
 
-    h1 = h0.Clone()
-    h2 = h0.Clone()
-    h1.SetName(h0.GetName() + "_" + norm_syst + "Up")
-    h2.SetName(h0.GetName() + "_" + norm_syst + "Down")
-    for proc in processes:
-        if proc not in keys:
-            print(f"Process {proc} not found in the directory.")
-            if proc in ["TTT", "VVT"]:
-                proc = proc.replace("TTT", "TTL").replace("VVT", "VVL")
-                if proc not in keys:
-                    print(f"Process {proc} not found in the directory.")
-                    continue
-            else:
-                continue
+#     print("Applying normalisation systematic:", norm_syst, 'to processes', processes)
+#     h1 = h0.Clone()
+#     h2 = h0.Clone()
+#     h1.SetName(h0.GetName() + "_" + norm_syst + "Up")
+#     h2.SetName(h0.GetName() + "_" + norm_syst + "Down")
+#     for proc in processes:
+#         if proc not in keys:
+#             print(f"Process {proc} not found in the directory.")
+#             if proc in ["TTT", "VVT"]:
+#                 proc = proc.replace("TTT", "TTL").replace("VVT", "VVL")
+#                 if proc not in keys:
+#                     print(f"Process {proc} not found in the directory.")
+#                     continue
+#             else:
+#                 continue
 
-        hup = directory.Get(proc).Clone()
-        hdown = directory.Get(proc).Clone()
+#         hup = directory.Get(proc).Clone()
+#         hdown = directory.Get(proc).Clone()
 
-        h1.Add(hup, -1.0)
-        h2.Add(hdown, -1.0)
+#         h1.Add(hup, -1.0)
+#         h2.Add(hdown, -1.0)
 
-        hup.Scale(1+up_shift)
-        hdown.Scale(1-down_shift)
+#         hup.Scale(1+up_shift)
+#         hdown.Scale(1-down_shift)
 
-        h1.Add(hup)
-        h2.Add(hdown)
+#         h1.Add(hup)
+#         h2.Add(hdown)
 
-    hists.append(h1.Clone())
-    hists.append(h2.Clone())
+#     hists.append(h1.Clone())
+#     hists.append(h2.Clone())
 
 # now process systematics affecting shape
 for hist in directory.GetListOfKeys():

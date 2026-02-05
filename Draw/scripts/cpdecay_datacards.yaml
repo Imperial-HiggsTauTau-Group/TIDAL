@@ -1,7 +1,7 @@
 input_folder: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/output/Jan_PreApp
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/2026/DEBUG_ET_CHANNEL/Alt_binning #Inclusive_Higgs #VBF_Region # NOTVBF_Region
-channels: [ et]
-eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix ]
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/2026/DEBUG_SYST/Signal_NoNormSysts #Inclusive_Higgs #VBF_Region # NOTVBF_Region
+channels: [ tt]
+eras: [ Run3_2022] #, Run3_2022EE, Run3_2023, Run3_2023BPix ]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [cpdecay]
 run_systematics: false
