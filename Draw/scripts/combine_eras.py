@@ -29,10 +29,10 @@ def plot_combined(cmb_file, tree_name, channel, method, era, variable, blind, un
         variable,
         method,
         blind=blind,
-        log_y=True,
+        log_y=False,
         is2Dunrolled=unrolled,
     )
-    Histo_Plotter.plot_1D_histo(ratio_min=0, ratio_max=2)
+    Histo_Plotter.plot_1D_histo()
 
 def get_files_to_combine(eras_to_combine, channel, scheme, directory, f_name):
     print(f"\nERAS TO COMBINE: {eras_to_combine}")
