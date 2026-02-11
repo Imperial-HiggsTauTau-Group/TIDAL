@@ -1359,16 +1359,21 @@ for hist in directory.GetListOfKeys():
     if ".subnodes" in hist.GetName():
         continue
 
-    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead"]
+    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead", "ggH_sm_prod_sm_htt125","qqH_sm_htt125","WH_sm_htt125","ZH_sm_htt125"]
     if hist.GetName().endswith("Up") or hist.GetName().endswith("Down"):
         for proc in processes:
             if hist.GetName().startswith(proc + '_'):
-                print(f"Adding {hist.GetName()} to total uncertainty")
-                no_syst_name = proc
-                temp_hist = h0.Clone()
-                temp_hist.Add(directory.Get(no_syst_name),-1)
-                temp_hist.Add(directory.Get(hist.GetName()))
-                hists.append(temp_hist)
+                if "signal" in hist.GetName() and proc in ["WH_sm_htt125", "ZH_sm_htt125"]:
+                    print("->Skipping signal systematic for VH (not valid):", hist.GetName())
+                    continue
+                else:
+                    print(f"Adding {hist.GetName()} to total uncertainty")
+                    no_syst_name = proc
+                    temp_hist = h0.Clone()
+                    temp_hist.Add(directory.Get(no_syst_name),-1)
+                    temp_hist.Add(directory.Get(hist.GetName()))
+                    temp_hist.SetName(hist.GetName())
+                    hists.append(temp_hist)
 
 (uncert, up, down) = Total_Uncertainty(h0, hists)
 outfile.cd(nodename)
