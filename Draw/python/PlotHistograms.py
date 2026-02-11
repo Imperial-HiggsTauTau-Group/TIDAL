@@ -55,6 +55,8 @@ class HTT_Histogram:
                 "green": "#a0c172", # #b1cf86
                 "grey": "#94a4a2",
                 "ash": "#717581",
+                "darkblue": "#00008B",
+                "pink": "#ff46a2",
             }
         # channel label height:
         self.ch_label_height = 0.915
@@ -153,7 +155,9 @@ class HTT_Histogram:
                 self.backgrounds = {
                                     "Jet$\\to\\tau_h$": {"nodes": ["JetFakes", "JetFakesSublead"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
-                                    "Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT", "qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "yellow"},
+                                    "Other Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT"], "color": "yellow"},
+                                    "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
+                                    "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             self.lep1 = "\\tau_1"
             self.lep2 = "\\tau_2"
@@ -164,7 +168,9 @@ class HTT_Histogram:
                                     "Electroweak": {"nodes": ["VVT"], "color": "red"},
                                     "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
-                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"}
+                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
+                                    "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
+                                    "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             else:
                 self.backgrounds = {
@@ -173,6 +179,8 @@ class HTT_Histogram:
                                     "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
                                     "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
+                                    "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
+                                    "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             self.lep1 = "\\mu"
             self.lep2 = "\\tau"
@@ -184,7 +192,9 @@ class HTT_Histogram:
                                     "Electroweak": {"nodes": ["VVT"], "color": "red"},
                                     "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
-                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"}
+                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
+                                    "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
+                                    "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             else:
                 self.backgrounds = {
@@ -193,6 +203,8 @@ class HTT_Histogram:
                                     "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
                                     "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
+                                    "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
+                                    "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             self.lep1 = "e"
             self.lep2 = "\\tau"
@@ -202,7 +214,7 @@ class HTT_Histogram:
                                 "QCD": {"nodes": ["QCD"], "color": "pink"},
                                 "Electroweak": {"nodes": ["VVT", "VVJ", "W"], "color": "red"},
                                 "Z$\\to\\ell\\ell": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
-                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
+                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"}
                             }
             self.lep1 = "e"
             self.lep2 = "\\mu"
@@ -212,7 +224,7 @@ class HTT_Histogram:
                                 "QCD": {"nodes": ["QCD"], "color": "pink"},
                                 "Electroweak": {"nodes": ["VVT", "VVJ", "W"], "color": "red"},
                                 "Z$\\to$ ee": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
-                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
+                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"}
                             }
             self.lep1 = "e_1"
             self.lep2 = "e_2"
@@ -222,7 +234,7 @@ class HTT_Histogram:
                                 "QCD": {"nodes": ["QCD"], "color": "pink"},
                                 "Electroweak": {"nodes": ["VVT", "VVJ", "W"], "color": "red"},
                                 "Z$\\to\\mu\\mu$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
-                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
+                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"}
                             }
             self.lep1 = "\\mu_1"
             self.lep2 = "\\mu_2"
