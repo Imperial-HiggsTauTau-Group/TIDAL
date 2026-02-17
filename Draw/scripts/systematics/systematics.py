@@ -570,16 +570,12 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
             systematics[systematic_name] = ('nominal', histogram_name, "weight_to_replace", nodes_to_skip, None, None)
 
     if specific_systematic == 'DM_migrations':
-        nodes_to_skip = ['JetFakes','ZL','ZJ','TTJ','VVJ','W'] # TODO add others to skip
-
-        # this uncertainty adds migration uncertainties that changes the fraction of correctly classified taus in each category
-        # note this only works correctly in categories where at least one tau has reco DM = the gen DM
+        nodes_to_skip = ['JetFakes','JetFakesSublead','ZL','ZJ','TTJ','VVJ','W'] # TODO add others to skip
 
         for dm in ["0", "1", "2", "10"]:
 
             # the uncerts dict
             # the first number scales the genuine contribution and the second scales the mis-ID contribution 
-            # e.g the GenDM0 variation has no physical meaning in categories where the reco DM !=0 
 
             uncert_df = {
                 "0":  (1.105, 0.544),
@@ -592,11 +588,11 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
             down_wt = '1'
 
             if specific_channel in ['mt', 'et']:
-                up_wt = f'((gen_decayMode_2=={dm})*{uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{uncert_df[dm][1]})'
-                down_wt = f'((gen_decayMode_2=={dm})*{2.-uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{2.-uncert_df[dm][1]})'
+                up_wt = f'((decayModePNet_2=={dm})*((gen_decayMode_2=={dm})*{uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{uncert_df[dm][1]}) + (decayModePNet_2!={dm}))'
+                down_wt = f'((decayModePNet_2=={dm})*((gen_decayMode_2=={dm})*{2.-uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{2.-uncert_df[dm][1]}) + (decayModePNet_2!={dm}))'
             elif specific_channel == 'tt':
-                up_wt = f'((gen_decayMode_1=={dm})*{uncert_df[dm][0]} + (gen_decayMode_1!={dm})*{uncert_df[dm][1]}) * ((gen_decayMode_2=={dm})*{uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{uncert_df[dm][1]})'
-                down_wt = f"((gen_decayMode_1=={dm})*{2.-uncert_df[dm][0]} + (gen_decayMode_1!={dm})*{2.-uncert_df[dm][1]}) * ((gen_decayMode_2=={dm})*{2.-uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{2.-uncert_df[dm][1]})"
+                up_wt = f'((decayModePNet_1=={dm})*((gen_decayMode_1=={dm})*{uncert_df[dm][0]} + (gen_decayMode_1!={dm})*{uncert_df[dm][1]}) + (decayModePNet_1!={dm})) * ((decayModePNet_2=={dm})*((gen_decayMode_2=={dm})*{uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{uncert_df[dm][1]}) + (decayModePNet_2!={dm}))'
+                down_wt = f'((decayModePNet_1=={dm})*((gen_decayMode_1=={dm})*{2.-uncert_df[dm][0]} + (gen_decayMode_1!={dm})*{2.-uncert_df[dm][1]}) + (decayModePNet_1!={dm})) * ((decayModePNet_2=={dm})*((gen_decayMode_2=={dm})*{2.-uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{2.-uncert_df[dm][1]}) + (decayModePNet_2!={dm}))'
 
             systematic_name = f'DM_Migrations_GenDM{dm}'
             if specific_name == '':
