@@ -15,19 +15,19 @@ cpdecay:
          - [ "systematic_Trigger", "CMS_HIG25012_trig_*obj_*trigger_*group" ]
 
         mt:
-        - [ "systematic_Tau_EnergyScale_PNet_MUSCALE", "CMS_HIG25012_scale_t_muFake_*group_*year" ]
-        - [ "systematic_Muon_ID_iso", "CMS_eff_m_*kind" ]
-        - [ "systematic_Tau_FakeRate_mu", "CMS_fake_t_DeepTau2018v2p5_VSmu_*year_eta_*eta"]
-        - [ "systematic_Trigger", "CMS_HIG25012_eff_m_trigger"]
-        - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
+         - [ "systematic_Tau_EnergyScale_PNet_MUSCALE", "CMS_HIG25012_scale_t_muFake_*group_*year" ]
+         - [ "systematic_Muon_ID_iso", "CMS_eff_m_*kind" ]
+         - [ "systematic_Tau_FakeRate_mu", "CMS_fake_t_DeepTau2018v2p5_VSmu_*year_eta_*eta"]
+         - [ "systematic_Trigger", "CMS_HIG25012_eff_m_trigger"]
+         - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
 
         et:
-        - [ "systematic_Tau_EnergyScale_PNet_ESCALE", "CMS_HIG25012_scale_t_eFake_*group_*year" ]
-        - [ "systematic_Tau_FakeRate_e", "CMS_fake_t_DeepTau2018v2p5_VSe_*year_eta_*eta_*group"]
-        - [ "systematic_Electron_Scale_Smearing", "CMS_*kind_e"]
-        - [ "systematic_Electron_ID_Reco", "CMS_eff_e_*kind"]
-        - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
-        - [ "systematic_Trigger", "CMS_HIG25012_eff_e_trigger"]
+         - [ "systematic_Tau_EnergyScale_PNet_ESCALE", "CMS_HIG25012_scale_t_eFake_*group_*year" ]
+         - [ "systematic_Tau_FakeRate_e", "CMS_fake_t_DeepTau2018v2p5_VSe_*year_eta_*eta_*group"]
+         - [ "systematic_Electron_Scale_Smearing", "CMS_*kind_e"]
+         - [ "systematic_Electron_ID_Reco", "CMS_eff_e_*kind"]
+         - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
+         - [ "systematic_Trigger", "CMS_HIG25012_eff_e_trigger"]
 
         common:
          - [ "systematic_Fake_Factors", "CMS_HIG25012_fake_t"]
@@ -42,7 +42,7 @@ cpdecay:
          - [ "systematic_IP_Calibration", "CMS_HIG25012_res_IP"]
          - [ "systematic_SV_Resolution", "CMS_HIG25012_res_SV"]
          - [ "systematic_Signal_Theory", "*type_signal"]
-
+         - [ "systematic_DM_migrations", "CMS_HIG25012_DM_migrations_*group"]
 
   variable_definitions:
       MVA_score: "BDT_pred_score[0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]"

@@ -87,7 +87,8 @@ systematic_options = [
     ["Signal_Theory", "theoretical uncertainties on the signal"],
     ["IP_Calibration", "Uncertainty on the IP calibration"],
     ["SV_Resolution", "Uncertainty on the SV resolution"],
-    ['IP_Significance', 'Uncertainty on the IP significance cut SFs']
+    ['IP_Significance', 'Uncertainty on the IP significance cut SFs'],
+    ['DM_migrations', 'Uncertainties related to potential migrations between DM categories due to the use of the PNet DM finder'],
 ]
 
 
