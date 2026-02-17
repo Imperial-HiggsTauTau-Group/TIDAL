@@ -4,7 +4,7 @@ channels: [ et, mt, tt ]
 eras: [ Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix ]
 parameter_path: /vols/cms/lcr119/offline/HiggsCP/HiggsDNA/scripts/ditau/config/
 schemes: [cpdecay]
-run_systematics: false
+run_systematics: true
 
 cpdecay:
 
