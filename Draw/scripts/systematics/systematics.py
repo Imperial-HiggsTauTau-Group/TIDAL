@@ -569,6 +569,45 @@ def generate_systematics_dict(specific_era='Run3_2022', specific_channel='mt', s
 
             systematics[systematic_name] = ('nominal', histogram_name, "weight_to_replace", nodes_to_skip, None, None)
 
+    if specific_systematic == 'DM_migrations':
+        nodes_to_skip = ['JetFakes','ZL','ZJ','TTJ','VVJ','W'] # TODO add others to skip
+
+        # this uncertainty adds migration uncertainties that changes the fraction of correctly classified taus in each category
+        # note this only works correctly in categories where at least one tau has reco DM = the gen DM
+
+        for dm in ["0", "1", "2", "10"]:
+
+            # the uncerts dict
+            # the first number scales the genuine contribution and the second scales the mis-ID contribution 
+            # e.g the GenDM0 variation has no physical meaning in categories where the reco DM !=0 
+
+            uncert_df = {
+                "0":  (1.105, 0.544),
+                "1":  (1.048, 0.816),
+                "2":  (1.359, 0.178),
+                "10": (1.023, 0.776)
+            }
+
+            up_wt = '1'
+            down_wt = '1'
+
+            if specific_channel in ['mt', 'et']:
+                up_wt = f'((gen_decayMode_2=={dm})*{uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{uncert_df[dm][1]})'
+                down_wt = f'((gen_decayMode_2=={dm})*{2.-uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{2.-uncert_df[dm][1]})'
+            elif specific_channel == 'tt':
+                up_wt = f'((gen_decayMode_1=={dm})*{uncert_df[dm][0]} + (gen_decayMode_1!={dm})*{uncert_df[dm][1]}) * ((gen_decayMode_2=={dm})*{uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{uncert_df[dm][1]})'
+                down_wt = f"((gen_decayMode_1=={dm})*{2.-uncert_df[dm][0]} + (gen_decayMode_1!={dm})*{2.-uncert_df[dm][1]}) * ((gen_decayMode_2=={dm})*{2.-uncert_df[dm][0]} + (gen_decayMode_2!={dm})*{2.-uncert_df[dm][1]})"
+
+            systematic_name = f'DM_Migrations_GenDM{dm}'
+            if specific_name == '':
+                histogram_name =  f'syst_dm_migrations_DM{dm}'
+            else:
+                histogram_name = specific_name.replace("*group", f"GenDM{dm}")
+
+            systematics[systematic_name + '_up'] = ('nominal', '_' + histogram_name + 'Up', 'weight_to_replace*' + up_wt, nodes_to_skip, None, None)
+            systematics[systematic_name + '_down'] = ('nominal', '_' + histogram_name + 'Down', 'weight_to_replace*' + down_wt, nodes_to_skip, None, None)
+
+
     if specific_systematic == 'Fake_Factors':
         # note the way this is setup at the moment won't work of the box if doing it for mt and et
         nodes_to_skip = [
