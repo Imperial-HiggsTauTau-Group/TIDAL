@@ -11,17 +11,17 @@ cpdecay:
   systematics:
     per_era:
       default:
-         tt:
+        tt:
          - [ "systematic_Trigger", "CMS_HIG25012_trig_*obj_*trigger_*group" ]
 
-         mt:
+        mt:
          - [ "systematic_Tau_EnergyScale_PNet_MUSCALE", "CMS_HIG25012_scale_t_muFake_*group_*year" ]
          - [ "systematic_Muon_ID_iso", "CMS_eff_m_*kind" ]
          - [ "systematic_Tau_FakeRate_mu", "CMS_fake_t_DeepTau2018v2p5_VSmu_*year_eta_*eta"]
          - [ "systematic_Trigger", "CMS_HIG25012_eff_m_trigger"]
          - [ 'systematic_IP_Significance', "CMS_HIG25012_eff_IPSigCut_*obj_eta_*eta"]
 
-         et:
+        et:
          - [ "systematic_Tau_EnergyScale_PNet_ESCALE", "CMS_HIG25012_scale_t_eFake_*group_*year" ]
          - [ "systematic_Tau_FakeRate_e", "CMS_fake_t_DeepTau2018v2p5_VSe_*year_eta_*eta_*group"]
          - [ "systematic_Electron_Scale_Smearing", "CMS_*kind_e"]
