@@ -156,7 +156,7 @@ class HTT_Histogram:
                                     "Jet$\\to\\tau_h$": {"nodes": ["JetFakes", "JetFakesSublead"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
                                     "Other Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT"], "color": "yellow"},
-                                    "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
+                                    # "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
                                     "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             self.lep1 = "\\tau_1"
@@ -169,7 +169,7 @@ class HTT_Histogram:
                                     "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
                                     "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                                    "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
+                                    # "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
                                     "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             else:
@@ -179,7 +179,7 @@ class HTT_Histogram:
                                     "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
                                     "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                                    "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
+                                    # "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
                                     "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             self.lep1 = "\\mu"
@@ -193,7 +193,7 @@ class HTT_Histogram:
                                     "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
                                     "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                                    "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
+                                    # "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
                                     "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             else:
@@ -203,7 +203,7 @@ class HTT_Histogram:
                                     "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
                                     "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                                    "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
+                                    # "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
                                     "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             self.lep1 = "e"
