@@ -233,6 +233,19 @@ def GenerateZTT(ana, nodename, add_name='', samples=[], plot='', wt='', sel='', 
     ztt_node = GetZTTNode(ana, add_name, samples, plot, wt, sel, cat, z_sels, get_os)
     ana.nodes[nodename].AddNode(ztt_node)
 
+    # hard code this by hand at the moment, and it only uses the decay mode of the *_2 object 
+    split_taus = True
+    if split_taus:
+      ztt_node_rho = GetZTTNode(ana, '_rho'+add_name, samples, plot, wt, sel+'&&gen_decayMode_2==1', cat, z_sels, get_os)
+      ana.nodes[nodename].AddNode(ztt_node_rho) 
+      ztt_node_a11pr = GetZTTNode(ana, '_a11pr'+add_name, samples, plot, wt, sel+'&&gen_decayMode_2==2', cat, z_sels, get_os)
+      ana.nodes[nodename].AddNode(ztt_node_a11pr)
+      ztt_node_pi = GetZTTNode(ana, '_pi'+add_name, samples, plot, wt, sel+'&&gen_decayMode_2==0', cat, z_sels, get_os)
+      ana.nodes[nodename].AddNode(ztt_node_pi)
+      ztt_node_a1 = GetZTTNode(ana, '_a13pr'+add_name, samples, plot, wt, sel+'&&gen_decayMode_2==10', cat, z_sels, get_os)
+      ana.nodes[nodename].AddNode(ztt_node_a1)
+      ztt_node_other = GetZTTNode(ana, '_other'+add_name, samples, plot, wt, sel+'&&(gen_decayMode_2!=0 && gen_decayMode_2!=1 && gen_decayMode_2!=2 && gen_decayMode_2!=10)', cat, z_sels, get_os)
+      ana.nodes[nodename].AddNode(ztt_node_other)
 
 def GenerateTop(ana, nodename, add_name='', samples=[], plot='', wt='', sel='', cat='', top_sels={}, get_os=True, doTTT=True, doTTJ=True):
   wt_=wt

@@ -258,6 +258,14 @@ categories["xt_dM1"] = "(decayMode_2 == 1)"
 categories["xt_dM10"] = "(decayMode_2 == 10)"
 categories["xt_dM11"] = "(decayMode_2 == 11)"
 
+categories["njets0"] = "(n_jets==0)" 
+categories["njets1"] = "(n_jets==1)" 
+categories["njetsGt1"] = "(n_jets>1)" 
+categories["njets2"] = "(n_jets==2)" 
+categories["njets3"] = "(n_jets==3)" 
+categories["njets4"] = "(n_jets==4)" 
+categories["njetsGt4"] = "(n_jets>4)" 
+
 if args.channel == "tt":
 
     sel_pi = "decayModePNet_X==0 && ip_LengthSig_X>=1.25"
@@ -349,7 +357,6 @@ if args.channel == "tt":
             categories[f'aminus_a11pr_rho_{obj}_{opt}'] = f"(alphaAngle_rho_rho_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a1a11pr']}))"
             categories[f'aminus_a1_a11pr_{obj}_{opt}'] = f"(alphaAngle_a1_rho_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a11pra1']}))"
             categories[f'aminus_a11pr_a1_{obj}_{opt}'] = f"(alphaAngle_rho_a1_FASTMTT_MassConstraint_{obj} {opt_cut} {np.pi/4} && ({categories['tau_a11pra1']}))"
-
 
 
 elif args.channel == "mt":
@@ -1015,7 +1022,7 @@ def RunPlotting(
             flatten_y = flatten_y
             )
 
-    if "signal" not in nodes_to_skip:
+    if "signal" not in nodes_to_skip and False: # TODO: remove this after!!!
         # generate correct signal
         # TODO: add scheme or similar flat to determine which ones to use
         GenerateReweightedCPSignal(
@@ -1426,6 +1433,7 @@ if (not is_2d) or (is_2d and args.do_unrolling):
         blind=args.blind,
         log_y=False,
         is2Dunrolled=is_2d,
+        split_taus=True,
     )
 
     Histo_Plotter.plot_1D_histo()

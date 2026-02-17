@@ -191,19 +191,20 @@ def hadd_root_files(input_files, output_file, dir_combinations, channel, exp_num
     
         method = 6 # method that plots jetfakes
         # make a plot of the combined histograms
-        Histo_Plotter = HTT_Histogram(
-            output_file,
-            dir_name,
-            channel,
-            '...',
-            var_name,
-            method,
-            blind=blind,
-            log_y=False,
-            is2Dunrolled=False,
-            save_name=output_file.replace('.root', f'_{dir_name}',)
-        )
-        Histo_Plotter.plot_1D_histo()
+        #TODO uncomment!!!
+        #Histo_Plotter = HTT_Histogram(
+        #    output_file,
+        #    dir_name,
+        #    channel,
+        #    '...',
+        #    var_name,
+        #    method,
+        #    blind=blind,
+        #    log_y=False,
+        #    is2Dunrolled=False,
+        #    save_name=output_file.replace('.root', f'_{dir_name}',)
+        #)
+        #Histo_Plotter.plot_1D_histo()
 
 
 

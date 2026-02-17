@@ -10,7 +10,7 @@ plt.rcParams.update({"font.size": 16})
 
 class HTT_Histogram:
 
-    def __init__(self, file, category, channel, era, variable, method, blind=False, log_y=False, is2Dunrolled=False, save_name=None):
+    def __init__(self, file, category, channel, era, variable, method, blind=False, log_y=False, is2Dunrolled=False, save_name=None, split_taus=False):
         self.file = uproot.open(file)
         self.file_name = file
         self.directory = os.path.dirname(file)
@@ -23,9 +23,11 @@ class HTT_Histogram:
         self.is2Dunrolled = is2Dunrolled
         self.save_name = save_name
         self.method = int(method)
+        self.split_taus = split_taus
         self.initialize_plotting()
         self.initialize_nodes()
         self.get_labels()
+
 
         if self.is2Dunrolled:
             self.var_dim_1 = np.fromstring(variable.split('[')[1][:-2], sep=',', dtype=float)
@@ -173,15 +175,28 @@ class HTT_Histogram:
                                     "VBF+VH (SM)": {"nodes": ["qqH_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "pink"}
                                 }
             else:
-                self.backgrounds = {
-                                    "QCD": {"nodes": ["QCD"], "color": "pink"},
-                                    "Electroweak": {"nodes": ["VVJ", "W", "VVT"], "color": "red"},
-                                    "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
-                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
-                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                                    "ggH (SM)": {"nodes": ["ggH_sm_prod_sm_htt125"], "color": "darkblue"},
-                                    "VBF+VH (SM)": {"nodes": ["qqH_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "pink"}
-                                }
+                if self.split_taus:
+                    self.backgrounds = {
+                                        "QCD": {"nodes": ["QCD"], "color": "pink"},
+                                        "Electroweak": {"nodes": ["VVJ", "W", "VVT"], "color": "red"},
+                                        "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
+                                        "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
+                                        "Z$\\to\\tau\\tau$ ($\\tau\\to$other)": {"nodes": ["ZTT_other"], "color": "brown"},
+                                        "Z$\\to\\tau\\tau$ ($\\tau\\to a_1^{3pr}$)": {"nodes": ["ZTT_a13pr"], "color": "green"},
+                                        "Z$\\to\\tau\\tau$ ($\\tau\\to a_1^{1pr}$)": {"nodes": ["ZTT_a11pr"], "color": "darkblue"},
+                                        "Z$\\to\\tau\\tau$ ($\\tau\\to\\pi$)": {"nodes": ["ZTT_pi"], "color": "purple"},
+                                        "Z$\\to\\tau\\tau$ ($\\tau\\to\\rho$)": {"nodes": ["ZTT_rho"], "color": "yellow"},                                                                                                                        
+                                    }
+                else:
+                    self.backgrounds = {
+                                        "QCD": {"nodes": ["QCD"], "color": "pink"},
+                                        "Electroweak": {"nodes": ["VVJ", "W", "VVT"], "color": "red"},
+                                        "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
+                                        "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
+                                        "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
+                                        "ggH (SM)": {"nodes": ["ggH_sm_prod_sm_htt125"], "color": "darkblue"},
+                                        "VBF+VH (SM)": {"nodes": ["qqH_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "pink"}
+                                    }
             self.lep1 = "\\mu"
             self.lep2 = "\\tau"
 

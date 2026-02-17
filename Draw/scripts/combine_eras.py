@@ -31,6 +31,7 @@ def plot_combined(cmb_file, tree_name, channel, method, era, variable, blind, un
         blind=blind,
         log_y=False,
         is2Dunrolled=unrolled,
+        split_taus=True,
     )
     Histo_Plotter.plot_1D_histo()
 
