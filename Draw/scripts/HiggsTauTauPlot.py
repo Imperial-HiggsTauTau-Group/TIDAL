@@ -26,6 +26,7 @@ from Draw.python.nodes import (
     GenerateQCD,
     GenerateFakes,
     GenerateReweightedCPSignal,
+    GenerateEWKZ
 )
 from Draw.python.HiggsTauTauPlot_utilities import (
     PrintSummary,
@@ -86,7 +87,8 @@ systematic_options = [
     ["Signal_Theory", "theoretical uncertainties on the signal"],
     ["IP_Calibration", "Uncertainty on the IP calibration"],
     ["SV_Resolution", "Uncertainty on the SV resolution"],
-    ['IP_Significance', 'Uncertainty on the IP significance cut SFs']
+    ['IP_Significance', 'Uncertainty on the IP significance cut SFs'],
+    ['DM_migrations', 'Uncertainties related to potential migrations between DM categories due to the use of the PNet DM finder'],
 ]
 
 
@@ -633,6 +635,9 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         "ST_tW_antitop_LNu2Q",
         "ST_tW_antitop_LNu2Q_ext1",
     ]
+    ewkz_samples = [
+        "EWKZ_MLL-50_TuneCP5_13p6TeV_madgraph-pythia8"
+    ]
     wjets_samples = [
         "WtoLNu_madgraphMLM",
         "WtoLNu_madgraphMLM_ext1",
@@ -738,6 +743,7 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
     samples_dict["top_samples"] = top_samples
     samples_dict["vv_samples"] = vv_samples
     samples_dict["wjets_samples"] = wjets_samples
+    # samples_dict["ewkz_samples"] = ewkz_samples
     samples_dict["signal_samples"] = signal_samples
 # ------------------------------------------------------------------------------------------------------------------------
 
@@ -951,6 +957,19 @@ def RunPlotting(
             doVVT,
             doVVJ,
         )
+    # if "EWKZ" not in nodes_to_skip:
+    #     GenerateEWKZ( # just genuine for now
+    #         ana,
+    #         nodename,
+    #         add_name,
+    #         samples_dict["ewkz_samples"],
+    #         plot,
+    #         wt,
+    #         sel,
+    #         cat,
+    #         gen_sels_dict["z_sels"],
+    #         not args.do_ss,
+    #     )
     if "W" not in nodes_to_skip:
         if method in [1, 2, 5]: # only generate W if no jetfakes
             GenerateW(
@@ -1197,7 +1216,7 @@ if not args.bypass_plotter:
                     sample_name,
                 )
 
-            for sample_name in ztt_samples + zll_samples + top_samples + vv_samples + wjets_samples:
+            for sample_name in ztt_samples + zll_samples + top_samples + vv_samples + wjets_samples: # + ewkz_samples:
                 analysis.AddSamples(
                     f"{args.input_folder}/{args.era}/{args.channel}/{sample_name}/{systematic_folder_name}/merged.root",
                     "ntuple",
@@ -1359,16 +1378,21 @@ for hist in directory.GetListOfKeys():
     if ".subnodes" in hist.GetName():
         continue
 
-    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead"]
+    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead", "ggH_sm_prod_sm_htt125","qqH_sm_htt125","WH_sm_htt125","ZH_sm_htt125"]
     if hist.GetName().endswith("Up") or hist.GetName().endswith("Down"):
         for proc in processes:
             if hist.GetName().startswith(proc + '_'):
-                print(f"Adding {hist.GetName()} to total uncertainty")
-                no_syst_name = proc
-                temp_hist = h0.Clone()
-                temp_hist.Add(directory.Get(no_syst_name),-1)
-                temp_hist.Add(directory.Get(hist.GetName()))
-                hists.append(temp_hist)
+                if "signal" in hist.GetName() and proc in ["WH_sm_htt125", "ZH_sm_htt125"]:
+                    print("->Skipping signal systematic for VH (not valid):", hist.GetName())
+                    continue
+                else:
+                    print(f"Adding {hist.GetName()} to total uncertainty")
+                    no_syst_name = proc
+                    temp_hist = h0.Clone()
+                    temp_hist.Add(directory.Get(no_syst_name),-1)
+                    temp_hist.Add(directory.Get(hist.GetName()))
+                    temp_hist.SetName(hist.GetName())
+                    hists.append(temp_hist)
 
 (uncert, up, down) = Total_Uncertainty(h0, hists)
 outfile.cd(nodename)
