@@ -322,7 +322,47 @@ class SubtractNode(BaseNode):
     def AddRequests(self, manifest):
         for node in self.SubNodes():
             node.AddRequests(manifest)
-            
+
+
+class LinearCombinationNode(BaseNode):
+    def __init__(self, name, nodes, coeffs=None, WriteSubnodes=True):
+        super().__init__(name, WriteSubnodes)
+        self.nodes = list(nodes)
+
+        if coeffs is None:
+            self.coeffs = [1.0] * len(self.nodes)
+        else:
+            self.coeffs = list(coeffs)
+
+        if len(self.coeffs) != len(self.nodes):
+            raise ValueError(f"LinearComboNode: coeffs length {len(self.coeffs)} != nodes length {len(self.nodes)}")
+
+        self.shape = None
+
+    def AddRequests(self, manifest):
+        # forward requests to children (CRITICAL)
+        for node in self.SubNodes():
+            node.AddRequests(manifest)
+
+    def RunSelf(self):
+        combo = None
+        for node, c in zip(self.nodes, self.coeffs):
+            if node.shape is None:
+                raise RuntimeError(f"LinearComboNode: subnode '{node.name}' has no shape")
+            term = node.shape * float(c)
+            combo = term if combo is None else (combo + term)
+        self.shape = combo
+
+    def Objects(self):
+        return {self.name: self.shape.hist}
+
+    def SubNodes(self):
+        return self.nodes
+
+    def OutputPrefix(self, node=None):
+        return self.name + '.subnodes'
+
+
 class FF_Node(BaseNode):
     def __init__(self, name, QCD_node, W_node, Top_node, QCD_frac, W_frac, Top_frac, flatten_y=False):
         BaseNode.__init__(self, name)

@@ -1,9 +1,102 @@
-input_folder: /vols/cms/ia2318/HiggsDNA/output/production_070525_EarlyRun3SyncMSSM/ #/vols/cms/ia2318/HiggsDNA-powheg/output/production_etauAISOtests/
-output_path: /vols/cms/ia2318/TIDAL/Draw/etauAISOtests  #etauAISOtests #mutautests
-channels: [et]
-eras: [Run3_2022]
-parameter_path: /vols/cms/ia2318/HiggsDNA/scripts/ditau/config/
+input_folder: /vols/cms/ia2318/HiggsDNA-powheg/output/Run3_2024_with_systematics/
+output_path: /vols/cms/ia2318/TIDAL/Draw/Run3_2024_with_systematics_withhiggs/
+channels: [mt, et]
+eras: [Run3_2024]
+parameter_path: /vols/cms/ia2318/HiggsDNA-powheg/scripts/ditau/config/
 schemes: [control]
+run_systematics: true
+
+control:
+  systematics:
+    per_era:
+      default:
+        common:
+          - ["systematic_BDT_FakeFactors", "CMS_MSSM_fake_t"]
+          - [ "systematic_DY_Shape", "CMS_MSSM_Z_pt_reweighting" ]
+          - [ "systematic_TTbar_Shape", "CMS_Top_pt_reweighting" ]
+          - [ "systematic_Tau_ID", "CMS_MSSM_eff_t_DeepTau2018v2p5_VSjet_*group"]
+          - [ "systematic_Tau_EnergyScale_TSCALE", "CMS_MSSM_scale_t_DeepTau2018v2p5_*group_*year_genTau" ]
+          - [ "systematic_MET_Recoil", "CMS_MSSM_*type_met" ]
+          - [ "systematic_Jet_EnergyScale_Total", "CMS_scale_j_13p6TeV" ]
+          - [ "systematic_Jet_EnergyResolution", "CMS_res_j_13p6TeV" ]
+          - [ 'systematic_Pileup', 'CMS_pileup']
+          - [ "systematic_BTag_ID", "CMS_MSSM_btag_*group_*year" ]
+          - [ "systematic_Signal_Theory", "*type_signal"]
+
+        tt:
+         - [ "systematic_Trigger", "CMS_MSSM_trig_*obj_*trigger_*group"]
+        
+        mt:
+        - [ "systematic_Tau_EnergyScale_MUSCALE", "CMS_scale_mu_DeepTau2018v2p5_*group_*year_genMuon" ]
+        - [ "systematic_Muon_ID_iso", "CMS_eff_m_*kind" ]
+        - [ "systematic_Tau_FakeRate_mu", "CMS_fake_t_DeepTau2018v2p5_VSmu_*year_eta_*eta"]
+        - [ "systematic_Trigger", "CMS_eff_m_trigger"]
+
+        et:
+        - [ "systematic_Tau_EnergyScale_ESCALE", "CMS_scale_e_DeepTau2018v2p5_*group_*year_genElectron" ]
+        - [ "systematic_Tau_FakeRate_e", "CMS_fake_t_DeepTau2018v2p5_VSe_*year_eta_*eta"]
+        - [ "systematic_Electron_Scale_Smearing", "CMS_*kind_e_13p6TeV"]
+        - [ "systematic_Electron_ID_Reco", "CMS_eff_e_*kind_13p6TeV"]
+        - [ "systematic_Trigger", "CMS_eff_e_trigger"]
+
+
+  variable_definitions:
+    m_vis: "m_vis[50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 250, 300, 350, 400, 450, 500, 800]"
+    pt_1: "pt_1(40,0,200)"
+    pt_2: "pt_2(40,0,200)"
+    eta_1: "eta_1(48,-2.4,2.4)"
+    eta_2: "eta_2(48,-2.4,2.4)"
+    phi_1: "phi_1(32,-pi,pi)"
+    phi_2: "phi_2(32,-pi,pi)"
+    dR: "dR(42,0,5)"
+    n_jets: "n_jets(10,0,10)"
+    n_bjets: "n_bjets(10,0,10)"
+    met_pt: "met_pt(40,0,200)"
+    pt_tt: "pt_tt(50,0,400)"
+    met_phi: "met_phi(32,-pi,pi)"
+    mt_tot_nobtag: "mt_tot[0,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,450,500,600,700,800,900,1100,1300,1500,1700,1900,2100,2300,2500,2700,2900,3100,3300,3500,3700,3900,4100,4300,4500,4700,5000]"
+    mt_tot_btag: "mt_tot[0,60,80,100,120,140,160,180,200,250,300,350,400,500,600,700,800,900,1100,1300,1500,1700,1900,2100,2300,2500,2700,2900,3100,3300,3500,3700,3900,4100,4300,4500,4700,5000]"
+
+
+  tt:
+    # - method: "7" # 7 for ML, 9 for classical
+    #   category: [inclusive, nobtag, btag]
+    #   plotting_variable: [m_vis, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, n_bjets, met_pt, pt_tt, met_phi]
+    # blind mt_tot
+    - method: "7" # 7 for ML, 9 for classical
+      category: [nobtag]
+      blind: true
+      plotting_variable: [mt_tot_nobtag]
+    - method: "7"
+      category: [btag]
+      blind: true
+      plotting_variable: [mt_tot_btag]
+  mt:
+    # - method: "8" # 8 for ML,  10 for classical
+    #   category: [inclusive, nobtag, btag]
+    #   plotting_variable: [m_vis, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, n_bjets, met_pt, pt_tt, met_phi]
+    # blind mt_tot
+    - method: "8" # 8 for ML,  10 for classical
+      category: [nobtag_tight]
+      blind: true
+      plotting_variable: [mt_tot_nobtag]
+    - method: "8"
+      category: [btag_tight]
+      blind: true
+      plotting_variable: [mt_tot_btag]
+  et:
+    # - method: "8" # 8 for ML,  10 for classical
+    #   category: [inclusive, nobtag, btag]
+    #   plotting_variable: [m_vis, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, n_bjets, met_pt, pt_tt, met_phi]
+    # blind mt_tot
+    - method: "8" # 8 for ML,  10 for classical
+      category: [nobtag_tight]
+      blind: true
+      plotting_variable: [mt_tot_nobtag]
+    - method: "8"
+      category: [btag_tight]
+      blind: true
+      plotting_variable: [mt_tot_btag]
 
 working_points:
   et:
@@ -18,112 +111,3 @@ working_points:
     vsJet: "Medium"
     vsEle: "VVLoose"
     vsMu: "VLoose"
-
-variables:
-  control:
-    definitions:
-      m_vis: "m_vis(50,0,400)"
-      pt_1: "pt_1(40,0,200)"
-      pt_2: "pt_2(40,0,200)"
-      eta_1: "eta_1(40,-pi,pi)"
-      eta_2: "eta_2(40,-pi,pi)"
-      phi_1: "phi_1(40,-pi,pi)"
-      phi_2: "phi_2(40,-pi,pi)"
-      decayMode_1: "decayMode_1[0,1,2,3,4,5,6,7,8,9,10,11,12]"
-      decayMode_2: "decayMode_2[0,1,2,3,4,5,6,7,8,9,10,11,12]"
-      mt_tot_btag: "mt_tot[0,60,80,100,120,140,160,180,200,250,300,350,400,500,600,700,800,900,1100,1300,1500,1700,1900,2100,2300,2500,2700,2900,3100,3300,3500,3700,3900,4100,4300,4500,4700,5000]" 
-      mt_tot_nobtag: "mt_tot[0,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,450,500,600,700,800,900,1100,1300,1500,1700,1900,2100,2300,2500,2700,2900,3100,3300,3500,3700,3900,4100,4300,4500,4700,5000]"
-      ## check binning in old code https://github.com/danielwinterbottom/ICHiggsTauTau/blob/efaf3bc6283772d1c4903f12407b4367495d6670/Analysis/HiggsTauTauRun2/scripts/makeDatacards_mssm_combined.py#L115
-      # https://github.com/danielwinterbottom/ICHiggsTauTau/blob/efaf3bc6283772d1c4903f12407b4367495d6670/Analysis/HiggsTauTauRun2/scripts/makeDatacards_mssm_combined.py#L291
-      # re-optimise mTLt40 once set-up is finalised for semileptonic analysis
-      # bliding for mt_tot -- ## need to automate it for submitting iteratively as well
-      FastMTT_mass: "FastMTT_mass(150,0,500)"
-      pt_2_custom: "pt_2(40,0,200)"
-
-    tt:
-      - ["3", inclusive, m_vis]
-      - ["3", inclusive, pt_1]
-      - ["3", inclusive, pt_2]
-      - ["3", inclusive, eta_1]
-      - ["3", inclusive, eta_2]
-      - ["3", inclusive, phi_1]
-      - ["3", inclusive, phi_2]
-      - ["3", inclusive, mt_tot_nobtag, blind]
-      - ["3", inclusive, FastMTT_mass]
-      - ["3", nobtag, m_vis]
-      - ["3", nobtag, pt_1]
-      - ["3", nobtag, pt_2]
-      - ["3", nobtag, eta_1]
-      - ["3", nobtag, eta_2]
-      - ["3", nobtag, phi_1]
-      - ["3", nobtag, phi_2]
-      - ["3", nobtag, mt_tot_nobtag, blind]
-      - ["3", nobtag, FastMTT_mass]
-      - ["3", btag, m_vis]
-      - ["3", btag, pt_1]
-      - ["3", btag, pt_2]
-      - ["3", btag, eta_1]
-      - ["3", btag, eta_2]
-      - ["3", btag, phi_1]
-      - ["3", btag, phi_2]
-      - ["3", btag, mt_tot_btag, blind]
-      - ["3", btag, FastMTT_mass]
-    mt:
-      - ["1", nobtag, pt_2]
-      - ["1", nobtag, pt_2_custom, -sel, "(mt_1 > 65) & (n_bjets == 0) & (iso_1 >= 0.05) & (iso_1 <= 0.15) & (idDeepTau2018v2p5VSe_2 >= 2) & (idDeepTau2018v2p5VSmu_2 >= 4) & ((((trg_mt_cross) & (pt_1 > 21) & (pt_1 <= 26) & (abs(eta_1) < 2.1) & (pt_2 > 32) & (abs(eta_2) < 2.1)) | ((trg_singlemuon) & (pt_1 > 26) & (abs(eta_1) < 2.4))) | ((trg_singletau) & (pt_2 > 190)))"]
-      # - ["1", inclusive, m_vis]
-      # - ["1", inclusive, pt_1]
-      # - ["1", inclusive, pt_2]
-      # - ['1', inclusive, eta_1]
-      # - ['1', inclusive, eta_2]
-      # - ['1', inclusive, phi_1]
-      # - ['1', inclusive, phi_2]
-      # - ["1", inclusive, mt_tot_nobtag, blind]
-      # - ["1", inclusive, FastMTT_mass]
-      # - ["1", nobtag, m_vis]
-      # - ["1", nobtag, pt_1]
-      # - ["1", nobtag, pt_2]
-      # - ['1', nobtag, eta_1]
-      # - ['1', nobtag, eta_2]
-      # - ['1', nobtag, phi_1]
-      # - ['1', nobtag, phi_2]
-      # - ["1", nobtag, mt_tot_nobtag, blind]
-      # - ["1", nobtag, FastMTT_mass]
-      # - ["1", btag, m_vis]
-      # - ["1", btag, pt_1]
-      # - ["1", btag, pt_2]
-      # - ['1', btag, eta_1]
-      # - ['1', btag, eta_2]
-      # - ['1', btag, phi_1]
-      # - ['1', btag, phi_2]
-      # - ["1", btag, mt_tot_btag, blind]
-      # - ["1", btag, FastMTT_mass]
-    et:  # confirm with Danny what Method to use for  et (cannot use 2 with mTLt40) cat -- give mt_1 < 40 GeV selection not in name but later
-    # use -sel option functionality in makeDatacards_mssm.py
-      - ["2", inclusive, m_vis]
-      - ["2", inclusive, pt_1]
-      - ["2", inclusive, pt_2]
-      - ['2', inclusive, eta_1]
-      - ['2', inclusive, eta_2]
-      - ['2', inclusive, phi_1]
-      - ['2', inclusive, phi_2]
-      - ["2", inclusive, mt_tot_nobtag, blind]
-      - ["2", inclusive, FastMTT_mass]
-      - ["2", nobtag, m_vis]
-      - ["2", nobtag, pt_1]
-      - ["2", nobtag, pt_2]
-      - ['2', nobtag, eta_1]
-      - ['2', nobtag, eta_2]
-      - ['2', nobtag, phi_1]
-      - ['2', nobtag, phi_2]
-      - ["2", nobtag, mt_tot_nobtag, blind]
-      - ["2", nobtag, FastMTT_mass]
-      - ["2", btag, m_vis]
-      - ["2", btag, pt_1]
-      - ["2", btag, pt_2]
-      - ['2', btag, eta_1]
-      - ['2', btag, eta_2]
-      - ['2', btag, phi_1]
-      - ['2', btag, phi_2]
-      - ["2", btag, mt_tot_btag, blind]
-      - ["2", btag, FastMTT_mass]

@@ -3,8 +3,59 @@ import shutil
 import shlex
 import yaml
 import argparse
+import ROOT
 from Draw.python.PlotHistograms import HTT_Histogram
 from Draw.scripts.makeDatacards import create_bins, format_first_selection
+
+
+def rebin_file(input_file, output_file, new_bins):
+    """Rebin all histograms in a ROOT file to new_bins and save to output_file."""
+    import array
+    import numpy as np
+
+    f_in = ROOT.TFile.Open(input_file, "READ")
+    f_out = ROOT.TFile.Open(output_file, "RECREATE")
+
+    def snap_bins_to_existing(hist, requested_bins):
+        """Snap requested bin edges to the nearest existing bin edges."""
+        n = hist.GetNbinsX()
+        existing_edges = [hist.GetBinLowEdge(i) for i in range(1, n + 2)]
+        snapped = []
+        for b in requested_bins:
+            closest = min(existing_edges, key=lambda x: abs(x - b))
+            if abs(closest - b) > 1e-3:
+                print(f"  WARNING: requested edge {b} snapped to {closest}")
+            snapped.append(closest)
+        # Remove duplicates while preserving order
+        seen = set()
+        result = []
+        for x in snapped:
+            if x not in seen:
+                seen.add(x)
+                result.append(x)
+        return result
+
+    def process_directory(src_dir, dst_dir, new_bins):
+        for key in src_dir.GetListOfKeys():
+            obj = key.ReadObj()
+            dst_dir.cd()
+            if isinstance(obj, ROOT.TDirectory):
+                new_dir = dst_dir.mkdir(obj.GetName())
+                process_directory(obj, new_dir, new_bins)
+            elif isinstance(obj, ROOT.TH1) and not isinstance(obj, ROOT.TH2):
+                snapped = snap_bins_to_existing(obj, new_bins)
+                bins_array = array.array('d', snapped)
+                n_bins = len(snapped) - 1
+                rebinned = obj.Rebin(n_bins, obj.GetName(), bins_array)
+                rebinned.Write()
+            else:
+                obj.Write()
+
+    process_directory(f_in, f_out, new_bins)
+    f_out.Close()
+    f_in.Close()
+    print(f"Rebinned histograms saved to {output_file}")
+
 
 def find_sh_file(root_file):
     # Find the shell file with parameters used to make the plot
@@ -29,10 +80,10 @@ def plot_combined(cmb_file, tree_name, channel, method, era, variable, blind, un
         variable,
         method,
         blind=blind,
-        log_y=False,
+        log_y=True,
         is2Dunrolled=unrolled,
     )
-    Histo_Plotter.plot_1D_histo()
+    Histo_Plotter.plot_1D_histo(combined_binning=True)
 
 def get_files_to_combine(eras_to_combine, channel, scheme, directory, f_name):
     print(f"\nERAS TO COMBINE: {eras_to_combine}")
@@ -114,6 +165,13 @@ def main(args, eras):
                         for variable in variables:
                             variable = settings["variable_definitions"][variable]
                             variable = create_bins(variable)
+                            # Override binning for combined plots if specified
+                            combined_binning = setting.get("combined_binning", {})
+                            variable_base = variable.split("[")[0].strip()
+                            if variable_base in combined_binning:
+                                    new_bins = combined_binning[variable_base]
+                                    variable = f"{variable_base}[{new_bins}]"
+                                    print(f"Using combined binning for {variable_base}: {new_bins}")
                             variable_name = variable.split("[")[0]
                             variable_name = variable_name.replace(",", "_vs_")
                             nodename = ""
@@ -144,6 +202,17 @@ def main(args, eras):
                             # Actually combine the histos
                             tree_name = f"{channel}_{cat}{nodename}"
                             combine_histos(files_to_combine, cmb_file)
+                            # Rebin if combined_binning is specified
+                            if variable_base in combined_binning:
+                                rebinned_file = cmb_file.replace(".root", "_rebinned.root")
+                                raw_bins = combined_binning[variable_base]
+                                # Parse if it's a string like "[50, 60, 70, ...]"
+                                if isinstance(raw_bins, str):
+                                    raw_bins = [float(x) for x in raw_bins.strip("[]").split(",")]
+                                else:
+                                    raw_bins = [float(x) for x in raw_bins]
+                                rebin_file(cmb_file, rebinned_file, raw_bins)
+                                cmb_file = rebinned_file
                             # plot the combined histograms
                             if variable_name.count(",") > 1 and not unroll: # check if unrolled (for CP)
                                 print("2D variable cannot be plotted directly, skipping plotting step.")

@@ -6,6 +6,10 @@
 # 3. Basic method using MC samples & Flat FF method for QCD estimation
 # 4. Basic method using MC samples && FF method for QCD estimation
 # 5. Basic method using MC samples && SS method for QCD estimation but, relaxed isolation
+# 7. BDT-based fake factor estimation for tt channel
+# 8. BDT-based fake factor estimation for lt channels
+# 9. Classical fake factor estimation for tt channel from jsons for MSSM
+# 10. Classical fake factor estimation for lt channels from jsons for MSSM
 
 import argparse
 from collections import OrderedDict
@@ -26,6 +30,7 @@ from Draw.python.nodes import (
     GenerateQCD,
     GenerateFakes,
     GenerateReweightedCPSignal,
+    GenerateMSSMReweightedSignal,
 )
 from Draw.python.HiggsTauTauPlot_utilities import (
     PrintSummary,
@@ -57,6 +62,8 @@ parser.add_argument("--method", default=1, help="Method to run on")
 parser.add_argument("--category", default="inclusive", help="Category to run on")
 parser.add_argument("--var", type=str, help="Variable to plot")
 parser.add_argument("--run_systematics", action="store_true", help="Run systematics")
+parser.add_argument('--bsm_search', action='store_true', help='Do BSM search')
+
 
 # Available Systematic Options:
 # ------------------------------------------------------------------------------------------------------------------------
@@ -66,9 +73,9 @@ systematic_options = [
     ["Tau_ID", "Tau ID systematic"],
     ["Tau_FakeRate_e","Tau Fake Rate systematic for genuine electrons misidentified as taus"],
     ["Tau_FakeRate_mu","Tau Fake Rate systematic for genuine muons misidentified as taus"],
-    ["Tau_EnergyScale_PNet_TSCALE", "Tau Energy Scale systematic for genuine taus"],
-    ["Tau_EnergyScale_PNet_ESCALE", "Tau Energy Scale systematic for genuine electrons misidentified as taus"],
-    ["Tau_EnergyScale_PNet_MUSCALE", "Tau Energy Scale systematic for genuine muons misidentified as taus"],
+    ["Tau_EnergyScale_TSCALE", "Tau Energy Scale systematic for genuine taus"],
+    ["Tau_EnergyScale_ESCALE", "Tau Energy Scale systematic for genuine electrons misidentified as taus"],
+    ["Tau_EnergyScale_MUSCALE", "Tau Energy Scale systematic for genuine muons misidentified as taus"],
     ['MET_Recoil', 'MET Recoil systematic'],
     ['Trigger', 'Trigger efficiency systematic'],
     ["Jet_EnergyScale_Total", "Jet Energy Scale Total systematic"],
@@ -85,7 +92,9 @@ systematic_options = [
     ["Signal_Theory", "theoretical uncertainties on the signal"],
     ["IP_Calibration", "Uncertainty on the IP calibration"],
     ["SV_Resolution", "Uncertainty on the SV resolution"],
-    ['IP_Significance', 'Uncertainty on the IP significance cut SFs']
+    ['IP_Significance', 'Uncertainty on the IP significance cut SFs'],
+    ["BDT_FakeFactors", "BDT-based fake factor related uncertainties"],
+    ["BTag_ID", "b-tagging systematic"]
 ]
 
 
@@ -140,7 +149,7 @@ if args.channel not in available_channels:
     raise ValueError(
         "Invalid channel. Please choose from: {}".format(available_channels)
     )
-available_methods = ["1", "2", "3", "4", "5", "6"]
+available_methods = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 if args.method not in available_methods:
     raise ValueError("Invalid method. Please choose from: {}".format(available_methods))
 
@@ -169,7 +178,7 @@ method = int(args.method)
 # Define baseline selections and different categories
 # TODO: add option to change triggers
 categories = {}
-if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
+if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix", "Run3_2024"]:
     if args.channel == "ee":
         categories["baseline"] = (
             "(iso_1<0.15 && iso_2<0.15 && (trg_singleelectron && pt_1 > 31 && abs(eta_1) < 2.1))"
@@ -181,27 +190,27 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
     if args.channel == "mt":
         mt_cross_only = "(trg_mt_cross && pt_1 > 21 && pt_1 <= 26 && abs(eta_1) < 2.1 && pt_2 > 32 && abs(eta_2) < 2.1)"
         single_muon_only = "(trg_singlemuon && pt_1 > 26  && abs(eta_1) < 2.4)"
-        trg_full = single_muon_only #"(%s || %s)" % (mt_cross_only, single_muon_only)
+        trg_full = "(%s || %s)" % (mt_cross_only, single_muon_only)
         categories["baseline"] = (
-            "(m_vis>40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            "(mt_1 < 65 && m_vis > 40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 > 4 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
         if args.do_aiso:
             categories["baseline"] = re.sub(
                 "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.2", categories["baseline"] # aiso cut based on what is used for the FF DR
             )
-            
+
         categories["lt_ff_AR"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_2 >= 7",
-            "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+            "idDeepTau2018v2p5VSjet_2 > 4",
+            "idDeepTau2018v2p5VSjet_2 <= 4 && idDeepTau2018v2p5VSjet_2 >= 1",
         )
-        
+
     if args.channel == "et":
-        # et_cross_only = "(trg_et_cross && pt_1 > 25 && pt_1 < 31 && abs(eta_1) < 2.1 && pt_2 > 35 && abs(eta_2) < 2.1)"
-        single_electron_only = "(trg_singleelectron && pt_1 >= 32 && abs(eta_1) < 2.1 )"
+        et_cross_only = "(trg_et_cross && pt_1 > 25 && pt_1 < 31 && abs(eta_1) < 2.1 && pt_2 > 35 && abs(eta_2) < 2.1)"
+        single_electron_only = "(trg_singleelectron && pt_1 >= 31 && abs(eta_1) < 2.1 )"
         trg_full = single_electron_only # remove et cross trigger until Nanoprod v3
         categories["baseline"] = ( # Tight VSe for et
-            "(m_vis>40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 6 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            "(mt_1 < 65 && m_vis > 40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 > 4 && idDeepTau2018v2p5VSe_2 >= 6 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
         if args.do_aiso:
@@ -210,32 +219,38 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
             )
 
         categories["lt_ff_AR"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_2 >= 7",
-            "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+            "idDeepTau2018v2p5VSjet_2 > 4",
+            "idDeepTau2018v2p5VSjet_2 <= 4 && idDeepTau2018v2p5VSjet_2 >= 1",
         )
 
     if args.channel == "tt":
-        doubletau_only_trg = "(trg_doubletau && pt_1 > 40 && pt_2 > 40)"
-        doubletaujet_only_trg = "(trg_doubletauandjet && pt_1 > 35 && pt_2 > 35 && jpt_1 > 60)"  # might need to revise jet cut later on
-        trg_full = "(%s || %s)" % (doubletau_only_trg, doubletaujet_only_trg)
+        if args.era == "Run3_2024":
+            singletau_cut = 140
+        else:
+            singletau_cut = 190
+        doubletau_only_trg = "(trg_doubletau && pt_1 > 35 && pt_2 > 35)"
+        doubletaujet_only_trg = f"(trg_doubletauandjet && pt_1 > 31 && pt_2 > 31 && jpt_1 > 60 && pt_1 < 140 && pt_2 < {singletau_cut})"  # might need to revise jet cut later on
+        single_tau_1_trg = "(trg_singletau && pt_1 > " + str(singletau_cut) + ")"
+        single_tau_2_trg = "(trg_singletau_2 && pt_2 > " + str(singletau_cut) + ")"
+        trg_full = "(%s || %s || %s || %s)" % (doubletau_only_trg, doubletaujet_only_trg, single_tau_1_trg, single_tau_2_trg)
         categories["baseline"] = (
-            "(m_vis > 40 && idDeepTau2018v2p5VSjet_1 >= 7 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_1 >= 2 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_1 >= 4 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            "(m_vis > 50 && idDeepTau2018v2p5VSjet_1 > 4 && idDeepTau2018v2p5VSjet_2 > 4 && idDeepTau2018v2p5VSe_1 >= 2 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_1 >= 4 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
 
         if args.do_aiso:
             categories["baseline"] = categories["baseline"].replace(
-                "idDeepTau2018v2p5VSjet_2 >= 7",
-                "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+                "idDeepTau2018v2p5VSjet_2 > 4",
+                "idDeepTau2018v2p5VSjet_2 <= 4 && idDeepTau2018v2p5VSjet_2 >= 0",
             )
 
         categories["tt_qcd_norm"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_1 >= 7",
-            "idDeepTau2018v2p5VSjet_1 < 7 && idDeepTau2018v2p5VSjet_1 >= 1",
+            "idDeepTau2018v2p5VSjet_1 > 4",
+            "idDeepTau2018v2p5VSjet_1 <= 4 && idDeepTau2018v2p5VSjet_1 >= 0",
         )
         categories["tt_ff_AR"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_1 >= 7",
-            "idDeepTau2018v2p5VSjet_1 < 7 && idDeepTau2018v2p5VSjet_1 >= 1",
+            "idDeepTau2018v2p5VSjet_1 > 4",
+            "idDeepTau2018v2p5VSjet_1 <= 4 && idDeepTau2018v2p5VSjet_1 >= 0",
         )
         categories["subleadfake"] = (
             categories["baseline"] + "&& genPartFlav_1 != 0 && genPartFlav_2 == 0"
@@ -244,6 +259,8 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
 categories["inclusive"] = "(1)"
 categories["nobtag"] = "(n_bjets==0)"
 categories["btag"] = "(n_bjets>=1)"
+categories["nobtag_tight"] = "(n_bjets==0 && mt_1 < 40)"
+categories["btag_tight"] = "(n_bjets>=1 && mt_1 < 40)"
 categories["w_sdb"] = "mt_1>70."
 categories["w_shape"] = ""
 categories["qcd_loose_shape"] = re.sub(
@@ -484,7 +501,7 @@ if args.set_alias is not None:
 
 # ------------------------------------------------------------------------------------------------------------------------
 # Define the samples (Data and MC (Background & Signal))
-if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
+if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix", "Run3_2024"]:
     samples_dict = {}
     # Data Samples
     if args.era in ["Run3_2022"]:
@@ -549,6 +566,57 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         elif args.channel == "tt":
             data_samples = ["Tau_Run2023D_v1", "Tau_Run2023D_v2"]
 
+    elif args.era in ["Run3_2024"]:
+        if args.channel in ["ee", "et"]:
+            data_samples = [
+                "EGamma0_Run2024C",
+                "EGamma0_Run2024D",
+                "EGamma0_Run2024E",
+                "EGamma0_Run2024F",
+                "EGamma0_Run2024G",
+                "EGamma0_Run2024H",
+                "EGamma0_Run2024I_v1",
+                "EGamma0_Run2024I_v2",
+                "EGamma1_Run2024C",
+                "EGamma1_Run2024D",
+                "EGamma1_Run2024E",
+                "EGamma1_Run2024F",
+                "EGamma1_Run2024G",
+                "EGamma1_Run2024H",
+                "EGamma1_Run2024I_v1",
+                "EGamma1_Run2024I_v2",
+            ]
+        elif args.channel in ["mm", "mt"]:
+            data_samples = [
+                "Muon0_Run2024C",
+                "Muon0_Run2024D",
+                "Muon0_Run2024E",
+                "Muon0_Run2024F",
+                "Muon0_Run2024G",
+                "Muon0_Run2024H",
+                "Muon0_Run2024I_v1",
+                "Muon0_Run2024I_v2",
+                "Muon1_Run2024C",
+                "Muon1_Run2024D",
+                "Muon1_Run2024E",
+                "Muon1_Run2024F",
+                "Muon1_Run2024G",
+                "Muon1_Run2024H",
+                "Muon1_Run2024I_v1",
+                "Muon1_Run2024I_v2",
+            ]
+        elif args.channel == "tt":
+            data_samples = [
+                "Tau_Run2024C",
+                "Tau_Run2024D",
+                "Tau_Run2024E",
+                "Tau_Run2024F",
+                "Tau_Run2024G",
+                "Tau_Run2024H",
+                "Tau_Run2024I_v1",
+                "Tau_Run2024I_v2",
+            ]
+
     samples_dict["data_samples"] = data_samples
 
     # MC Samples
@@ -589,11 +657,16 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
 
     else:
         print("Using New DY samples")
-        ztt_samples = [
-            "DYto2Tau_MLL_50_0J_amcatnloFXFX",
-            "DYto2Tau_MLL_50_1J_amcatnloFXFX",
-            "DYto2Tau_MLL_50_2J_amcatnloFXFX"
-        ]
+        if args.era != "Run3_2024":
+            ztt_samples = [
+                "DYto2Tau_MLL_50_0J_amcatnloFXFX",
+                "DYto2Tau_MLL_50_1J_amcatnloFXFX",
+                "DYto2Tau_MLL_50_2J_amcatnloFXFX"
+            ]
+        else:
+            ztt_samples = [
+                "DYto2Tau_MLL_50_amcatnloFXFX"
+            ]
         if args.use_filtered_DY:
             print(f"WARNING: Will use filtered DY, and read effective events from alternate file")
             ztt_samples += [
@@ -601,13 +674,19 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
                 "DYto2Tau_MLL_50_1J_Filtered_amcatnloFXFX",
                 "DYto2Tau_MLL_50_2J_Filtered_amcatnloFXFX"
             ]
-        zll_samples = [
-            "DYto2L_M_50_amcatnloFXFX",
-            "DYto2L_M_50_amcatnloFXFX_ext1",
-            "DYto2L_M_50_0J_amcatnloFXFX",
-            "DYto2L_M_50_1J_amcatnloFXFX",
-            "DYto2L_M_50_2J_amcatnloFXFX"
-        ]
+        if args.era != "Run3_2024":
+            zll_samples = [
+                "DYto2L_M_50_amcatnloFXFX",
+                "DYto2L_M_50_amcatnloFXFX_ext1",
+                "DYto2L_M_50_0J_amcatnloFXFX",
+                "DYto2L_M_50_1J_amcatnloFXFX",
+                "DYto2L_M_50_2J_amcatnloFXFX"
+            ]
+        else:
+            zll_samples = [
+                "DYto2Mu_MLL_50_amcatnloFXFX",
+                "DYto2E_MLL_50_amcatnloFXFX"
+            ]
         if args.era in ["Run3_2023", "Run3_2023BPix"]:
             zll_samples.remove("DYto2L_M_50_amcatnloFXFX_ext1")
 
@@ -632,14 +711,26 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         "ST_tW_antitop_LNu2Q",
         "ST_tW_antitop_LNu2Q_ext1",
     ]
-    wjets_samples = [
-        "WtoLNu_madgraphMLM",
-        "WtoLNu_madgraphMLM_ext1",
-        "WtoLNu_1J_madgraphMLM",
-        "WtoLNu_2J_madgraphMLM",
-        "WtoLNu_3J_madgraphMLM",
-        "WtoLNu_4J_madgraphMLM",
-    ]
+    if args.era != "Run3_2024":
+        wjets_samples = [
+            "WtoLNu_madgraphMLM",
+            "WtoLNu_madgraphMLM_ext1",
+            "WtoLNu_1J_madgraphMLM",
+            "WtoLNu_2J_madgraphMLM",
+            "WtoLNu_3J_madgraphMLM",
+            "WtoLNu_4J_madgraphMLM",
+        ]
+    elif args.channel != "ee":
+        wjets_samples = [
+            "WtoENu_madgraphMLM",
+            "WtoMuNu_madgraphMLM",
+            "WtoTauNu_madgraphMLM",
+        ]
+    elif args.channel == "ee":
+        wjets_samples = [
+            "WtoENu_madgraphMLM",
+            "WtoTauNu_madgraphMLM",
+        ]
 
     if args.era in ["Run3_2023", "Run3_2023BPix"]:
         top_samples.remove("TTto2L2Nu_ext1")
@@ -649,85 +740,99 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         vv_samples.remove("ST_tW_top_LNu2Q_ext1")
         vv_samples.remove("ST_tW_antitop_LNu2Q_ext1")
         wjets_samples.remove("WtoLNu_madgraphMLM_ext1")
+    if args.era in ["Run3_2024"]:
+        top_samples.remove("TTto2L2Nu_ext1")
+        top_samples.remove("TTtoLNu2Q_ext1")
+        vv_samples.remove("ST_tW_top_2L2Nu_ext1")
+        vv_samples.remove("ST_tW_antitop_2L2Nu_ext1")
+        vv_samples.remove("ST_tW_top_LNu2Q_ext1")
+        vv_samples.remove("ST_tW_antitop_LNu2Q_ext1")
+        vv_samples.remove("ST_t_channel_top_4f_InclusiveDecays")
+        vv_samples.remove("ST_t_channel_antitop_4f_InclusiveDecays")
 
     if args.channel in ["et", "mt", "tt"]:
-        signal_samples = {
-            # Unfiltered samples
-            # "qqH_sm_unfiltered_htt*": "VBFHToTauTau_UncorrelatedDecay_UnFiltered",
-            # "WH_sm_unfiltered_htt*": [
-            #     "WplusHToTauTau_UncorrelatedDecay_UnFiltered",
-            #     "WminusHToTauTau_UncorrelatedDecay_UnFiltered",
-            # ],
-            # "ZH_sm_unfiltered_htt*": "ZHToTauTau_UncorrelatedDecay_UnFiltered",
+        if args.bsm_search:
+            signal_samples = {
+                "bbH_MSSM_htt*": ["BBHto2Tau_M_*"],  # Bottom-quark associated production
+                "ggH_MSSM_htt*": ["GluGluHto2Tau_M_*_2HDM_II"],  # Gluon-gluon fusion
+                "ggH_SM_htt_M125": ["GluGluHto2Tau_M125_amcatnloFXFX"],  # SM Higgs
+            }
+            if args.era == "Run3_2022EE":
+                signal_samples["bbH_MSSM_htt*"].append("BBHto2Tau_M_*_ext1")
+        else:
+            signal_samples = {
+                # Unfiltered samples
+                # "qqH_sm_unfiltered_htt*": "VBFHToTauTau_UncorrelatedDecay_UnFiltered",
+                # "WH_sm_unfiltered_htt*": [
+                #     "WplusHToTauTau_UncorrelatedDecay_UnFiltered",
+                #     "WminusHToTauTau_UncorrelatedDecay_UnFiltered",
+                # ],
+                # "ZH_sm_unfiltered_htt*": "ZHToTauTau_UncorrelatedDecay_UnFiltered",
 
-            # VBF samples
-            "qqH_sm_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
-            "qqH_ps_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
-            "qqH_mm_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
+                # VBF samples
+                "qqH_sm_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
+                "qqH_ps_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
+                "qqH_mm_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
 
-            # ggH samples (SM production)
-            "ggH_sm_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
-            "ggH_ps_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
-            "ggH_mm_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
-            # ggH samples (PS production)
-            "ggH_sm_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
-            "ggH_ps_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
-            "ggH_mm_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
-            # ggH samples (MM production)
-            "ggH_sm_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
-            "ggH_ps_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
-            "ggH_mm_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+                # ggH samples (SM production)
+                "ggH_sm_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+                "ggH_ps_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+                "ggH_mm_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+                # ggH samples (PS production)
+                "ggH_sm_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+                "ggH_ps_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+                "ggH_mm_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+                # ggH samples (MM production)
+                "ggH_sm_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+                "ggH_ps_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+                "ggH_mm_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
 
-            # WH samples
-            "WH_sm_htt*": [
-                "WplusHToTauTau_UncorrelatedDecay_Filtered",
-                "WminusHToTauTau_UncorrelatedDecay_Filtered",
-            ],
-            "WH_ps_htt*": [
-                "WplusHToTauTau_UncorrelatedDecay_Filtered",
-                "WminusHToTauTau_UncorrelatedDecay_Filtered",
-            ],
-            "WH_mm_htt*": [
-                "WplusHToTauTau_UncorrelatedDecay_Filtered",
-                "WminusHToTauTau_UncorrelatedDecay_Filtered",
-            ],
+                # WH samples
+                "WH_sm_htt*": [
+                    "WplusHToTauTau_UncorrelatedDecay_Filtered",
+                    "WminusHToTauTau_UncorrelatedDecay_Filtered",
+                ],
+                "WH_ps_htt*": [
+                    "WplusHToTauTau_UncorrelatedDecay_Filtered",
+                    "WminusHToTauTau_UncorrelatedDecay_Filtered",
+                ],
+                "WH_mm_htt*": [
+                    "WplusHToTauTau_UncorrelatedDecay_Filtered",
+                    "WminusHToTauTau_UncorrelatedDecay_Filtered",
+                ],
 
-            # ZH samples
-            "ZH_sm_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
-            "ZH_ps_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
-            "ZH_mm_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
+                # ZH samples
+                "ZH_sm_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
+                "ZH_ps_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
+                "ZH_mm_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
 
-            # Higgs Flat samples (uncorrelated decay)
-            "Higgs_flat_htt*": [
-                "VBFHToTauTau_UncorrelatedDecay_Filtered",
-                "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
-                "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
-                "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
-                "ZHToTauTau_UncorrelatedDecay_Filtered",
-                "WplusHToTauTau_UncorrelatedDecay_Filtered",
-                "WminusHToTauTau_UncorrelatedDecay_Filtered"
-            ],
-            "qqH_flat_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
-            "ggH_flat_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
-            "ggH_flat_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
-            "ggH_flat_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
-            "WH_flat_htt*": [
-                "WplusHToTauTau_UncorrelatedDecay_Filtered",
-                "WminusHToTauTau_UncorrelatedDecay_Filtered",
-            ],
-            "ZH_flat_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
+                # Higgs Flat samples (uncorrelated decay)
+                "Higgs_flat_htt*": [
+                    "VBFHToTauTau_UncorrelatedDecay_Filtered",
+                    "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+                    "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+                    "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+                    "ZHToTauTau_UncorrelatedDecay_Filtered",
+                    "WplusHToTauTau_UncorrelatedDecay_Filtered",
+                    "WminusHToTauTau_UncorrelatedDecay_Filtered"
+                ],
+                "qqH_flat_htt*": "VBFHToTauTau_UncorrelatedDecay_Filtered",
+                "ggH_flat_prod_sm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay",
+                "ggH_flat_prod_ps_htt*": "GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay",
+                "ggH_flat_prod_mm_htt*": "GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay",
+                "WH_flat_htt*": [
+                    "WplusHToTauTau_UncorrelatedDecay_Filtered",
+                    "WminusHToTauTau_UncorrelatedDecay_Filtered",
+                ],
+                "ZH_flat_htt*": "ZHToTauTau_UncorrelatedDecay_Filtered",
 
-            # combined ggH (events from all production mechanisms)
-            # "ggH_sm_prod_sm_reweight_htt*": [
-            #     'GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay',
-            #     'GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay',
-            #     'GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay'
-            # ],
+                # combined ggH (events from all production mechanisms)
+                # "ggH_sm_prod_sm_reweight_htt*": [
+                #     'GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay',
+                #     'GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay',
+                #     'GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay'
+                # ],
         }
-
-
-    else:
-        signal_samples = {}
 
     # # TODO: REMOVE THIS IS TEMPORARY FOR TAU ID SFs
     # signal_samples = {}
@@ -766,8 +871,8 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
 gen_sels = {}
 gen_sels_dict = {}
 if args.channel in ["ee", "mm"]:
-    gen_sels["ll_sel"] = "(genPartFlav_1==1 & genPartFlav_2==1)"
-    gen_sels["tt_sel"] = "(genPartFlav_1==15 & genPartFlav_2==15)"
+    gen_sels["ll_sel"] = "(genPartFlav_1==1 && genPartFlav_2==1)"
+    gen_sels["tt_sel"] = "(genPartFlav_1==15 && genPartFlav_2==15)"
     gen_sels["j_sel"] = (
         "(!(" + gen_sels["ll_sel"] + ") && !(" + gen_sels["tt_sel"] + "))"
     )
@@ -876,7 +981,7 @@ def RunPlotting(
     doVVJ = True if "VVJ" not in nodes_to_skip else False
 
 
-    if method in [3,4,6]: # jet fake estimate so don't include other MC jet fakes:
+    if method in [3,4,6,7,8,9,10]: # jet fake estimate so don't include other MC jet fakes:
         doTTJ = False
         doZJ = False
         doVVJ = False
@@ -988,12 +1093,40 @@ def RunPlotting(
             qcd_factor=qcd_factor,
             get_os=not args.do_ss,
         )
-    elif "JetFakes" not in nodes_to_skip and method in [3,4,6]:  # Jet Fakes
+    elif "JetFakes" not in nodes_to_skip and method in [3,4,6,7,8,9,10]:  # Jet Fakes
         if method == 6 and "BDT_pred_score,aco" in args.var:
             print("WARNING: For CP datacards with variable names matching: `BDT_pred_score,aco*`, jet fake fractions are computed per BDT bin")
             flatten_y = True
         else:
             flatten_y = False
+            if method in [9,10]:
+                classical_ff_cfg = {
+                        'tt': {
+                            'path': f'/vols/cms/ia2318/REAL/TAU-25-001/classical/{args.era}_fake_factors_tt_QCD.json',
+                            'process': 'QCD',
+                            'pt_var': 'pt_1',
+                            'tt_pt_suffix': 1,
+                            'jpt_col': 'seeding_jpt_1',
+                            'npreb_col': 'n_prebjets',
+                            'ar_key': 'tt_ff_AR',
+                            'sublead_key': 'subleadfake',
+                            'add_sublead_mc': True,
+                        },
+                        'lt': {
+                            'channel': 'mt',  # or 'et'
+                            'paths': {
+                                'QCD': f'/vols/cms/ia2318/REAL/TAU-25-001/classical/{args.era}_fake_factors_mt_QCD.json',
+                                'Wjets': f'/vols/cms/ia2318/REAL/TAU-25-001/classical/{args.era}_fake_factors_mt_Wjets.json',
+                                'ttbarMC': f'/vols/cms/ia2318/REAL/TAU-25-001/classical/{args.era}_fake_factors_mt_ttbarMC.json',
+                            },
+                            'pt_var': 'pt_2',
+                            'jpt_col': 'seeding_jpt_2',
+                            'npreb_col': 'n_prebjets',
+                            'ar_key': 'lt_ff_AR',  # or 'mt_ff_AR' if that is what your categories dict uses
+                        }
+                    }
+            else:
+                classical_ff_cfg = None
         GenerateFakes(
             ana,
             nodename,
@@ -1011,13 +1144,28 @@ def RunPlotting(
             method=method,
             qcd_factor=qcd_factor,
             get_os=not args.do_ss,
-            flatten_y = flatten_y
+            flatten_y = flatten_y,
+            classical_ff_cfg = classical_ff_cfg
             )
 
-    if "signal" not in nodes_to_skip:
+    if "signal" not in nodes_to_skip and not args.bsm_search:
         # generate correct signal
         # TODO: add scheme or similar flat to determine which ones to use
         GenerateReweightedCPSignal(
+            ana,
+            nodename,
+            add_name,
+            samples_dict["signal_samples"],
+            masses,
+            plot,
+            wt,
+            sel,
+            cat,
+            not args.do_ss,
+        )
+    elif "signal" not in nodes_to_skip and args.bsm_search:
+        # generate BSM signal
+        GenerateMSSMReweightedSignal(
             ana,
             nodename,
             add_name,
@@ -1208,14 +1356,23 @@ if not args.bypass_plotter:
                 if not isinstance(value, (list,)):
                     value = [value]
                 for samp in value:
-                    for mass in masses:
-                        sample_name = samp.replace("*", mass)
+                    if samp == "GluGluHto2Tau_M125_amcatnloFXFX":
+                        higgs_input_folder = args.input_folder.rstrip("/") + "_higgssample"
                         analysis.AddSamples(
-                            f"{args.input_folder}/{args.era}/{args.channel}/{sample_name}/{systematic_folder_name}/merged.root",
+                            f"{higgs_input_folder}/{args.era}/{args.channel}/{samp}/{systematic_folder_name}/merged.root",
                             "ntuple",
                             None,
-                            sample_name,
+                            samp,
                         )
+                    else:
+                        for mass in masses:
+                            sample_name = samp.replace("*", mass)
+                            analysis.AddSamples(
+                                f"{args.input_folder}/{args.era}/{args.channel}/{sample_name}/{systematic_folder_name}/merged.root",
+                                "ntuple",
+                                None,
+                                sample_name,
+                            )
 
             analysis.AddInfo(args.parameter_file, scaleTo="data_obs")
 

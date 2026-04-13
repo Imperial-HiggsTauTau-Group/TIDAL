@@ -5,7 +5,14 @@ import uproot
 import os
 
 plt.style.use(hep.style.CMS)
-plt.rcParams.update({"font.size": 16})
+plt.rcParams.update({
+       "font.size": 20,          # base font size
+       "axes.titlesize": 22,
+       "axes.labelsize": 20,
+       "legend.fontsize": 18,
+       "xtick.labelsize": 18,
+       "ytick.labelsize": 18,
+   })
 
 
 class HTT_Histogram:
@@ -55,6 +62,16 @@ class HTT_Histogram:
                 "green": "#a0c172", # #b1cf86
                 "grey": "#94a4a2",
                 "ash": "#717581",
+                "cms_blue": "#3f90da",
+                "cms_yellow": "#ffa90e",
+                "cms_red": "#bd1f01",
+                "cms_grey": "#94a4a2",
+                "cms_violet": "#832db6",
+                "cms_brown": "#a96b59",
+                "cms_orange": "#e76300",
+                "cms_green": "#b9ac70",
+                "cms_ash": "#717581",
+                "cms_cyan": "#92dadd",
             }
         # channel label height:
         self.ch_label_height = 0.915
@@ -62,7 +79,7 @@ class HTT_Histogram:
         # define channel label (inclusive)
         label_map = {
                 "tt": "$\\tau_h\\tau_h$",
-                "mt": "$\\mu\\tau_h$",
+                "mt": "$\\tau_{\\mu}\\tau_h$",
                 "et": "$e\\tau_h$",
                 "em": "$e\\mu$",
                 "ee": "$ee$",
@@ -153,18 +170,34 @@ class HTT_Histogram:
                 self.backgrounds = {
                                     "Jet$\\to\\tau_h$": {"nodes": ["JetFakes", "JetFakesSublead"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
-                                    "Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT", "qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "yellow"},
+                                    "Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT"], "color": "yellow"},
+                                }
+            elif self.method in [1,2]:
+                self.backgrounds = {
+                                    "Jet$\\to\\tau_h$": {"nodes": ["QCD"], "color": "green"},
+                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
+                                    "Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT"], "color": "yellow"},
+                                }
+            elif self.method in [7,9]:
+                self.backgrounds = {
+                                    "Electroweak": {"nodes": ["VVT"], "color": "cms_red"},
+                                    "$t\\bar{t}$": {"nodes": ["TTT"], "color": "cms_violet"},
+                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes", "JetFakesSublead"], "color": "cms_cyan"},
+                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "cms_green"},
+                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "cms_yellow"},
+                                    "H$\\to\\tau\\tau$": {"nodes": ["ggH_SM_htt_M125"], "color": "cms_orange"},
                                 }
             self.lep1 = "\\tau_1"
             self.lep2 = "\\tau_2"
         elif self.channel == "mt":
-            if self.method == 6:
+            if self.method in [6,8,10]:
                 self.backgrounds = {
-                                    "$t\\bar{t}$": {"nodes": ["TTT"], "color": "violet"},
-                                    "Electroweak": {"nodes": ["VVT"], "color": "red"},
-                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
-                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
-                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"}
+                                    "Electroweak": {"nodes": ["VVT"], "color": "cms_red"},
+                                    "$t\\bar{t}$": {"nodes": ["TTT"], "color": "cms_violet"},
+                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "cms_cyan"},
+                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "cms_green"},
+                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "cms_yellow"},
+                                    "H$\\to\\tau\\tau$": {"nodes": ["ggH_SM_htt_M125"], "color": "cms_orange"},
                                 }
             else:
                 self.backgrounds = {
@@ -178,13 +211,14 @@ class HTT_Histogram:
             self.lep2 = "\\tau"
 
         elif self.channel == "et":
-            if self.method == 6:
+            if self.method in [6,8,10]:
                 self.backgrounds = {
-                                    "$t\\bar{t}$": {"nodes": ["TTT"], "color": "violet"},
-                                    "Electroweak": {"nodes": ["VVT"], "color": "red"},
-                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
-                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
-                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"}
+                                    "Electroweak": {"nodes": ["VVT"], "color": "cms_red"},
+                                    "$t\\bar{t}$": {"nodes": ["TTT"], "color": "cms_violet"},
+                                    "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "cms_cyan"},
+                                    "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "cms_green"},
+                                    "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "cms_yellow"},
+                                    "H$\\to\\tau\\tau$": {"nodes": ["ggH_SM_htt_M125"], "color": "cms_orange"},
                                 }
             else:
                 self.backgrounds = {
@@ -240,7 +274,9 @@ class HTT_Histogram:
         elif self.era == 'full23':
             self.lumi = 27.76
         elif self.era == 'earlyrun3':
-            self.lumi = 62.41
+            self.lumi = 62.4
+        elif self.era == 'Run3_2024':
+            self.lumi = 109.08
         else: 
             self.lumi = 0.0
         # get color for each background
@@ -337,8 +373,13 @@ class HTT_Histogram:
         counts = self.backgrounds[name]["counts"]
         steps = np.append(np.insert(counts,0,0.0),0.0)
         # plot block and outline
-        self.ax.bar(self.bin_centers, counts, width = self.bin_widths, bottom = self.stacked_block,
-                color = self.backgrounds[name]["color"], label = rf"{name}")
+        self.ax.fill_between(self.bin_edges,
+                             np.append(self.stacked_block, self.stacked_block[-1]),
+                             np.append(self.stacked_block + counts, self.stacked_block[-1] + counts[-1]),
+                             step="post",
+                             color=self.backgrounds[name]["color"],
+                             label=rf"{name}",
+                             linewidth=0)
         self.ax.step(self.step_edges, steps + self.stacked_step, color='black', linewidth = 0.5)
         # Update the bottom for the next process
         self.stacked_block += counts
@@ -361,7 +402,7 @@ class HTT_Histogram:
     #     return True
 
 
-    def plot_1D_histo(self, ratio_min=0.5, ratio_max=1.5):
+    def plot_1D_histo(self, ratio_min=0.5, ratio_max=1.5, combined_binning=False):
         print("Plotting 1D histogram")
         # plot 1D histogram
         self.fig, (self.ax, self.ax_ratio) = plt.subplots(2, 1, gridspec_kw={'height_ratios': [4, 1]}, sharex=True, figsize=(9, 8))
@@ -378,7 +419,7 @@ class HTT_Histogram:
                     step="post", facecolor='none', hatch='////////', edgecolor='grey', linewidth=0, label = "Bkg. Uncert.")
         if not self.blind:
             # add data
-            self.ax.errorbar(self.bin_centers, self.data['counts'], label='Observation', yerr=self.data['errors'], fmt='o', color = 'black', markersize=3, linewidth=0.6)
+            self.ax.errorbar(self.bin_centers, self.data['counts'], label='Data', yerr=self.data['errors'], fmt='o', color = 'black', markersize=3, linewidth=0.6)
             self.ax.errorbar(self.bin_centers, self.data['counts'],xerr=self.bin_widths/2, fmt='o', color = 'black', markersize=3, linewidth=0.6) # add width marker
 
 
@@ -388,7 +429,7 @@ class HTT_Histogram:
         self.ax_ratio.axhline(1, color='black', linestyle=':')
         for l in [0.6, 0.8, 1.2, 1.4]: # add horizontal lines
             self.ax_ratio.axhline(l, color='darkgray', linestyle='dotted')
-        self.fig.subplots_adjust(hspace=0.05)
+        self.fig.subplots_adjust(hspace=0.1)
         # add data/MC ratio as points
         if not self.blind:
             self.ax_ratio.errorbar(self.bin_centers, self.data_MC_ratio['counts'], yerr=self.data_MC_ratio['error_data'], xerr=self.bin_widths/2, fmt='o', color = 'black', markersize=3, linewidth=0.6)
@@ -399,8 +440,8 @@ class HTT_Histogram:
             step="post", facecolor='none', hatch='////////', edgecolor='grey', linewidth=0)
 
         # legends and labels
-        hep.cms.label(ax=self.ax, label="Preliminary", data=True, lumi=self.lumi, com=13.6, fontsize=16)
-        self.ax.text(0.035, self.ch_label_height, self.channel_label, fontsize=18, fontweight="bold", transform=self.ax.transAxes)
+        hep.cms.label(ax=self.ax, label="", data=True, lumi=self.lumi, com=13.6, fontsize=24)
+        self.ax.text(0.035, self.ch_label_height, self.channel_label, fontsize=22, fontweight="bold", transform=self.ax.transAxes)
         handles, labels = self.ax.get_legend_handles_labels()
 
         # add vertical lines if 2D unrolled:
@@ -420,17 +461,19 @@ class HTT_Histogram:
                     # print(self.var_dim_1[i], self.var_dim_1[i+1])
                     self.ax.text(l, 0.84, f"BDT ({self.var_dim_1[i]}, {self.var_dim_1[i+1]})", fontsize=16, transform=self.ax.transAxes)
             # place legend outside of plot
-            plt.legend(handles[::-1], labels[::-1], loc='upper left', frameon=1, framealpha=1, bbox_to_anchor=(1.005, 5.2))
+            plt.legend(handles[::-1], labels[::-1], loc='upper left', frameon=0, framealpha=1, bbox_to_anchor=(1.005, 5.2), fontsize=18)
         else:
             if len(handles) <= 5:
                 ncols=1
             else:
                 ncols=2
-            self.ax.legend(handles[::-1], labels[::-1], loc='upper right', frameon=1, framealpha=1, bbox_to_anchor=(0.98, 0.98), ncol=ncols)
+            self.ax.legend(handles[::-1], labels[::-1], loc='upper right', frameon=0, framealpha=1, bbox_to_anchor=(0.98, 0.98), ncol=ncols, fontsize=18)
 
         # main plot
-        if "(GeV)" in self.variable_label:
+        if "(GeV)" in self.variable_label and not combined_binning:
             self.ax.set_ylabel(f"Events / {round(self.bin_widths[0],2)} GeV")
+        elif "(GeV)" in self.variable_label and combined_binning:
+            self.ax.set_ylabel(f"Events / bin (GeV)", fontsize=24)
         else:
             self.ax.set_ylabel(f"Events / {round(self.bin_widths[0],2)}")
         if self.log_y:
@@ -440,8 +483,8 @@ class HTT_Histogram:
             self.ax.set_ylim(0, 1.9*np.max(self.stacked_block))
         self.ax.set_xlim(self.bin_edges[0], self.bin_edges[-1])
         # ratio plot
-        self.ax_ratio.set_ylabel("Obs/Exp")
-        self.ax_ratio.set_xlabel(self.variable_label)
+        self.ax_ratio.set_ylabel("Obs/Exp", fontsize=24)
+        self.ax_ratio.set_xlabel(self.variable_label, fontsize=24)
         self.ax_ratio.set_ylim(ratio_min, ratio_max)
 
         # Save to pdf and png
