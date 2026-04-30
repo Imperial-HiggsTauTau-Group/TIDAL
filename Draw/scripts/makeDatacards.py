@@ -205,7 +205,9 @@ if __name__ == "__main__":
                 f"Channel {channel} is not a valid channel. Please choose from {available_channels}"
             )
 
-    available_eras = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
+    available_eras = [
+        "Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix", "Run3_2024",
+    ]
     for era in eras:
         if era not in available_eras:
             raise ValueError(
