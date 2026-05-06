@@ -1,4 +1,5 @@
 from scipy.optimize import minimize
+from prettytable import PrettyTable
 
 # Expected filter efficiencies for when we order filtered DY samples
 eff0=0.165
@@ -24,7 +25,7 @@ class EarlyRun3:
     c1 = 39.468
     c2 = 54.816
     # Total absolute uncertainty in final bin
-    e = (
+    E = (
         ((c0 * e0) ** 2 +  (c1 * e1) ** 2 + (c2 * e2) ** 2) ** 0.5
     )
 
@@ -41,7 +42,7 @@ class Run3_2024:
     c1 = 59.906
     c2 = 95.138
     # Total absolute uncertainty in final bin
-    e = (
+    E = (
         ((c0 * e0) ** 2 +  (c1 * e1) ** 2 + (c2 * e2) ** 2) ** 0.5
     )
     # Total events originally ordered (NanoAOD event number in millions)
@@ -57,7 +58,7 @@ class Run3_2024:
 
 
 # target error is EarlyRun3 error scaled by the sqrt of the luminosity ratio
-target_error = EarlyRun3.e * (Run3_2024.lumi / EarlyRun3.lumi) ** 0.5
+target_E_2024 = EarlyRun3.E * (Run3_2024.lumi / EarlyRun3.lumi) ** 0.5
 
 
 def constraint(vars):
@@ -66,13 +67,17 @@ def constraint(vars):
         ((Run3_2024.e0 * Run3_2024.c0) ** 2 / x0
          + (Run3_2024.e1 * Run3_2024.c1) ** 2 / x1
          + (Run3_2024.e2 * Run3_2024.c2) ** 2 / x2) ** 0.5
-         - target_error
+         - target_E_2024
     )
 
 
 def objective(vars):
     x0, x1, x2 = vars
-    return XS0 * x0 * eff0 + XS1 * x1 * eff1 + XS2 * x2 * eff2
+    N0_new = Run3_2024.N_0 * (x0-1) * eff0
+    N1_new = Run3_2024.N_1 * (x1-1) * eff1
+    N2_new = Run3_2024.N_2 * (x2-1) * eff2
+    # we want to minimize the total number of events to be ordered
+    return N0_new + N1_new + N2_new
 
 
 # Initial guesses for x0, x1, x2
@@ -87,13 +92,12 @@ constraints = {
 # different options for boundaries
 bounds_vec = [
     [(1, None), (1, None), (1, None)],
-    [(2, None), (2, None), (2, None)],
     ]
 
 for bounds in bounds_vec:
 
-    print('\n--------------------------------')
-    print(f'performing minimization for bounds: {bounds}')
+    print('\n----------------------------------------------------------------')
+    print(f'Performing minimization for bounds: {bounds}')
     # Perform the optimization
     result = minimize(
         objective, initial_guess, bounds=bounds, constraints=constraints
@@ -113,5 +117,11 @@ for bounds in bounds_vec:
 
     print(
         "\033[91mEvents to be requested for Run3_2024:\033[0m\n"
-        + f"0j: {N0_new}, 1j: {N1_new}, 2j: {N2_new}"
     )
+
+    table = PrettyTable()
+    table.field_names = ["Jet Multiplicity", "Events to be Ordered (millions)"]
+    table.add_row(["DYto2Tau_0J", f"{N0_new:.2f}"])
+    table.add_row(["DYto2Tau_1J", f"{N1_new:.2f}"])
+    table.add_row(["DYto2Tau_2J", f"{N2_new:.2f}"])
+    print(table)
