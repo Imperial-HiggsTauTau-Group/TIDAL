@@ -5,6 +5,7 @@ eff0=0.165
 eff1=0.22
 eff2=0.21
 
+# Cross-sections in pb for the different jet multiplicities
 XS0=1788
 XS1=339.7
 XS2=125.1
@@ -56,7 +57,7 @@ class Run3_2024:
 
 
 # target error is EarlyRun3 error scaled by the sqrt of the luminosity ratio
-target_error = EarlyRun3.e * (EarlyRun3.lumi / Run3_2024.lumi) ** 0.5
+target_error = EarlyRun3.e * (Run3_2024.lumi / EarlyRun3.lumi) ** 0.5
 
 
 def constraint(vars):
