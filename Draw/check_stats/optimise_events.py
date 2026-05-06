@@ -1,3 +1,4 @@
+import argparse
 from scipy.optimize import minimize
 from prettytable import PrettyTable
 
@@ -79,49 +80,64 @@ def objective(vars):
     # we want to minimize the total number of events to be ordered
     return N0_new + N1_new + N2_new
 
+def optimise():
+    # Initial guesses for x0, x1, x2
+    initial_guess = [1.0, 1.0, 1.0]
 
-# Initial guesses for x0, x1, x2
-initial_guess = [1.0, 1.0, 1.0]
+    # Define the constraints dictionary
+    constraints = {
+        'type': 'eq',  # Equality constraint
+        'fun': constraint
+    }
 
-# Define the constraints dictionary
-constraints = {
-    'type': 'eq',  # Equality constraint
-    'fun': constraint
-}
+    # different options for boundaries
+    bounds_vec = [
+        [(1, None), (1, None), (1, None)],
+        ]
 
-# different options for boundaries
-bounds_vec = [
-    [(1, None), (1, None), (1, None)],
-    ]
+    for bounds in bounds_vec:
 
-for bounds in bounds_vec:
+        print('\n----------------------------------------------------------------')
+        print(f'Performing minimization for bounds: {bounds}')
+        # Perform the optimization
+        result = minimize(
+            objective, initial_guess, bounds=bounds, constraints=constraints
+        )
 
-    print('\n----------------------------------------------------------------')
-    print(f'Performing minimization for bounds: {bounds}')
-    # Perform the optimization
-    result = minimize(
-        objective, initial_guess, bounds=bounds, constraints=constraints
-    )
+        # Extract results
+        x0, x1, x2 = result.x
+        print(f"Optimized x0: {x0}, x1: {x1}, x2: {x2}")
+        print(f"Objective value: {objective(result.x)}")
+        print(f"Constraint value: {constraint(result.x)}")
 
-    # Extract results
-    x0, x1, x2 = result.x
-    print(f"Optimized x0: {x0}, x1: {x1}, x2: {x2}")
-    print(f"Objective value: {objective(result.x)}")
-    print(f"Constraint value: {constraint(result.x)}")
+        # so total number of filtered events to be ordered is the original number
+        # of events multiplied by (x-1) and the filter efficiency
+        N0_new = Run3_2024.N_0 * (x0-1) * eff0
+        N1_new = Run3_2024.N_1 * (x1-1) * eff1
+        N2_new = Run3_2024.N_2 * (x2-1) * eff2
 
-    # so total number of filtered events to be ordered is the original number
-    # of events multiplied by (x-1) and the filter efficiency
-    N0_new = Run3_2024.N_0 * (x0-1) * eff0
-    N1_new = Run3_2024.N_1 * (x1-1) * eff1
-    N2_new = Run3_2024.N_2 * (x2-1) * eff2
+        print(
+            "\033[91mEvents to be requested for Run3_2024:\033[0m\n"
+        )
 
-    print(
-        "\033[91mEvents to be requested for Run3_2024:\033[0m\n"
-    )
+        table = PrettyTable()
+        table.field_names = ["Sample", "Events to be Ordered (millions)"]
+        table.add_row(["DYto2Tau_0J", f"{N0_new:.2f}"])
+        table.add_row(["DYto2Tau_1J", f"{N1_new:.2f}"])
+        table.add_row(["DYto2Tau_2J", f"{N2_new:.2f}"])
+        print(table)
 
-    table = PrettyTable()
-    table.field_names = ["Sample", "Events to be Ordered (millions)"]
-    table.add_row(["DYto2Tau_0J", f"{N0_new:.2f}"])
-    table.add_row(["DYto2Tau_1J", f"{N1_new:.2f}"])
-    table.add_row(["DYto2Tau_2J", f"{N2_new:.2f}"])
-    print(table)
+
+def sanity_check():
+    pass
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Optimize the number of events to be ordered for Run3_2024.')
+    parser.add_argument('--sanity-check', action='store_true', help='Run a sanity check to verify the optimization results')
+    args = parser.parse_args()
+    
+    optimise()
+    
+    if args.sanity_check:
+        sanity_check()

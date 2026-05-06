@@ -31,6 +31,14 @@
         "DY_to2Tau_1J_filtered": 21420409,
         "DY_to2Tau_2J_filtered": 37118658
     },
+    "Early_Run3": {
+        "DY_to2Tau_0J": 295600924,
+        "DY_to2Tau_1J": 419152094,
+        "DY_to2Tau_2J": 892001108,
+        "DY_to2Tau_0J_filtered": 98552722,
+        "DY_to2Tau_1J_filtered": 150702734,
+        "DY_to2Tau_2J_filtered": 240707270
+    },
     "Run3_2024": {
         "DY_to2Tau_0J": 493132017,
         "DY_to2Tau_1J": 428387857,
