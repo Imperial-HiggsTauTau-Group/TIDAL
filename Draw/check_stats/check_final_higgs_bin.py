@@ -39,7 +39,6 @@ def main(args):
     print(table)
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--file", type=str, required=True, help="Path to the input ROOT file")
