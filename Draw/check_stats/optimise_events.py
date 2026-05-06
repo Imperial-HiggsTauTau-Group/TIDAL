@@ -49,7 +49,7 @@ class Run3_2024:
     N_exc_0 = 493.13
     N_exc_1 = 428.39
     N_exc_2 = 232.97
-    N_inc = 133.35
+    N_inc = 349.16
     # Total event number broken down by jet multiplicity, assuming the
     # inclusive sample is distributed according to the cross-sections
     N_0 = N_exc_0 + N_inc * (XS0 / XS_tot)

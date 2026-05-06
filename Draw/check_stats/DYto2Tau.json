@@ -1,0 +1,40 @@
+{
+    "Run3_2022": {
+        "DY_to2Tau_0J": 39627426,
+        "DY_to2Tau_1J": 56687827,
+        "DY_to2Tau_2J": 106481565,
+        "DY_to2Tau_0J_filtered": 10862703,
+        "DY_to2Tau_1J_filtered": 20230695,
+        "DY_to2Tau_2J_filtered": 29654728
+    },
+    "Run3_2022EE": {
+        "DY_to2Tau_0J": 125936677,
+        "DY_to2Tau_1J": 165533843,
+        "DY_to2Tau_2J": 365687741,
+        "DY_to2Tau_0J_filtered": 43864206,
+        "DY_to2Tau_1J_filtered": 65170238,
+        "DY_to2Tau_2J_filtered": 110138041
+    },
+    "Run3_2023": {
+        "DY_to2Tau_0J": 86010297,
+        "DY_to2Tau_1J": 123286592,
+        "DY_to2Tau_2J": 299753100,
+        "DY_to2Tau_0J_filtered": 29290719,
+        "DY_to2Tau_1J_filtered": 43881392,
+        "DY_to2Tau_2J_filtered": 63795843
+    },
+    "Run3_2023BPix": {
+        "DY_to2Tau_0J": 44026524,
+        "DY_to2Tau_1J": 73643832,
+        "DY_to2Tau_2J": 120078702,
+        "DY_to2Tau_0J_filtered": 14535094,
+        "DY_to2Tau_1J_filtered": 21420409,
+        "DY_to2Tau_2J_filtered": 37118658
+    },
+    "Run3_2024": {
+        "DY_to2Tau_0J": 493132017,
+        "DY_to2Tau_1J": 428387857,
+        "DY_to2Tau_2J": 232971613,
+        "DY_to2Tau": 349164447
+    }
+}
