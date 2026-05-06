@@ -120,7 +120,7 @@ for bounds in bounds_vec:
     )
 
     table = PrettyTable()
-    table.field_names = ["Jet Multiplicity", "Events to be Ordered (millions)"]
+    table.field_names = ["Sample", "Events to be Ordered (millions)"]
     table.add_row(["DYto2Tau_0J", f"{N0_new:.2f}"])
     table.add_row(["DYto2Tau_1J", f"{N1_new:.2f}"])
     table.add_row(["DYto2Tau_2J", f"{N2_new:.2f}"])
