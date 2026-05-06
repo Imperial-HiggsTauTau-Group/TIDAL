@@ -129,6 +129,7 @@ parser.add_argument("--nodename", help="Override the nodename")
 parser.add_argument(
     "--auto_rebin", action="store_true", help="Automatically rebin histograms"
 )
+parser.add_argument("--stats-check", action="store_true", help="Make datacards for statistical checks")
 
 # ------------------------------------------------------------------------------------------------------------------------
 args = parser.parse_args()
@@ -997,6 +998,7 @@ def RunPlotting(
             cat,
             gen_sels_dict["z_sels"],
             not args.do_ss,
+            jet_bin=args.stats_check
         )
     if "ZLL" not in nodes_to_skip:
         GenerateZLL(

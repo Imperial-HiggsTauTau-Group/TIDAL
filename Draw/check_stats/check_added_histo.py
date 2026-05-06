@@ -95,12 +95,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Check statistics of variables in a ROOT file.")
     parser.add_argument("--file", type=str, required=True, help="Path to the ROOT file")
     parser.add_argument("--era", type=str, required=True, help="Era of the data (e.g., 2016, 2017, 2018)")
-    parser.add_argument("--overview", action="store_true", help="Print statistics for overview samples")
-    parser.add_argument("--signal", action="store_true", help="Print statistics for signal samples")
+    parser.add_argument("--overview-table", action="store_true", help="Print statistics for overview samples")
+    parser.add_argument("--signal-table", action="store_true", help="Print statistics for signal samples")
     args = parser.parse_args()
 
-    if args.overview:
+    if args.overview_table:
         print_error_table(args, overview)
-    if args.signal:
+    if args.signal_table:
         print_error_table(args, signal)
 

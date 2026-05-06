@@ -103,6 +103,7 @@ def create_shell_script(
     dy_NLO=False,
     use_filtered_DY=False,
     nodename="",
+    stats_check=False,
 ):
     shell_script = f"""
 #!/bin/bash
@@ -147,6 +148,8 @@ python3 Draw/scripts/HiggsTauTauPlot.py \\
         shell_script += " \\\n--use_filtered_DY"
     if nodename != "":
         shell_script += f" \\\n--nodename {nodename}"
+    if stats_check:
+        shell_script += " \\\n--stats-check"
 
     with open(script_path, "w") as script_file:
         print(shell_script)
@@ -196,6 +199,7 @@ if __name__ == "__main__":
     eras = config["eras"]
     parameter_path = config["parameter_path"]
     schemes = config["schemes"]
+    stats_check = True if "stats-check" in schemes else False
     run_systematics = config["run_systematics"]
 
     available_channels = ["mm", "ee", "mt", "tt", "et"]
@@ -214,7 +218,16 @@ if __name__ == "__main__":
                 f"Era {era} is not a valid era. Please choose from {available_eras}"
             )
 
-    available_schemes = ["sf_calculation", "control", "cpdecay", "cp_acoplanarity", "cpdecay_fakefactors_control", "cp_alpha_angles", "cp_chi2_tests"]
+    available_schemes = [
+        "sf_calculation",
+        "control",
+        "cpdecay",
+        "cp_acoplanarity",
+        "cpdecay_fakefactors_control",
+        "cp_alpha_angles",
+        "cp_chi2_tests",
+        "stats-check",
+    ]
 
     for scheme in schemes:
         if scheme not in available_schemes:
@@ -357,6 +370,7 @@ if __name__ == "__main__":
                                     dy_NLO=dy_NLO,
                                     use_filtered_DY=use_filtered_DY,
                                     nodename=nodename,
+                                    stats_check=stats_check,
                                 )
 
                                 submit_file = os.path.join(
