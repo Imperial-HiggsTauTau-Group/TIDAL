@@ -8,5 +8,8 @@ CP_Tools/samples
 Draw/plots
 Draw/scripts/oldFW_crosschecks
 Draw/Plots
+Draw/scripts/2024_test
 
 jupyter_notebooks
+
+**/HTCondor

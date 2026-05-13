@@ -62,13 +62,13 @@ class Run3_2024:
 target_E_2024 = EarlyRun3.E * (Run3_2024.lumi / EarlyRun3.lumi) ** 0.5
 
 
-def constraint(vars):
+def constraint(vars, target_E):
     x0, x1, x2 = vars
     return (
         ((Run3_2024.e0 * Run3_2024.c0) ** 2 / x0
          + (Run3_2024.e1 * Run3_2024.c1) ** 2 / x1
          + (Run3_2024.e2 * Run3_2024.c2) ** 2 / x2) ** 0.5
-         - target_E_2024
+         - target_E
     )
 
 
@@ -80,14 +80,15 @@ def objective(vars):
     # we want to minimize the total number of events to be ordered
     return N0_new + N1_new + N2_new
 
-def optimise():
+def optimise(target_E=target_E_2024):
     # Initial guesses for x0, x1, x2
     initial_guess = [1.0, 1.0, 1.0]
 
     # Define the constraints dictionary
+    constraint_ = lambda vars: constraint(vars, target_E)
     constraints = {
         'type': 'eq',  # Equality constraint
-        'fun': constraint
+        'fun': constraint_
     }
 
     # different options for boundaries
@@ -108,7 +109,7 @@ def optimise():
         x0, x1, x2 = result.x
         print(f"Optimized x0: {x0}, x1: {x1}, x2: {x2}")
         print(f"Objective value: {objective(result.x)}")
-        print(f"Constraint value: {constraint(result.x)}")
+        print(f"Constraint value: {constraint(result.x, target_E)}")
 
         # so total number of filtered events to be ordered is the original number
         # of events multiplied by (x-1) and the filter efficiency
@@ -121,6 +122,7 @@ def optimise():
         )
 
         table = PrettyTable()
+        table.title = f"For target error of {target_E:.2f}"
         table.field_names = ["Sample", "Events to be Ordered (millions)"]
         table.add_row(["DYto2Tau_0J", f"{N0_new:.2f}"])
         table.add_row(["DYto2Tau_1J", f"{N1_new:.2f}"])
@@ -129,7 +131,7 @@ def optimise():
 
 
 def sanity_check():
-    pass
+    pass # TODO
 
 
 if __name__ == "__main__":
@@ -137,7 +139,8 @@ if __name__ == "__main__":
     parser.add_argument('--sanity-check', action='store_true', help='Run a sanity check to verify the optimization results')
     args = parser.parse_args()
     
-    optimise()
+    for target_E in (3, 4, 5, 6, 7, 8, 9):
+        optimise(target_E=target_E)
     
     if args.sanity_check:
         sanity_check()

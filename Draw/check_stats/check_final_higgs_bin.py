@@ -5,7 +5,8 @@ from prettytable import PrettyTable
 of_interest = [
     "ZTT_0J",
     "ZTT_1J",
-    "ZTT_2J"
+    "ZTT_2J",
+    "JetFakes",
 ]
 
 
@@ -17,7 +18,10 @@ def get_final_bin_error(hist):
     last_bin_content = hist.GetBinContent(n_bins)
     last_bin_error = hist.GetBinError(n_bins)
     
-    return last_bin_error / last_bin_content, last_bin_content
+    try:
+        return last_bin_error / last_bin_content, last_bin_content
+    except ZeroDivisionError:
+        return last_bin_error, last_bin_content
 
 
 def main(args):
@@ -32,7 +36,7 @@ def main(args):
         hist = directory.Get(sample)
         if hist:
             error, content = get_final_bin_error(hist)
-            table.add_row([sample, f"{error:.4f}", f"{content:.4f}"])
+            table.add_row([sample, f"{error:.1%}", f"{content:.2f}"])
         else:
             print(f"Histogram for {sample} not found in the file.")
     

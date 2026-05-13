@@ -1,7 +1,7 @@
-input_folder: /vols/cms/dmw25/HiggsDNA/output/output_tt
-output_path: /vols/cms/dmw25/TIDAL/Draw/plots/tt_EarlyRun3
+input_folder: /vols/cms/dmw25/HiggsDNA/output/setting_up_2024
+output_path: /vols/cms/dmw25/TIDAL/Draw/plots/setting_up_2024
 channels: [tt]
-eras: [Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix]
+eras: [Run3_2024]
 parameter_path: /vols/cms/dmw25/HiggsDNA/scripts/ditau/config
 schemes: [stats-check]
 run_systematics: false
@@ -49,13 +49,13 @@ stats-check:
 
   tt:
     # Nominal plots (change filtered DY to false if running 2024)
-     - { method: '3', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: true}
+     - { method: '3', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false}
 
   mt:
     # Nominal plots
-     - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+     - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
 
   et:
     # Nominal plots
-     - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: true, additional_selections: ["(mt_1<65)"]}
+     - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
   
