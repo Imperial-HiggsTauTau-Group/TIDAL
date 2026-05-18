@@ -13,6 +13,6 @@ Draw/scripts/2024_test
 jupyter_notebooks
 
 **/HTCondor
-check_stats/*.csv
-check_stats/*.json
-check_stats/extract_orders_from_csv.py
+Draw/check_stats/*.csv
+Draw/check_stats/*.json
+Draw/check_stats/extract_orders_from_csv_.py
