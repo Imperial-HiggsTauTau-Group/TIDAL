@@ -24,6 +24,7 @@ def GetZTTNode(ana, add_name='', samples=[], plot='', wt='', sel='', cat='', z_s
     else:
         OSSS = '!os'
 
+    full_selection = BuildCutString(wt, sel, cat, OSSS, z_sels['ztt_sel'])
     if jet_bin:
         if len(sel) > 0:
             sel = sel + ' && '
@@ -35,14 +36,13 @@ def GetZTTNode(ana, add_name='', samples=[], plot='', wt='', sel='', cat='', z_s
         full_selection_2J = BuildCutString(wt, sel_2J, cat, OSSS, z_sels['ztt_sel'])
         
         return (
+            ana.SummedFactory('ZTT'+add_name, samples, plot, full_selection),
             ana.SummedFactory('ZTT_0J'+add_name, samples, plot, full_selection_0J),
             ana.SummedFactory('ZTT_1J'+add_name, samples, plot, full_selection_1J),
             ana.SummedFactory('ZTT_2J'+add_name, samples, plot, full_selection_2J)
         )
 
     else:
-        full_selection = BuildCutString(wt, sel, cat, OSSS, z_sels['ztt_sel'])
-        
         return ana.SummedFactory('ZTT'+add_name, samples, plot, full_selection)
 
 
@@ -249,7 +249,8 @@ def GenerateZLL(ana, nodename, add_name='', samples=[], plot='', wt='', sel='', 
 
 def GenerateZTT(ana, nodename, add_name='', samples=[], plot='', wt='', sel='', cat='', z_sels={}, get_os=True, jet_bin=False):
     if jet_bin:
-        ztt_node_0J, ztt_node_1J, ztt_node_2J = GetZTTNode(ana, add_name, samples, plot, wt, sel, cat, z_sels, get_os, jet_bin=True)
+        ztt_node, ztt_node_0J, ztt_node_1J, ztt_node_2J = GetZTTNode(ana, add_name, samples, plot, wt, sel, cat, z_sels, get_os, jet_bin=True)
+        ana.nodes[nodename].AddNode(ztt_node)
         ana.nodes[nodename].AddNode(ztt_node_0J)
         ana.nodes[nodename].AddNode(ztt_node_1J)
         ana.nodes[nodename].AddNode(ztt_node_2J)
