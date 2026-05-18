@@ -38,6 +38,7 @@ class HTT_Histogram:
         # get bin information
         self.bin_edges = self.file[f"{self.category}/ZTT"].axis().edges()
         self.bin_centers = self.file[f"{self.category}/ZTT"].axis().centers()
+        self.n_bins = len(self.bin_centers)
         self.bin_widths = np.diff(self.bin_edges)
         self.step_edges = np.append(self.bin_edges,2*self.bin_edges[-1]-self.bin_edges[-2]) # for outline
         # track height of stacked backgrounds
@@ -248,6 +249,8 @@ class HTT_Histogram:
             self.lumi = 27.76
         elif self.era == 'earlyrun3':
             self.lumi = 62.41
+        elif self.era == 'Run3_2024':
+            self.lumi = 109.08
         else: 
             self.lumi = 0.0
         # get color for each background
@@ -406,13 +409,12 @@ class HTT_Histogram:
             step="post", facecolor='none', hatch='////////', edgecolor='grey', linewidth=0)
 
         # legends and labels
-        hep.cms.label(ax=self.ax, label="Work in progress", data=True, lumi=self.lumi, com=13.6, fontsize=16)
+        hep.cms.label(ax=self.ax, text="Work in progress", data=True, lumi=self.lumi, com=13.6, fontsize=16)
         self.ax.text(0.035, self.ch_label_height, self.channel_label, fontsize=18, fontweight="bold", transform=self.ax.transAxes)
         handles, labels = self.ax.get_legend_handles_labels()
 
         # add vertical lines if 2D unrolled:
         if self.is2Dunrolled:
-            n_bins = len(self.bin_centers)
             nrows = len(self.var_dim_1)-1
             ncols = len(self.var_dim_2)-1
             # draw boundaries

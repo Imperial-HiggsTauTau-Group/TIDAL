@@ -104,6 +104,7 @@ def create_shell_script(
     dy_NLO=False,
     use_filtered_DY=False,
     nodename="",
+    stats_check=False,
 ):
     shell_script = f"""
 #!/bin/bash
@@ -148,6 +149,8 @@ python3 Draw/scripts/HiggsTauTauPlot.py \\
         shell_script += " \\\n--use_filtered_DY"
     if nodename != "":
         shell_script += f" \\\n--nodename {nodename}"
+    if stats_check:
+        shell_script += " \\\n--stats-check"
 
     with open(script_path, "w") as script_file:
         print(shell_script)
@@ -211,14 +214,25 @@ if __name__ == "__main__":
                 f"Channel {channel} is not a valid channel. Please choose from {available_channels}"
             )
 
-    available_eras = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
+    available_eras = [
+        "Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix", "Run3_2024",
+    ]
     for era in eras:
         if era not in available_eras:
             raise ValueError(
                 f"Era {era} is not a valid era. Please choose from {available_eras}"
             )
 
-    available_schemes = ["sf_calculation", "control", "cpdecay", "cp_acoplanarity", "cpdecay_fakefactors_control", "cp_alpha_angles", "cp_chi2_tests"]
+    available_schemes = [
+        "sf_calculation",
+        "control",
+        "cpdecay",
+        "cp_acoplanarity",
+        "cpdecay_fakefactors_control",
+        "cp_alpha_angles",
+        "cp_chi2_tests",
+        "stats-check",
+    ]
 
     for scheme in schemes:
         if scheme not in available_schemes:
@@ -230,6 +244,7 @@ if __name__ == "__main__":
         parameter_file = f"{parameter_path}/{era}/params.yaml"
         for channel in channels:
             for scheme in schemes:
+                stats_check = (scheme == "stats-check")
                 settings = config[scheme]
                 output_folder = f"{output_path}/{era}/{scheme}/{channel}"
                 subprocess.run(["mkdir", "-p", output_folder])
@@ -361,6 +376,7 @@ if __name__ == "__main__":
                                     dy_NLO=dy_NLO,
                                     use_filtered_DY=use_filtered_DY,
                                     nodename=nodename,
+                                    stats_check=stats_check,
                                 )
 
                                 submit_file = os.path.join(

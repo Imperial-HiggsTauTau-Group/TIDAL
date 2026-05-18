@@ -82,5 +82,3 @@ control:
   ee:
   # GENERAL CONTROL
   - { method: "5", category:  [ inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
-
-

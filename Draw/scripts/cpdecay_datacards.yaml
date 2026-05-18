@@ -445,4 +445,3 @@ cpdecay_fakefactors_control:
      - { method: '4', category:  ['higgs_pia1'], plotting_variable: [ BDT_pred_score], aiso: true, nodename: "_BDT_score"}
     # look at SS control plot for pipi, since the aco angle agreement looks bad in the aiso region
      - { method: '4', category:  ['higgs_pipi'], plotting_variable: [ aco_pi_pi], same_sign: true}
-

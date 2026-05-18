@@ -130,6 +130,7 @@ parser.add_argument("--nodename", help="Override the nodename")
 parser.add_argument(
     "--auto_rebin", action="store_true", help="Automatically rebin histograms"
 )
+parser.add_argument("--stats-check", action="store_true", help="Make datacards for statistical checks")
 
 # ------------------------------------------------------------------------------------------------------------------------
 args = parser.parse_args()
@@ -171,7 +172,10 @@ method = int(args.method)
 # Define baseline selections and different categories
 # TODO: add option to change triggers
 categories = {}
-if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
+available_eras = [
+    "Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix", "Run3_2024",
+]
+if args.era in available_eras:
     if args.channel == "ee":
         categories["baseline"] = (
             "(iso_1<0.15 && iso_2<0.15 && (trg_singleelectron && pt_1 > 31 && abs(eta_1) < 2.1))"
@@ -486,7 +490,7 @@ if args.set_alias is not None:
 
 # ------------------------------------------------------------------------------------------------------------------------
 # Define the samples (Data and MC (Background & Signal))
-if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
+if args.era in available_eras:
     samples_dict = {}
     # Data Samples
     if args.era in ["Run3_2022"]:
@@ -551,108 +555,201 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         elif args.channel == "tt":
             data_samples = ["Tau_Run2023D_v1", "Tau_Run2023D_v2"]
 
+    elif args.era == "Run3_2024":
+        if args.channel in ["ee", "et"]:
+            data_samples = [
+                "EGamma0_Run2024C",
+                "EGamma0_Run2024D",
+                "EGamma0_Run2024E",
+                "EGamma0_Run2024F",
+                "EGamma0_Run2024G",
+                "EGamma0_Run2024H",
+                "EGamma0_Run2024I_v1",
+                "EGamma0_Run2024I_v2",
+                "EGamma1_Run2024C",
+                "EGamma1_Run2024D",
+                "EGamma1_Run2024E",
+                "EGamma1_Run2024F",
+                "EGamma1_Run2024G",
+                "EGamma1_Run2024H",
+                "EGamma1_Run2024I_v1",
+                "EGamma1_Run2024I_v2",
+            ] 
+
+
+        elif args.channel in ["mm", "mt"]:
+            data_samples = [
+                "Muon0_Run2024C",
+                "Muon0_Run2024D",
+                "Muon0_Run2024E",
+                "Muon0_Run2024F",
+                "Muon0_Run2024G",
+                "Muon0_Run2024H",
+                "Muon0_Run2024I_v1",
+                "Muon0_Run2024I_v2",
+                "Muon1_Run2024C",
+                "Muon1_Run2024D",
+                "Muon1_Run2024E",
+                "Muon1_Run2024F",
+                "Muon1_Run2024G",
+                "Muon1_Run2024H",
+                "Muon1_Run2024I_v1",
+                "Muon1_Run2024I_v2",
+            ]
+
+        elif args.channel == "tt":
+            data_samples = [
+                "Tau_Run2024C",
+                "Tau_Run2024D",
+                "Tau_Run2024E",
+                "Tau_Run2024F",
+                "Tau_Run2024G",
+                "Tau_Run2024H",
+                "Tau_Run2024I_v1",
+                "Tau_Run2024I_v2",
+            ]
+
     samples_dict["data_samples"] = data_samples
 
-    # MC Samples
-    if args.LO_DY:
-        print("WARNING: Using LO DY samples")
-        ztt_samples = [
-            "DYto2L_M_50_madgraphMLM",
-            "DYto2L_M_50_madgraphMLM_ext1",
-            "DYto2L_M_50_1J_madgraphMLM",
-            "DYto2L_M_50_2J_madgraphMLM",
-            "DYto2L_M_50_3J_madgraphMLM",
-            "DYto2L_M_50_4J_madgraphMLM",
-        ]
-        if args.era in ["Run3_2023", "Run3_2023BPix"]:
-            ztt_samples.remove("DYto2L_M_50_madgraphMLM_ext1")
-
-    elif args.NLO_DY:
-        print("WARNING: Using NLO DY samples")
-        ztt_samples = [
-            "DYto2L_M_50_amcatnloFXFX",
-            "DYto2L_M_50_amcatnloFXFX_ext1",
-            "DYto2L_M_50_0J_amcatnloFXFX",
-            "DYto2L_M_50_1J_amcatnloFXFX",
-            "DYto2L_M_50_2J_amcatnloFXFX",
-            "DYto2L_M_50_PTLL_40to100_1J_amcatnloFXFX",
-            "DYto2L_M_50_PTLL_100to200_1J_amcatnloFXFX",
-            "DYto2L_M_50_PTLL_200to400_1J_amcatnloFXFX",
-            "DYto2L_M_50_PTLL_400to600_1J_amcatnloFXFX",
-            "DYto2L_M_50_PTLL_600_1J_amcatnloFXFX",
-            "DYto2L_M_50_PTLL_40to100_2J_amcatnloFXFX",
-            "DYto2L_M_50_PTLL_100to200_2J_amcatnloFXFX",
-            "DYto2L_M_50_PTLL_200to400_2J_amcatnloFXFX",
-            "DYto2L_M_50_PTLL_400to600_2J_amcatnloFXFX",
-            "DYto2L_M_50_PTLL_600_2J_amcatnloFXFX",
-        ]  # use NLO samples
-        if args.era in ["Run3_2023", "Run3_2023BPix"]:
-            ztt_samples.remove("DYto2L_M_50_amcatnloFXFX_ext1")
-
-    else:
-        print("Using New DY samples")
-        ztt_samples = [
-            "DYto2Tau_MLL_50_0J_amcatnloFXFX",
-            "DYto2Tau_MLL_50_1J_amcatnloFXFX",
-            "DYto2Tau_MLL_50_2J_amcatnloFXFX"
-        ]
-        if args.use_filtered_DY:
-            print(f"WARNING: Will use filtered DY, and read effective events from alternate file")
-            ztt_samples += [
-                "DYto2Tau_MLL_50_0J_Filtered_amcatnloFXFX",
-                "DYto2Tau_MLL_50_1J_Filtered_amcatnloFXFX",
-                "DYto2Tau_MLL_50_2J_Filtered_amcatnloFXFX"
+    # MC (background) samples
+    if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:  
+        if args.LO_DY:
+            print("WARNING: Using LO DY samples")
+            ztt_samples = [
+                "DYto2L_M_50_madgraphMLM",
+                "DYto2L_M_50_madgraphMLM_ext1",
+                "DYto2L_M_50_1J_madgraphMLM",
+                "DYto2L_M_50_2J_madgraphMLM",
+                "DYto2L_M_50_3J_madgraphMLM",
+                "DYto2L_M_50_4J_madgraphMLM",
             ]
-        zll_samples = [
-            "DYto2L_M_50_amcatnloFXFX",
-            "DYto2L_M_50_amcatnloFXFX_ext1",
-            "DYto2L_M_50_0J_amcatnloFXFX",
-            "DYto2L_M_50_1J_amcatnloFXFX",
-            "DYto2L_M_50_2J_amcatnloFXFX"
+            if args.era in ["Run3_2023", "Run3_2023BPix"]:
+                ztt_samples.remove("DYto2L_M_50_madgraphMLM_ext1")
+
+        elif args.NLO_DY:
+            print("WARNING: Using NLO DY samples")
+            ztt_samples = [
+                "DYto2L_M_50_amcatnloFXFX",
+                "DYto2L_M_50_amcatnloFXFX_ext1",
+                "DYto2L_M_50_0J_amcatnloFXFX",
+                "DYto2L_M_50_1J_amcatnloFXFX",
+                "DYto2L_M_50_2J_amcatnloFXFX",
+                "DYto2L_M_50_PTLL_40to100_1J_amcatnloFXFX",
+                "DYto2L_M_50_PTLL_100to200_1J_amcatnloFXFX",
+                "DYto2L_M_50_PTLL_200to400_1J_amcatnloFXFX",
+                "DYto2L_M_50_PTLL_400to600_1J_amcatnloFXFX",
+                "DYto2L_M_50_PTLL_600_1J_amcatnloFXFX",
+                "DYto2L_M_50_PTLL_40to100_2J_amcatnloFXFX",
+                "DYto2L_M_50_PTLL_100to200_2J_amcatnloFXFX",
+                "DYto2L_M_50_PTLL_200to400_2J_amcatnloFXFX",
+                "DYto2L_M_50_PTLL_400to600_2J_amcatnloFXFX",
+                "DYto2L_M_50_PTLL_600_2J_amcatnloFXFX",
+            ]  # use NLO samples
+            if args.era in ["Run3_2023", "Run3_2023BPix"]:
+                ztt_samples.remove("DYto2L_M_50_amcatnloFXFX_ext1")
+
+        else:
+            print("Using New DY samples")
+            ztt_samples = [
+                "DYto2Tau_MLL_50_0J_amcatnloFXFX",
+                "DYto2Tau_MLL_50_1J_amcatnloFXFX",
+                "DYto2Tau_MLL_50_2J_amcatnloFXFX"
+            ]
+            if args.use_filtered_DY:
+                print(f"WARNING: Will use filtered DY, and read effective events from alternate file")
+                ztt_samples += [
+                    "DYto2Tau_MLL_50_0J_Filtered_amcatnloFXFX",
+                    "DYto2Tau_MLL_50_1J_Filtered_amcatnloFXFX",
+                    "DYto2Tau_MLL_50_2J_Filtered_amcatnloFXFX"
+                ]
+            zll_samples = [
+                "DYto2L_M_50_amcatnloFXFX",
+                "DYto2L_M_50_amcatnloFXFX_ext1",
+                "DYto2L_M_50_0J_amcatnloFXFX",
+                "DYto2L_M_50_1J_amcatnloFXFX",
+                "DYto2L_M_50_2J_amcatnloFXFX"
+            ]
+            if args.era in ["Run3_2023", "Run3_2023BPix"]:
+                zll_samples.remove("DYto2L_M_50_amcatnloFXFX_ext1")
+
+        top_samples = [
+            "TTto2L2Nu",
+            "TTto2L2Nu_ext1",
+            "TTtoLNu2Q",
+            "TTtoLNu2Q_ext1"
         ]
+        vv_samples = [
+            "WW",
+            "WZ",
+            "ZZ",
+            "ST_t_channel_top_4f_InclusiveDecays",
+            "ST_t_channel_antitop_4f_InclusiveDecays",
+            "EWKZ_MLL-50_TuneCP5_13p6TeV_madgraph-pythia8",
+            "ST_tW_top_2L2Nu",
+            "ST_tW_top_2L2Nu_ext1",
+            "ST_tW_antitop_2L2Nu",
+            "ST_tW_antitop_2L2Nu_ext1",
+            "ST_tW_top_LNu2Q",
+            "ST_tW_top_LNu2Q_ext1",
+            "ST_tW_antitop_LNu2Q",
+            "ST_tW_antitop_LNu2Q_ext1",
+        ]
+        wjets_samples = [
+            "WtoLNu_madgraphMLM",
+            "WtoLNu_madgraphMLM_ext1",
+            "WtoLNu_1J_madgraphMLM",
+            "WtoLNu_2J_madgraphMLM",
+            "WtoLNu_3J_madgraphMLM",
+            "WtoLNu_4J_madgraphMLM",
+        ]
+
         if args.era in ["Run3_2023", "Run3_2023BPix"]:
-            zll_samples.remove("DYto2L_M_50_amcatnloFXFX_ext1")
+            top_samples.remove("TTto2L2Nu_ext1")
+            top_samples.remove("TTtoLNu2Q_ext1")
+            vv_samples.remove("ST_tW_top_2L2Nu_ext1")
+            vv_samples.remove("ST_tW_antitop_2L2Nu_ext1")
+            vv_samples.remove("ST_tW_top_LNu2Q_ext1")
+            vv_samples.remove("ST_tW_antitop_LNu2Q_ext1")
+            wjets_samples.remove("WtoLNu_madgraphMLM_ext1")
 
-    top_samples = [
-        "TTto2L2Nu",
-        "TTto2L2Nu_ext1",
-        "TTtoLNu2Q",
-        "TTtoLNu2Q_ext1"
-    ]
-    vv_samples = [
-        "WW",
-        "WZ",
-        "ZZ",
-        "ST_t_channel_top_4f_InclusiveDecays",
-        "ST_t_channel_antitop_4f_InclusiveDecays",
-        "EWKZ_MLL-50_TuneCP5_13p6TeV_madgraph-pythia8",
-        "ST_tW_top_2L2Nu",
-        "ST_tW_top_2L2Nu_ext1",
-        "ST_tW_antitop_2L2Nu",
-        "ST_tW_antitop_2L2Nu_ext1",
-        "ST_tW_top_LNu2Q",
-        "ST_tW_top_LNu2Q_ext1",
-        "ST_tW_antitop_LNu2Q",
-        "ST_tW_antitop_LNu2Q_ext1",
-    ]
-    wjets_samples = [
-        "WtoLNu_madgraphMLM",
-        "WtoLNu_madgraphMLM_ext1",
-        "WtoLNu_1J_madgraphMLM",
-        "WtoLNu_2J_madgraphMLM",
-        "WtoLNu_3J_madgraphMLM",
-        "WtoLNu_4J_madgraphMLM",
-    ]
+    elif args.era in ["Run3_2024"]:
+        # MC (background) samples
+        ztt_samples = [
+            'DYto2Tau_MLL_50_amcatnloFXFX',
+            'DYto2Tau_MLL_50_0J_amcatnloFXFX',
+            'DYto2Tau_MLL_50_1J_amcatnloFXFX',
+            'DYto2Tau_MLL_50_2J_amcatnloFXFX',
+        ]
+        zll_samples = [
+            'DYto2E_MLL_50_amcatnloFXFX',
+            'DYto2E_MLL_50_0J_amcatnloFXFX',
+            'DYto2E_MLL_50_1J_amcatnloFXFX',
+            'DYto2E_MLL_50_2J_amcatnloFXFX',
+            'DYto2Mu_MLL_50_amcatnloFXFX',
+            'DYto2Mu_MLL_50_0J_amcatnloFXFX',
+            'DYto2Mu_MLL_50_1J_amcatnloFXFX',
+            'DYto2Mu_MLL_50_2J_amcatnloFXFX',
+        ]
+        top_samples = [
+            'TTto2L2Nu',
+            'TTtoLNu2Q',
+        ]
+        vv_samples = [
+            'WW',
+            'WZ',
+            'ZZ',
+            'ST_tW_top_2L2Nu',
+            'ST_tW_antitop_2L2Nu',
+            'ST_tW_top_LNu2Q',
+            'ST_tW_antitop_LNu2Q',
+        ]
+        wjets_samples = [
+            'WtoENu_madgraphMLM',
+            'WtoMuNu_madgraphMLM',
+            'WtoTauNu_madgraphMLM',
+        ]
 
-    if args.era in ["Run3_2023", "Run3_2023BPix"]:
-        top_samples.remove("TTto2L2Nu_ext1")
-        top_samples.remove("TTtoLNu2Q_ext1")
-        vv_samples.remove("ST_tW_top_2L2Nu_ext1")
-        vv_samples.remove("ST_tW_antitop_2L2Nu_ext1")
-        vv_samples.remove("ST_tW_top_LNu2Q_ext1")
-        vv_samples.remove("ST_tW_antitop_LNu2Q_ext1")
-        wjets_samples.remove("WtoLNu_madgraphMLM_ext1")
-
+    # MC (signal) samples
     if args.channel in ["et", "mt", "tt"]:
         signal_samples = {
             # Unfiltered samples
@@ -728,12 +825,8 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
             # ],
         }
 
-
     else:
         signal_samples = {}
-
-    # # TODO: REMOVE THIS IS TEMPORARY FOR TAU ID SFs
-    # signal_samples = {}
 
     samples_dict["ztt_samples"] = ztt_samples
     samples_dict["zll_samples"] = zll_samples
@@ -907,6 +1000,7 @@ def RunPlotting(
             cat,
             gen_sels_dict["z_sels"],
             not args.do_ss,
+            jet_bin=args.stats_check
         )
     if "ZLL" not in nodes_to_skip:
         GenerateZLL(
