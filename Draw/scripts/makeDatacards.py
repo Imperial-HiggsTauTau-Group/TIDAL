@@ -4,6 +4,7 @@ import numpy
 import subprocess
 import os
 import re
+import shutil
 
 def create_bins(variable: str) -> str:
     if "(" in variable:
@@ -160,8 +161,8 @@ def format_first_selection(selection):
     if match:
         condition = match.group(1).strip()
         # Replace operators with readable words
-        formatted = condition.replace(">", "_GT_").replace("<", "_LT_")\
-                              .replace(">=", "_GTE_").replace("<=", "_LTE_")\
+        formatted = condition.replace(">=", "_GTE_").replace("<=", "_LTE_")\
+                              .replace(">", "_GT_").replace("<", "_LT_")\
                               .replace("==", "_EQ_").replace("!=", "_NEQ_")
         # Replace spaces with underscores
         readable_format = formatted.replace(" ", "").removeprefix("(").removesuffix(")")
@@ -192,6 +193,11 @@ if __name__ == "__main__":
 
     input_folder = config["input_folder"]
     output_path = config["output_path"]
+
+    # save config
+    os.makedirs(output_path, exist_ok=True)
+    shutil.copy(config_file, output_path)
+
     channels = config["channels"]
     eras = config["eras"]
     parameter_path = config["parameter_path"]

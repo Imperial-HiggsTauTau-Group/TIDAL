@@ -25,7 +25,7 @@ from Draw.python.nodes import (
     GenerateW,
     GenerateQCD,
     GenerateFakes,
-    GenerateReweightedCPSignal,
+    GenerateReweightedCPSignal
 )
 from Draw.python.HiggsTauTauPlot_utilities import (
     PrintSummary,
@@ -86,7 +86,8 @@ systematic_options = [
     ["Signal_Theory", "theoretical uncertainties on the signal"],
     ["IP_Calibration", "Uncertainty on the IP calibration"],
     ["SV_Resolution", "Uncertainty on the SV resolution"],
-    ['IP_Significance', 'Uncertainty on the IP significance cut SFs']
+    ['IP_Significance', 'Uncertainty on the IP significance cut SFs'],
+    ['DM_migrations', 'Uncertainties related to potential migrations between DM categories due to the use of the PNet DM finder'],
 ]
 
 
@@ -624,6 +625,7 @@ if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
         "ZZ",
         "ST_t_channel_top_4f_InclusiveDecays",
         "ST_t_channel_antitop_4f_InclusiveDecays",
+        "EWKZ_MLL-50_TuneCP5_13p6TeV_madgraph-pythia8",
         "ST_tW_top_2L2Nu",
         "ST_tW_top_2L2Nu_ext1",
         "ST_tW_antitop_2L2Nu",
@@ -1359,16 +1361,21 @@ for hist in directory.GetListOfKeys():
     if ".subnodes" in hist.GetName():
         continue
 
-    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead"]
+    processes = ["ZTT", "ZL", "ZJ", "TTT", "TTJ","VVT","VVJ", "W", "QCD", "JetFakes", "JetFakesSublead", "ggH_sm_prod_sm_htt125","qqH_sm_htt125","WH_sm_htt125","ZH_sm_htt125"]
     if hist.GetName().endswith("Up") or hist.GetName().endswith("Down"):
         for proc in processes:
             if hist.GetName().startswith(proc + '_'):
-                print(f"Adding {hist.GetName()} to total uncertainty")
-                no_syst_name = proc
-                temp_hist = h0.Clone()
-                temp_hist.Add(directory.Get(no_syst_name),-1)
-                temp_hist.Add(directory.Get(hist.GetName()))
-                hists.append(temp_hist)
+                if "signal" in hist.GetName() and proc in ["WH_sm_htt125", "ZH_sm_htt125"]:
+                    print("->Skipping signal systematic for VH (not valid):", hist.GetName())
+                    continue
+                else:
+                    print(f"Adding {hist.GetName()} to total uncertainty")
+                    no_syst_name = proc
+                    temp_hist = h0.Clone()
+                    temp_hist.Add(directory.Get(no_syst_name),-1)
+                    temp_hist.Add(directory.Get(hist.GetName()))
+                    temp_hist.SetName(hist.GetName())
+                    hists.append(temp_hist)
 
 (uncert, up, down) = Total_Uncertainty(h0, hists)
 outfile.cd(nodename)

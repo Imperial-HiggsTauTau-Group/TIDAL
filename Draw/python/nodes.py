@@ -90,7 +90,6 @@ def GetVVTNode(ana, add_name ='', samples=[], plot='', wt='', sel='', cat='', vv
   full_selection = BuildCutString(wt, sel, cat, OSSS, vv_sels['vvt_sel'])
   return ana.SummedFactory('VVT'+add_name, samples, plot, full_selection)
 
-
 def GetVVJNode(ana, add_name ='', samples=[], plot='', wt='', sel='', cat='', vv_sels={}, get_os=True):
   if get_os:
       OSSS = 'os'
@@ -263,6 +262,7 @@ def GenerateW(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={}, plo
     cat = categories['cat']
     w_node = GetWNode(ana, add_name, samples_dict['wjets_samples'], plot, wt, sel, cat, "", get_os)
   ana.nodes[nodename].AddNode(w_node)
+
 
 def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={}, systematic='', plot='', plot_unmodified='', wt='', sel='', cat_name='', categories={}, categories_unmodified={}, method=3, qcd_factor=1.0, get_os=True, flatten_y=False):
     shape_node = None
