@@ -199,7 +199,6 @@ if __name__ == "__main__":
     eras = config["eras"]
     parameter_path = config["parameter_path"]
     schemes = config["schemes"]
-    stats_check = True if "stats-check" in schemes else False
     run_systematics = config["run_systematics"]
 
     available_channels = ["mm", "ee", "mt", "tt", "et"]
@@ -239,6 +238,7 @@ if __name__ == "__main__":
         parameter_file = f"{parameter_path}/{era}/params.yaml"
         for channel in channels:
             for scheme in schemes:
+                stats_check = (scheme == "stats-check")
                 settings = config[scheme]
                 output_folder = f"{output_path}/{era}/{scheme}/{channel}"
                 subprocess.run(["mkdir", "-p", output_folder])
