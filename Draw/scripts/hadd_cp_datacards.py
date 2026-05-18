@@ -1,11 +1,39 @@
 import ROOT
 import argparse
 import os
+import yaml
 from tqdm import tqdm
 from Draw.python.PlotHistograms import HTT_Histogram
+from Draw.scripts.makeDatacards import create_bins
 
 
-def hadd_root_files(input_files, output_file, dir_combinations, channel, exp_num=None):
+def find_variable(dir_name, channel, config):
+    category = dir_name[3:] # remove the channel prefix
+    if dir_name.endswith('_aiso'):
+        category = category[:-5] # remove the _aiso suffix
+    
+    plotting_variable = None
+    for entry in config['cpdecay'][channel]:
+        if entry['category'][0] == category:
+            plotting_variable = entry['plotting_variable'][0]
+            break
+    
+    try:
+        var = config['cpdecay']['variable_definitions'][plotting_variable]
+        return create_bins(var)
+    except KeyError:
+        return 'Bin number'
+
+
+def hadd_root_files(
+        input_files,
+        output_file,
+        dir_combinations,
+        channel,
+        config,
+        era,
+        exp_num=None,
+):
     """
     Combine ROOT files and merge specific directories by adding their histograms.
     
@@ -178,30 +206,43 @@ def hadd_root_files(input_files, output_file, dir_combinations, channel, exp_num
 
     print("Written output file:", output_file)
 
+    aco_categories = []
+    for entry in config['cpdecay'][channel]:
+        if 'aco' in entry['plotting_variable'][0]:
+            aco_categories.append(ch + '_' + entry['category'][0])
+            aco_categories.append(ch + '_' + entry['category'][0] + '_aiso')
+    aco_categories = set(aco_categories)
+
     for dir_name in dir_names:
 
-        blind = True
-        if 'mva_fake' in dir_name or 'mva_tau' in dir_name or 'aiso' in dir_name or '_ss' in dir_name:
-            blind = False
+        print('\033[1;34m=============================================\033[0m')
+        print(f"\033[1;34mPlotting directory: {dir_name}\033[0m")
 
+        blind = True
+        is2Dunrolled = False
         var_name = "Bin number"
-        if 'BDT_score' in dir_name or 'mva_fake' in dir_name or 'mva_tau' in dir_name or 'mva_higgs' in dir_name:
+        
+        if 'mva_fake' in dir_name or 'mva_tau' in dir_name or 'aiso' in dir_name or '_ss' in dir_name:
+            blind = False 
+        if 'mva_fake' in dir_name or 'mva_tau' in dir_name or 'mva_higgs' in dir_name:
             var_name = "BDT score"
-        elif 'aiso' in dir_name or dir_name == 'tt_higgs_pipi_ss':
-            var_name = r"$\phi_{CP}$"
-    
+        elif dir_name in aco_categories:
+            is2Dunrolled = True
+            var_name = find_variable(dir_name, channel, config)
+        
+            
         method = 6 # method that plots jetfakes
         # make a plot of the combined histograms
         Histo_Plotter = HTT_Histogram(
             output_file,
             dir_name,
             channel,
-            '...',
+            era,
             var_name,
             method,
             blind=blind,
             log_y=False,
-            is2Dunrolled=False,
+            is2Dunrolled=is2Dunrolled,
             save_name=output_file.replace('.root', f'_{dir_name}',)
         )
         Histo_Plotter.plot_1D_histo()
@@ -217,6 +258,8 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--output', required=True, help="Name of the output ROOT file")
     parser.add_argument('-e', '--expected', type=int, default=None, help="Expected number of input files each histogram should appear in i.e the number of eras")
     parser.add_argument('-c', '--channel', default='tt', help="Channel to process (default: 'tt')")
+    parser.add_argument('--config', type=str, default='Draw/scripts/cpdecay_datacards.yaml', help="Path to the configuration file (default: 'Draw/scripts/cpdecay_datacards.yaml')")
+    parser.add_argument('--era', type=str, default='earlyrun3', help="Affects lumi label only")
 
     # Parse arguments
     args = parser.parse_args()
@@ -230,7 +273,15 @@ if __name__ == "__main__":
     # channel to precess
     ch = args.channel
 
+    # era
+    era = args.era
+
+    # expected number of input files each histogram should appear in i.e the number of eras
     exp_num = args.expected
+
+    # Load the configuration file
+    with open(args.config, 'r') as f:
+        config = yaml.safe_load(f)
 
     # Define which directories to combine (customize this based on your case)
     if ch == 'tt':
@@ -272,5 +323,5 @@ if __name__ == "__main__":
 
 
     # Call the hadd function with the provided arguments
-    hadd_root_files(input_files, output_file, dir_combinations, ch, exp_num=exp_num)
-    # should be called added_histo_Run2Bins.root
+    hadd_root_files(input_files, output_file, dir_combinations, ch, config, era, exp_num=exp_num)
+   

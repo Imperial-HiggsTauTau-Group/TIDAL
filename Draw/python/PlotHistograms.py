@@ -402,7 +402,7 @@ class HTT_Histogram:
             step="post", facecolor='none', hatch='////////', edgecolor='grey', linewidth=0)
 
         # legends and labels
-        hep.cms.label(ax=self.ax, label="Preliminary", data=True, lumi=self.lumi, com=13.6, fontsize=16)
+        hep.cms.label(ax=self.ax, text="Work in progress", data=True, lumi=self.lumi, com=13.6, fontsize=16)
         self.ax.text(0.035, self.ch_label_height, self.channel_label, fontsize=18, fontweight="bold", transform=self.ax.transAxes)
         handles, labels = self.ax.get_legend_handles_labels()
 
