@@ -35,13 +35,13 @@ class Run3_2024:
     # Luminosity in fb-1
     lumi = 109 
     # Relative uncertainties in final bin
-    e0 = 0.6234
-    e1 = 0.1149
-    e2 = 0.1142
+    e0 = 0
+    e1 = 0.104
+    e2 = 0.103
     # Actual content in final bin
-    c0 = 1.2609
-    c1 = 59.906
-    c2 = 95.138
+    c0 = 0
+    c1 = 66.22
+    c2 = 111.86
     # Total absolute uncertainty in final bin
     E = (
         ((c0 * e0) ** 2 +  (c1 * e1) ** 2 + (c2 * e2) ** 2) ** 0.5

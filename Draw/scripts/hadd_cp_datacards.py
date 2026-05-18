@@ -4,6 +4,7 @@ import os
 from tqdm import tqdm
 from Draw.python.PlotHistograms import HTT_Histogram
 
+
 def hadd_root_files(input_files, output_file, dir_combinations, channel, exp_num=None):
     """
     Combine ROOT files and merge specific directories by adding their histograms.
