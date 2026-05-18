@@ -36,8 +36,9 @@ def describe_datacard(obj: ROOT.TH1):
     return RMS_per_window
 
 
-def summarise(directory: ROOT.TDirectory,
-              of_interest: list[str]
+def summarise(
+    directory: ROOT.TDirectory,
+    of_interest: list[str]
 ) -> dict[str, list[float]]:
     """
     Summarises the statistics of the variables in the given TDirectory.
