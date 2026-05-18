@@ -156,7 +156,6 @@ class HTT_Histogram:
                                     "Jet$\\to\\tau_h$": {"nodes": ["JetFakes", "JetFakesSublead"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
                                     "Other Genuine $\\tau$": {"nodes": ["ZTT", "TTT", "VVT"], "color": "yellow"},
-                                    # "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
                                     "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             self.lep1 = "\\tau_1"
@@ -169,7 +168,6 @@ class HTT_Histogram:
                                     "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
                                     "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                                    # "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
                                     "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             else:
@@ -179,7 +177,6 @@ class HTT_Histogram:
                                     "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
                                     "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                                    # "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
                                     "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             self.lep1 = "\\mu"
@@ -193,7 +190,6 @@ class HTT_Histogram:
                                     "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
                                     "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                                    # "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
                                     "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             else:
@@ -203,7 +199,6 @@ class HTT_Histogram:
                                     "$t\\bar{t}$": {"nodes": ["TTJ", "TTT"], "color": "violet"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL", "ZJ"], "color": "lightblue"},
                                     "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                                    # "VBF Z (genuine $\\tau$)": {"nodes": ["EWKZ"], "color": "pink"},
                                     "SM Higgs": {"nodes": ["qqH_sm_htt125","ggH_sm_prod_sm_htt125","WH_sm_htt125","ZH_sm_htt125"], "color": "darkblue"}
                                 }
             self.lep1 = "e"
@@ -390,7 +385,7 @@ class HTT_Histogram:
                     step="post", facecolor='none', hatch='////////', edgecolor='grey', linewidth=0, label = "Bkg. Uncert.")
         if not self.blind:
             # add data
-            self.ax.errorbar(self.bin_centers, self.data['counts'], label='Observation', yerr=self.data['errors'], fmt='o', color = 'black', markersize=3, linewidth=0.6)
+            self.ax.errorbar(self.bin_centers, self.data['counts'], label='Data', yerr=self.data['errors'], fmt='o', color = 'black', markersize=3, linewidth=0.6)
             self.ax.errorbar(self.bin_centers, self.data['counts'],xerr=self.bin_widths/2, fmt='o', color = 'black', markersize=3, linewidth=0.6) # add width marker
 
 
@@ -411,7 +406,7 @@ class HTT_Histogram:
             step="post", facecolor='none', hatch='////////', edgecolor='grey', linewidth=0)
 
         # legends and labels
-        hep.cms.label(ax=self.ax, label="Preliminary", data=True, lumi=self.lumi, com=13.6, fontsize=16)
+        hep.cms.label(ax=self.ax, label="Work in progress", data=True, lumi=self.lumi, com=13.6, fontsize=16)
         self.ax.text(0.035, self.ch_label_height, self.channel_label, fontsize=18, fontweight="bold", transform=self.ax.transAxes)
         handles, labels = self.ax.get_legend_handles_labels()
 
