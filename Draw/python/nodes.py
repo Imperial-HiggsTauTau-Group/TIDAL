@@ -118,7 +118,7 @@ def GetVVJNode(ana, add_name ='', samples=[], plot='', wt='', sel='', cat='', vv
   return ana.SummedFactory('VVJ'+add_name, samples, plot, full_selection)
 
 
-def GetSubtractNode(ana, add_name, plot, plot_unmodified, wt, sel, cat_name, categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=False, w_shift=None, jet_bin=False):
+def GetSubtractNode(ana, add_name, plot, plot_unmodified, wt, sel, cat_name, categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=False, w_shift=None):
     cat = categories[cat_name]
     cat_data = categories_unmodified[cat_name]
     subtract_node = Analysis.SummedNode('total_bkg'+add_name)
@@ -135,14 +135,8 @@ def GetSubtractNode(ana, add_name, plot, plot_unmodified, wt, sel, cat_name, cat
     subtract_node.AddNode(vvt_node)
     subtract_node.AddNode(vvj_node)
 
-    if jet_bin:
-        ztt_node_0J, ztt_node_1J, ztt_node_2J = GetZTTNode(ana, "", samples_dict['ztt_samples'], plot, wt, sel, cat, z_sels=gen_sels_dict['z_sels'], get_os=get_os, jet_bin=True)
-        subtract_node.AddNode(ztt_node_0J)
-        subtract_node.AddNode(ztt_node_1J)
-        subtract_node.AddNode(ztt_node_2J)
-    else:
-        ztt_node = GetZTTNode(ana, "", samples_dict['ztt_samples'], plot, wt, sel, cat, gen_sels_dict['z_sels'], get_os)
-        subtract_node.AddNode(ztt_node)
+    ztt_node = GetZTTNode(ana, "", samples_dict['ztt_samples'], plot, wt, sel, cat, gen_sels_dict['z_sels'], get_os)
+    subtract_node.AddNode(ztt_node)
 
     zl_node = GetZLNode(ana, "", samples_dict['ztt_samples']+samples_dict["zll_samples"], plot, wt, sel, cat, gen_sels_dict['z_sels'], get_os)
     zj_node = GetZJNode(ana, "", samples_dict['ztt_samples']+samples_dict["zll_samples"], plot, wt, sel, cat, gen_sels_dict['z_sels'], get_os)
