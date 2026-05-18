@@ -31,7 +31,6 @@ def hadd_root_files(
         dir_combinations,
         channel,
         config,
-        era,
         exp_num=None,
 ):
     """
@@ -203,6 +202,12 @@ def hadd_root_files(
     # Close the output file
     output.Close()
 
+    if len(config['eras']) == 1:
+        era = config['eras'][0]
+    elif set(config['eras']) == {'Run3_2022', 'Run3_2022EE', 'Run3_2023', 'Run3_2023BPix'}:
+        era = 'earlyrun3'
+    else:
+        era = '...'
 
     print("Written output file:", output_file)
 
@@ -229,7 +234,6 @@ def hadd_root_files(
         elif dir_name in aco_categories:
             is2Dunrolled = True
             var_name = find_variable(dir_name, channel, config)
-        
             
         method = 6 # method that plots jetfakes
         # make a plot of the combined histograms
@@ -258,8 +262,7 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--output', required=True, help="Name of the output ROOT file")
     parser.add_argument('-e', '--expected', type=int, default=None, help="Expected number of input files each histogram should appear in i.e the number of eras")
     parser.add_argument('-c', '--channel', default='tt', help="Channel to process (default: 'tt')")
-    parser.add_argument('--config', type=str, default='Draw/scripts/cpdecay_datacards.yaml', help="Path to the configuration file (default: 'Draw/scripts/cpdecay_datacards.yaml')")
-    parser.add_argument('--era', type=str, default='earlyrun3', help="Affects lumi label only")
+    parser.add_argument('--config', type=str, default=None, help="Path to the configuration file (default: 'Draw/scripts/cpdecay_datacards.yaml')")
 
     # Parse arguments
     args = parser.parse_args()
@@ -273,13 +276,18 @@ if __name__ == "__main__":
     # channel to precess
     ch = args.channel
 
-    # era
-    era = args.era
-
     # expected number of input files each histogram should appear in i.e the number of eras
     exp_num = args.expected
 
     # Load the configuration file
+    if args.config is None:
+        print(
+"""\033[1;91mWARNING: No config file provided, using default: \
+'Draw/scripts/cpdecay_datacards.yaml' — luminosity and BDT labels may not be \
+correct!\033[0m"""
+        )
+        args.config = 'Draw/scripts/cpdecay_datacards.yaml'
+
     with open(args.config, 'r') as f:
         config = yaml.safe_load(f)
 
@@ -323,5 +331,5 @@ if __name__ == "__main__":
 
 
     # Call the hadd function with the provided arguments
-    hadd_root_files(input_files, output_file, dir_combinations, ch, config, era, exp_num=exp_num)
+    hadd_root_files(input_files, output_file, dir_combinations, ch, config, exp_num=exp_num)
    
