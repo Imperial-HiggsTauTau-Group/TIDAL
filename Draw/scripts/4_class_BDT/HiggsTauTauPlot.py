@@ -303,7 +303,8 @@ if args.channel == "tt":
     categories["inclusive_PNet_a11prpi"] = "(%(sel_a11pr_1)s && %(sel_pi_2)s)" % vars()
     categories["inclusive_PNet_a11pra1"] = "(%(sel_a11pr_1)s && %(sel_a1_2)s)" % vars()
 
-    categories["mva_higgs"] = f"(BDT_pred_class==1) && ( ({sel_pi_1}) || ({sel_rho_1}) || ({sel_a1_1}) || ({sel_a11pr_1}) ) && ( ({sel_pi_2}) || ({sel_rho_2}) || ({sel_a1_2}) || ({sel_a11pr_2}) )"
+    categories["mva_ggH"] = f"(BDT_pred_class==11) && ( ({sel_pi_1}) || ({sel_rho_1}) || ({sel_a1_1}) || ({sel_a11pr_1}) ) && ( ({sel_pi_2}) || ({sel_rho_2}) || ({sel_a1_2}) || ({sel_a11pr_2}) )"
+    categories["mva_VBF"] = f"(BDT_pred_class==12) && ( ({sel_pi_1}) || ({sel_rho_1}) || ({sel_a1_1}) || ({sel_a11pr_1}) ) && ( ({sel_pi_2}) || ({sel_rho_2}) || ({sel_a1_2}) || ({sel_a11pr_2}) )"
     categories["mva_fake"] = f"(BDT_pred_class==2) && ( ({sel_pi_1}) || ({sel_rho_1}) || ({sel_a1_1}) || ({sel_a11pr_1}) ) && ( ({sel_pi_2}) || ({sel_rho_2}) || ({sel_a1_2}) || ({sel_a11pr_2}) )"
     categories["mva_tau"] = f"(BDT_pred_class==0) && ( ({sel_pi_1}) || ({sel_rho_1}) || ({sel_a1_1}) || ({sel_a11pr_1}) ) && ( ({sel_pi_2}) || ({sel_rho_2}) || ({sel_a1_2}) || ({sel_a11pr_2}) )"
 
@@ -325,16 +326,10 @@ if args.channel == "tt":
     ]
 
     for c in tt_channels:
-        categories[f"higgs_{c}"] = f"((BDT_pred_class==1) && {categories[f'inclusive_PNet_{c}']})"
+        categories[f"ggH_{c}"] = f"((BDT_pred_class==11) && {categories[f'inclusive_PNet_{c}']})"
+        categories[f"VBF_{c}"] = f"((BDT_pred_class==12) && {categories[f'inclusive_PNet_{c}']})"
         categories[f"tau_{c}"] = f"((BDT_pred_class==0) && {categories[f'inclusive_PNet_{c}']})"
         categories[f"fake_{c}"] = f"((BDT_pred_class==2) && {categories[f'inclusive_PNet_{c}']})"
-
-
-    # Define MVA categories by channels instead
-    # categories['mva_tau'] = f"((BDT_pred_class==0) && ({categories['inclusive_PNet_rhorho']} || {categories['inclusive_PNet_pirho']} || {categories['inclusive_PNet_rhopi']} || {categories['inclusive_PNet_a1rho']} || {categories['inclusive_PNet_rhoa1']} || {categories['inclusive_PNet_a1pi']} || {categories['inclusive_PNet_pia1']} || {categories['inclusive_PNet_a1a1']} || {categories['inclusive_PNet_pipi']} || {categories['inclusive_PNet_pia11pr']} || {categories['inclusive_PNet_a11prpi']} || {categories['inclusive_PNet_rhoa11pr']} || {categories['inclusive_PNet_a1a11pr']} || {categories['inclusive_PNet_a11pra1']}) )"
-    # categories['mva_fake'] = f"((BDT_pred_class==2) && ({categories['inclusive_PNet_rhorho']} || {categories['inclusive_PNet_pirho']} || {categories['inclusive_PNet_rhopi']} || {categories['inclusive_PNet_a1rho']} || {categories['inclusive_PNet_rhoa1']} || {categories['inclusive_PNet_a1pi']} || {categories['inclusive_PNet_pia1']} || {categories['inclusive_PNet_a1a1']} || {categories['inclusive_PNet_pipi']} || {categories['inclusive_PNet_pia11pr']} || {categories['inclusive_PNet_a11prpi']} || {categories['inclusive_PNet_rhoa11pr']} || {categories['inclusive_PNet_a1a11pr']} || {categories['inclusive_PNet_a11pra1']}) )"
-    # categories['mva_higgs'] = f"((BDT_pred_class==1) && ({categories['inclusive_PNet_rhorho']} || {categories['inclusive_PNet_pirho']} || {categories['inclusive_PNet_rhopi']} || {categories['inclusive_PNet_a1rho']} || {categories['inclusive_PNet_rhoa1']} || {categories['inclusive_PNet_a1pi']} || {categories['inclusive_PNet_pia1']} || {categories['inclusive_PNet_a1a1']} || {categories['inclusive_PNet_pipi']} || {categories['inclusive_PNet_pia11pr']} || {categories['inclusive_PNet_a11prpi']} || {categories['inclusive_PNet_rhoa11pr']} || {categories['inclusive_PNet_a1a11pr']} || {categories['inclusive_PNet_a11pra1']}) )"
-
 
     # alpha minus validation angles
     for opt, opt_cut in zip(['high', 'low'], ['>', '<']):
@@ -379,7 +374,8 @@ elif args.channel == "mt":
     # inclusive category including an mT cut to suppress W+jets
     categories['cp_inclusive'] = f"(({categories['sel_mupi']}) || ({categories['sel_murho']}) || ({categories['sel_mua11pr']}) || ({categories['sel_mua1']}))"
 
-    categories["mva_higgs"] = f"(BDT_pred_class==1) && ({categories['cp_inclusive']})"
+    categories["mva_ggH"] = f"(BDT_pred_class==11) && ({categories['cp_inclusive']})"
+    categories["mva_VBF"] = f"(BDT_pred_class==12) && ({categories['cp_inclusive']})"
     categories["mva_fake"] = f"(BDT_pred_class==2) && ({categories['cp_inclusive']})"
     categories["mva_tau"] = f"(BDT_pred_class==0) && ({categories['cp_inclusive']})"
 
@@ -390,7 +386,8 @@ elif args.channel == "mt":
         "mua1"
     ]
     for c in lt_channels:
-        categories[f"higgs_{c}"] = f"({categories['mva_higgs']} && {categories[f'sel_{c}']})"
+        categories[f"ggH_{c}"] = f"({categories['mva_ggH']} && {categories[f'sel_{c}']})"
+        categories[f"VBF_{c}"] = f"({categories['mva_VBF']} && {categories[f'sel_{c}']})"
         categories[f"tau_{c}"] = f"({categories['mva_tau']} && {categories[f'sel_{c}']})"
         categories[f"fake_{c}"] = f"({categories['mva_fake']} && {categories[f'sel_{c}']})"
 
@@ -429,7 +426,8 @@ elif args.channel == "et":
     # inclusive category including an mT cut to suppress W+jets
     categories['cp_inclusive'] = f"(({categories['sel_epi']}) || ({categories['sel_erho']}) || ({categories['sel_ea11pr']}) || ({categories['sel_ea1']}))"
 
-    categories["mva_higgs"] = f"(BDT_pred_class==1) && ({categories['cp_inclusive']})"
+    categories["mva_ggH"] = f"(BDT_pred_class==11) && ({categories['cp_inclusive']})"
+    categories["mva_VBF"] = f"(BDT_pred_class==12) && ({categories['cp_inclusive']})"
     categories["mva_fake"] = f"(BDT_pred_class==2) && ({categories['cp_inclusive']})"
     categories["mva_tau"] = f"(BDT_pred_class==0) && ({categories['cp_inclusive']})"
 
@@ -440,7 +438,8 @@ elif args.channel == "et":
         "ea1"
     ]
     for c in lt_channels:
-        categories[f"higgs_{c}"] = f"({categories['mva_higgs']} && {categories[f'sel_{c}']})"
+        categories[f"ggH_{c}"] = f"({categories['mva_ggH']} && {categories[f'sel_{c}']})"
+        categories[f"VBF_{c}"] = f"({categories['mva_VBF']} && {categories[f'sel_{c}']})"
         categories[f"tau_{c}"] = f"({categories['mva_tau']} && {categories[f'sel_{c}']})"
         categories[f"fake_{c}"] = f"({categories['mva_fake']} && {categories[f'sel_{c}']})"
 
