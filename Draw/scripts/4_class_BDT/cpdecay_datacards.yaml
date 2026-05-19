@@ -1,7 +1,7 @@
-input_folder: /vols/cms/dmw25/HiggsDNA/output/qqH_studies
-output_path: /vols/cms/dmw25/TIDAL/Draw/plots/qqH_studies
+input_folder: /vols/cms/dmw25/HiggsDNA/output/qqH_studies/EarlyRun3/tt_qqH_reweighted
+output_path: /vols/cms/dmw25/TIDAL/Draw/plots/qqH_studies/EarlyRun3
 channels: [tt]
-eras: [Run3_2024]
+eras: [Run3_2022, Run3_2022EE, Run3_2023, Run3_2023BPix]
 parameter_path: /vols/cms/dmw25/HiggsDNA/scripts/ditau/config
 schemes: [cpdecay]
 run_systematics: false
