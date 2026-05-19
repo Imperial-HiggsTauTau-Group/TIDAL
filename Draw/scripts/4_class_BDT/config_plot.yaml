@@ -47,5 +47,5 @@ control:
 
   tt:
   # GENERAL CONTROL
-  - { method: "3", category:  [ cp_inclusive ], plotting_variable: [ m_vis_tt, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
+  - { method: "4", category:  [ cp_inclusive ], plotting_variable: [ m_vis_tt, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
 

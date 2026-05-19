@@ -67,68 +67,68 @@ cpdecay:
 
   tt:
     # Nominal plots
-     - { method: '3', category:  ['mva_ggH'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false}
-     - { method: '3', category:  ['mva_VBF'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false}
-     - { method: '3', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: false}
-     - { method: '3', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_rhorho'], plotting_variable: [ MVA_vs_aco_rho_rho_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_pipi'], plotting_variable: [ MVA_vs_aco_pi_pi_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a1a1'], plotting_variable: [ MVA_vs_aco_a1_a1_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_pirho'], plotting_variable: [ MVA_vs_aco_pi_rho_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_rhopi'], plotting_variable: [ MVA_vs_aco_rho_pi_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_pia11pr'], plotting_variable: [ MVA_vs_aco_pi_a11pr_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a11prpi'], plotting_variable: [ MVA_vs_aco_a11pr_pi_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_rhoa11pr'], plotting_variable: [ MVA_vs_aco_rho_a11pr_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a1a11pr'], plotting_variable: [ MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a11pra1'], plotting_variable: [ MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a1rho'], plotting_variable: [ MVA_vs_aco_a1_rho_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_rhoa1'], plotting_variable: [ MVA_vs_aco_rho_a1_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a1pi'], plotting_variable: [ MVA_vs_aco_a1_pi_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_pia1'], plotting_variable: [ MVA_vs_aco_pi_a1_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: false}
+     - { method: '4', category:  ['mva_ggH'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: true }
+     - { method: '4', category:  ['mva_VBF'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: true }
+     - { method: '4', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: true }
+     - { method: '4', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_rhorho'], plotting_variable: [ MVA_vs_aco_rho_rho_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_pipi'], plotting_variable: [ MVA_vs_aco_pi_pi_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a1a1'], plotting_variable: [ MVA_vs_aco_a1_a1_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_pirho'], plotting_variable: [ MVA_vs_aco_pi_rho_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_rhopi'], plotting_variable: [ MVA_vs_aco_rho_pi_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_pia11pr'], plotting_variable: [ MVA_vs_aco_pi_a11pr_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a11prpi'], plotting_variable: [ MVA_vs_aco_a11pr_pi_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_rhoa11pr'], plotting_variable: [ MVA_vs_aco_rho_a11pr_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a1a11pr'], plotting_variable: [ MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a11pra1'], plotting_variable: [ MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a1rho'], plotting_variable: [ MVA_vs_aco_a1_rho_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_rhoa1'], plotting_variable: [ MVA_vs_aco_rho_a1_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a1pi'], plotting_variable: [ MVA_vs_aco_a1_pi_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_pia1'], plotting_variable: [ MVA_vs_aco_pi_a1_FASTMTT_MassConstraint_ggH], blind: true, unroll: true, use_filtered_DY: true }
     # aiso (for fake factor systematics)
-     - { method: '3', category:  ['mva_tau'], plotting_variable: [ MVA_score], aiso: true, use_filtered_DY: false}
-     - { method: '3', category:  ['mva_fake'], plotting_variable: [ MVA_score], aiso: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_rhorho'], plotting_variable: [ MVA_vs_aco_rho_rho_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_pipi'], plotting_variable: [ MVA_vs_aco_pi_pi_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a1a1'], plotting_variable: [ MVA_vs_aco_a1_a1_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_pirho'], plotting_variable: [ MVA_vs_aco_pi_rho_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_rhopi'], plotting_variable: [ MVA_vs_aco_rho_pi_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_pia11pr'], plotting_variable: [ MVA_vs_aco_pi_a11pr_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a11prpi'], plotting_variable: [ MVA_vs_aco_a11pr_pi_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_rhoa11pr'], plotting_variable: [ MVA_vs_aco_rho_a11pr_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a1a11pr'], plotting_variable: [ MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a11pra1'], plotting_variable: [ MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a1rho'], plotting_variable: [ MVA_vs_aco_a1_rho_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_rhoa1'], plotting_variable: [ MVA_vs_aco_rho_a1_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_a1pi'], plotting_variable: [ MVA_vs_aco_a1_pi_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['ggH_pia1'], plotting_variable: [ MVA_vs_aco_pi_a1_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: false}
+     - { method: '4', category:  ['mva_tau'], plotting_variable: [ MVA_score], aiso: true, use_filtered_DY: true }
+     - { method: '4', category:  ['mva_fake'], plotting_variable: [ MVA_score], aiso: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_rhorho'], plotting_variable: [ MVA_vs_aco_rho_rho_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_pipi'], plotting_variable: [ MVA_vs_aco_pi_pi_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a1a1'], plotting_variable: [ MVA_vs_aco_a1_a1_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_pirho'], plotting_variable: [ MVA_vs_aco_pi_rho_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_rhopi'], plotting_variable: [ MVA_vs_aco_rho_pi_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_pia11pr'], plotting_variable: [ MVA_vs_aco_pi_a11pr_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a11prpi'], plotting_variable: [ MVA_vs_aco_a11pr_pi_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_rhoa11pr'], plotting_variable: [ MVA_vs_aco_rho_a11pr_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a1a11pr'], plotting_variable: [ MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a11pra1'], plotting_variable: [ MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a1rho'], plotting_variable: [ MVA_vs_aco_a1_rho_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_rhoa1'], plotting_variable: [ MVA_vs_aco_rho_a1_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_a1pi'], plotting_variable: [ MVA_vs_aco_a1_pi_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['ggH_pia1'], plotting_variable: [ MVA_vs_aco_pi_a1_FASTMTT_MassConstraint_ggH], aiso: true, unroll: true, use_filtered_DY: true }
       # Nominal plots
-     - { method: '3', category:  ['VBF_rhorho'], plotting_variable: [ MVA_vs_aco_rho_rho_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_pipi'], plotting_variable: [ MVA_vs_aco_pi_pi_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a1a1'], plotting_variable: [ MVA_vs_aco_a1_a1_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_pirho'], plotting_variable: [ MVA_vs_aco_pi_rho_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_rhopi'], plotting_variable: [ MVA_vs_aco_rho_pi_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_pia11pr'], plotting_variable: [ MVA_vs_aco_pi_a11pr_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a11prpi'], plotting_variable: [ MVA_vs_aco_a11pr_pi_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_rhoa11pr'], plotting_variable: [ MVA_vs_aco_rho_a11pr_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a1a11pr'], plotting_variable: [ MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a11pra1'], plotting_variable: [ MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a1rho'], plotting_variable: [ MVA_vs_aco_a1_rho_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_rhoa1'], plotting_variable: [ MVA_vs_aco_rho_a1_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a1pi'], plotting_variable: [ MVA_vs_aco_a1_pi_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_pia1'], plotting_variable: [ MVA_vs_aco_pi_a1_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: false}
+     - { method: '4', category:  ['VBF_rhorho'], plotting_variable: [ MVA_vs_aco_rho_rho_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_pipi'], plotting_variable: [ MVA_vs_aco_pi_pi_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a1a1'], plotting_variable: [ MVA_vs_aco_a1_a1_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_pirho'], plotting_variable: [ MVA_vs_aco_pi_rho_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_rhopi'], plotting_variable: [ MVA_vs_aco_rho_pi_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_pia11pr'], plotting_variable: [ MVA_vs_aco_pi_a11pr_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a11prpi'], plotting_variable: [ MVA_vs_aco_a11pr_pi_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_rhoa11pr'], plotting_variable: [ MVA_vs_aco_rho_a11pr_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a1a11pr'], plotting_variable: [ MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a11pra1'], plotting_variable: [ MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a1rho'], plotting_variable: [ MVA_vs_aco_a1_rho_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_rhoa1'], plotting_variable: [ MVA_vs_aco_rho_a1_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a1pi'], plotting_variable: [ MVA_vs_aco_a1_pi_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_pia1'], plotting_variable: [ MVA_vs_aco_pi_a1_FASTMTT_MassConstraint_VBF], blind: true, unroll: true, use_filtered_DY: true }
     # aiso (for fake factor systematics)
-     - { method: '3', category:  ['VBF_rhorho'], plotting_variable: [ MVA_vs_aco_rho_rho_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_pipi'], plotting_variable: [ MVA_vs_aco_pi_pi_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a1a1'], plotting_variable: [ MVA_vs_aco_a1_a1_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_pirho'], plotting_variable: [ MVA_vs_aco_pi_rho_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_rhopi'], plotting_variable: [ MVA_vs_aco_rho_pi_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_pia11pr'], plotting_variable: [ MVA_vs_aco_pi_a11pr_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a11prpi'], plotting_variable: [ MVA_vs_aco_a11pr_pi_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_rhoa11pr'], plotting_variable: [ MVA_vs_aco_rho_a11pr_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a1a11pr'], plotting_variable: [ MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a11pra1'], plotting_variable: [ MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a1rho'], plotting_variable: [ MVA_vs_aco_a1_rho_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_rhoa1'], plotting_variable: [ MVA_vs_aco_rho_a1_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_a1pi'], plotting_variable: [ MVA_vs_aco_a1_pi_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: false}
-     - { method: '3', category:  ['VBF_pia1'], plotting_variable: [ MVA_vs_aco_pi_a1_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: false}
+     - { method: '4', category:  ['VBF_rhorho'], plotting_variable: [ MVA_vs_aco_rho_rho_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_pipi'], plotting_variable: [ MVA_vs_aco_pi_pi_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a1a1'], plotting_variable: [ MVA_vs_aco_a1_a1_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_pirho'], plotting_variable: [ MVA_vs_aco_pi_rho_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_rhopi'], plotting_variable: [ MVA_vs_aco_rho_pi_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_pia11pr'], plotting_variable: [ MVA_vs_aco_pi_a11pr_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a11prpi'], plotting_variable: [ MVA_vs_aco_a11pr_pi_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_rhoa11pr'], plotting_variable: [ MVA_vs_aco_rho_a11pr_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a1a11pr'], plotting_variable: [ MVA_vs_aco_a1_a11pr_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a11pra1'], plotting_variable: [ MVA_vs_aco_a11pr_a1_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a1rho'], plotting_variable: [ MVA_vs_aco_a1_rho_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_rhoa1'], plotting_variable: [ MVA_vs_aco_rho_a1_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_a1pi'], plotting_variable: [ MVA_vs_aco_a1_pi_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: true }
+     - { method: '4', category:  ['VBF_pia1'], plotting_variable: [ MVA_vs_aco_pi_a1_FASTMTT_MassConstraint_VBF], aiso: true, unroll: true, use_filtered_DY: true }
