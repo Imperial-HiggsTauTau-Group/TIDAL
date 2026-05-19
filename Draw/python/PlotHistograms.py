@@ -293,7 +293,7 @@ class HTT_Histogram:
         }
         self.variable_label = label_map.get(self.variable, self.variable)
         if self.is2Dunrolled:
-            if "BDT_pred_score,aco" in self.variable:
+            if ",aco_" in self.variable:
                 self.variable_label = "Acoplanarity Bin Number"
 
 
@@ -422,9 +422,9 @@ class HTT_Histogram:
             for b in boundaries:
                 self.ax_ratio.axvline(b, color='black', linestyle='--', linewidth=2)
                 self.ax.axvline(b, color='black', linestyle='--', linewidth=2)
-            if "BDT_pred_score," in self.variable:
+            if "BDT_" in self.variable:
                 # add text for binning of variable 1
-                label_loc = (np.arange(nrows)/nrows) + 0.03
+                label_loc = (np.arange(nrows)/nrows) + 0.01
                 for i, l in zip(range(nrows), label_loc):
                     # print(self.var_dim_1[i], self.var_dim_1[i+1])
                     self.ax.text(l, 0.84, f"BDT ({self.var_dim_1[i]}, {self.var_dim_1[i+1]})", fontsize=16, transform=self.ax.transAxes)

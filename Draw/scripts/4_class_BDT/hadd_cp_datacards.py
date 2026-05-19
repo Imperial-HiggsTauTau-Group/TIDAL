@@ -41,7 +41,7 @@ def hadd_root_files(
         output_file (str): Name of the output ROOT file.
         dir_combinations (dict): Dictionary where keys are new directory names and values are lists
                                  of directories to combine.
-                                 E.g., {'higgs_pirho': ['tt_higgs_pirho', 'tt_higgs_rhopi']}
+                                 E.g., {'ggH_pirho': ['tt_ggH_pirho', 'tt_ggH_rhopi']}
     """
     # Create an empty output ROOT file
     output = ROOT.TFile(output_file, "RECREATE")
@@ -229,7 +229,7 @@ def hadd_root_files(
         
         if 'mva_fake' in dir_name or 'mva_tau' in dir_name or 'aiso' in dir_name or '_ss' in dir_name:
             blind = False 
-        if 'mva_fake' in dir_name or 'mva_tau' in dir_name or 'mva_higgs' in dir_name:
+        if 'mva_fake' in dir_name or 'mva_tau' in dir_name or 'mva_ggH' in dir_name:
             var_name = "BDT score"
         elif dir_name in aco_categories:
             is2Dunrolled = True
@@ -283,10 +283,10 @@ if __name__ == "__main__":
     if args.config is None:
         print(
 """\033[1;91mWARNING: No config file provided, using default: \
-'Draw/scripts/cpdecay_datacards.yaml' — luminosity and BDT labels may not be \
-correct!\033[0m"""
+'Draw/scripts/4_class_BDT/cpdecay_datacards_2024.yaml' — luminosity and BDT \
+labels may not be correct!\033[0m"""
         )
-        args.config = 'Draw/scripts/cpdecay_datacards.yaml'
+        args.config = 'Draw/scripts/4_class_BDT/cpdecay_datacards_2024.yaml'
 
     with open(args.config, 'r') as f:
         config = yaml.safe_load(f)
@@ -294,11 +294,17 @@ correct!\033[0m"""
     # Define which directories to combine (customize this based on your case)
     if ch == 'tt':
         dir_combinations = {
-            'tt_higgs_pirho': ['tt_higgs_pirho', 'tt_higgs_rhopi'],
-            'tt_higgs_rhoa1': ['tt_higgs_a1rho', 'tt_higgs_rhoa1'],
-            'tt_higgs_pia1': ['tt_higgs_a1pi', 'tt_higgs_pia1'],
-            'tt_higgs_pia11pr': ['tt_higgs_pia11pr', 'tt_higgs_a11prpi'],
-            'tt_higgs_a11pra1': ['tt_higgs_a11pra1', 'tt_higgs_a1a11pr'],
+            'tt_ggH_pirho': ['tt_ggH_pirho', 'tt_ggH_rhopi'],
+            'tt_ggH_rhoa1': ['tt_ggH_a1rho', 'tt_ggH_rhoa1'],
+            'tt_ggH_pia1': ['tt_ggH_a1pi', 'tt_ggH_pia1'],
+            'tt_ggH_pia11pr': ['tt_ggH_pia11pr', 'tt_ggH_a11prpi'],
+            'tt_ggH_a11pra1': ['tt_ggH_a11pra1', 'tt_ggH_a1a11pr'],
+
+            'tt_VBF_pirho': ['tt_VBF_pirho', 'tt_VBF_rhopi'],
+            'tt_VBF_rhoa1': ['tt_VBF_a1rho', 'tt_VBF_rhoa1'],
+            'tt_VBF_pia1': ['tt_VBF_a1pi', 'tt_VBF_pia1'],
+            'tt_VBF_pia11pr': ['tt_VBF_pia11pr', 'tt_VBF_a11prpi'],
+            'tt_VBF_a11pra1': ['tt_VBF_a11pra1', 'tt_VBF_a1a11pr'],
 
             'tt_fake_pirho': ['tt_fake_pirho', 'tt_fake_rhopi'],
             'tt_fake_rhoa1': ['tt_fake_a1rho', 'tt_fake_rhoa1'],
@@ -323,10 +329,10 @@ correct!\033[0m"""
     elif ch in ['et', 'mt']:
         dir_combinations = None
         # {
-        #     'mt_higgs_mupi': ['mt_higgs_mupi'],
-        #     'mt_higgs_murho': ['mt_higgs_murho'],
-        #     'mt_higgs_mua11pr': ['mt_higgs_mua11pr'],
-        #     'mt_higgs_mua1': ['mt_higgs_mua1'],
+        #     'mt_ggH_mupi': ['mt_ggH_mupi'],
+        #     'mt_ggH_murho': ['mt_ggH_murho'],
+        #     'mt_ggH_mua11pr': ['mt_ggH_mua11pr'],
+        #     'mt_ggH_mua1': ['mt_ggH_mua1'],
         # }
 
 
