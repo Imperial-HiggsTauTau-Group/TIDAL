@@ -683,7 +683,7 @@ if args.era in available_eras:
             "ZZ",
             "ST_t_channel_top_4f_InclusiveDecays",
             "ST_t_channel_antitop_4f_InclusiveDecays",
-            "EWKZ_MLL-50_TuneCP5_13p6TeV_madgraph-pythia8",
+            # "EWKZ_MLL-50_TuneCP5_13p6TeV_madgraph-pythia8",
             "ST_tW_top_2L2Nu",
             "ST_tW_top_2L2Nu_ext1",
             "ST_tW_antitop_2L2Nu",
