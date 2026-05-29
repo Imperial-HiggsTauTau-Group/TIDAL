@@ -1,5 +1,5 @@
 input_folder: /vols/cms/dmw25/HiggsDNA/output/qqH_studies
-output_path: /vols/cms/dmw25/TIDAL/Draw/plots/qqH_studies
+output_path: /vols/cms/dmw25/TIDAL/Draw/plots/tauID_studies_2024/PNet
 channels: [tt]
 eras: [Run3_2024]
 parameter_path: /vols/cms/dmw25/HiggsDNA/scripts/ditau/config
