@@ -251,6 +251,8 @@ class HTT_Histogram:
             self.lumi = 62.41
         elif self.era == 'Run3_2024':
             self.lumi = 109.08
+        elif self.era == 'Run3_2025':
+            self.lumi = 110.58
         else: 
             self.lumi = 0.0
         # get color for each background

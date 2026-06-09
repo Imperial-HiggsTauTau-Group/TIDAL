@@ -178,6 +178,7 @@ available_eras = [
     "Run3_2023",
     "Run3_2023BPix",
     "Run3_2024",
+    "Run3_2025",
 ]
 early_run_3 = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
 
@@ -619,6 +620,68 @@ if args.era in available_eras:
                 "Tau_Run2024I_v2",
             ]
 
+    elif args.era == "Run3_2025":
+        if args.channel in ["ee", "et"]:
+            data_samples = [
+                'EGamma0_Run2025C_v1',
+                'EGamma0_Run2025C_v2',
+                'EGamma0_Run2025D',
+                'EGamma0_Run2025E',
+                'EGamma0_Run2025F_v1',
+                'EGamma0_Run2025F_v2',
+                'EGamma0_Run2025G',
+                'EGamma1_Run2025C_v1',
+                'EGamma1_Run2025C_v2',
+                'EGamma1_Run2025D',
+                'EGamma1_Run2025E',
+                'EGamma1_Run2025F_v1',
+                'EGamma1_Run2025F_v2',
+                'EGamma1_Run2025G',
+                'EGamma2_Run2025C_v1',
+                'EGamma2_Run2025C_v2',
+                'EGamma2_Run2025D',
+                'EGamma2_Run2025E',
+                'EGamma2_Run2025F_v1',
+                'EGamma2_Run2025F_v2',
+                'EGamma2_Run2025G',
+                'EGamma3_Run2025C_v1',
+                'EGamma3_Run2025C_v2',
+                'EGamma3_Run2025D',
+                'EGamma3_Run2025E',
+                'EGamma3_Run2025F_v1',
+                'EGamma3_Run2025F_v2',
+                'EGamma3_Run2025G'
+            ] 
+
+        elif args.channel in ["mm", "mt"]:
+            data_samples = [
+                'Muon0_Run2025C_v1',
+                'Muon0_Run2025C_v2',
+                'Muon0_Run2025D',
+                'Muon0_Run2025E',
+                'Muon0_Run2025F_v1',
+                'Muon0_Run2025F_v2',
+                'Muon0_Run2025G',
+                'Muon1_Run2025C_v1',
+                'Muon1_Run2025C_v2',
+                'Muon1_Run2025D',
+                'Muon1_Run2025E',
+                'Muon1_Run2025F_v1',
+                'Muon1_Run2025F_v2',
+                'Muon1_Run2025G'
+            ]
+
+        elif args.channel == "tt":
+            data_samples = [
+                'Tau_Run2025C_v1',
+                'Tau_Run2025C_v2',
+                'Tau_Run2025D',
+                'Tau_Run2025E',
+                'Tau_Run2025F_v1',
+                'Tau_Run2025F_v2',
+                'Tau_Run2025G'
+            ]
+
     samples_dict["data_samples"] = data_samples
 
     # MC (background) samples
@@ -722,7 +785,7 @@ if args.era in available_eras:
             vv_samples.remove("ST_tW_antitop_LNu2Q_ext1")
             wjets_samples.remove("WtoLNu_madgraphMLM_ext1")
 
-    elif args.era in ["Run3_2024"]:
+    elif args.era in ["Run3_2024", "Run3_2025"]:
         # MC (background) samples
         ztt_samples = [
             'DYto2Tau_MLL_50_amcatnloFXFX',
