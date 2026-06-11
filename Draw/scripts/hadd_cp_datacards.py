@@ -218,6 +218,8 @@ def hadd_root_files(
         era = config['eras'][0]
     elif set(config['eras']) == {'Run3_2022', 'Run3_2022EE', 'Run3_2023', 'Run3_2023BPix'}:
         era = 'earlyrun3'
+    elif set(config['eras']) == {'Run3_2024', 'Run3_2025'}:
+        era = 'laterun3'
     else:
         era = '...'
 
