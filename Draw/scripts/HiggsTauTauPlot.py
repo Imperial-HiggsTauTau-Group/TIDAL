@@ -182,7 +182,7 @@ available_eras = [
 ]
 early_run_3 = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
 
-algo_VSjet = 'PNet' if args.era == 'Run3_2024' else 'DeepTau2018v2p5'
+algo_VSjet = 'PNet' if (args.era == 'Run3_2024' and args.channel == "tt") else 'DeepTau2018v2p5'
 wp_VSjet = '7'  # VTight
 
 if args.era in available_eras:
@@ -273,7 +273,7 @@ categories["xt_dM1"] = "(decayMode_2 == 1)"
 categories["xt_dM10"] = "(decayMode_2 == 10)"
 categories["xt_dM11"] = "(decayMode_2 == 11)"
 
-cut_IPsig = 1.25 if args.era in early_run_3 else 1.15
+cut_IPsig = 1.25
 cut_Esplit = 0.2 if args.era in early_run_3 else 0.15
 
 if args.channel == "tt":
