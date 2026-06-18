@@ -182,7 +182,7 @@ available_eras = [
 ]
 early_run_3 = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
 
-tau_id_algo = 'PNet' if args.era == 'Run3_2024' else 'DeepTau2018v2p5'
+algo_VSjet = 'PNet' if args.era == 'Run3_2024' else 'DeepTau2018v2p5'
 wp_VSjet = '7'  # VTight
 
 if args.era in available_eras:
@@ -199,7 +199,7 @@ if args.era in available_eras:
         single_muon_only = "(trg_singlemuon && pt_1 > 26  && abs(eta_1) < 2.4)"
         trg_full = single_muon_only #"(%s || %s)" % (mt_cross_only, single_muon_only)
         categories["baseline"] = (
-            f"(m_vis>40 && iso_1 < 0.15 && id{tau_id_algo}VSjet_2 >= {wp_VSjet} && id{tau_id_algo}VSe_2 >= 2 && id{tau_id_algo}VSmu_2 >= 4 && %s)"
+            f"(m_vis>40 && iso_1 < 0.15 && id{algo_VSjet}VSjet_2 >= {wp_VSjet} && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
         if args.do_aiso:
@@ -208,8 +208,8 @@ if args.era in available_eras:
             )
             
         categories["lt_ff_AR"] = categories["baseline"].replace(
-            f"id{tau_id_algo}VSjet_2 >= {wp_VSjet}",
-            f"id{tau_id_algo}VSjet_2 < {wp_VSjet} && id{tau_id_algo}VSjet_2 >= 1",
+            f"id{algo_VSjet}VSjet_2 >= {wp_VSjet}",
+            f"id{algo_VSjet}VSjet_2 < {wp_VSjet} && id{algo_VSjet}VSjet_2 >= 1",
         )
         
     if args.channel == "et":
@@ -217,7 +217,7 @@ if args.era in available_eras:
         single_electron_only = "(trg_singleelectron && pt_1 >= 32 && abs(eta_1) < 2.1 )"
         trg_full = single_electron_only # remove et cross trigger until Nanoprod v3
         categories["baseline"] = ( # Tight VSe for et
-            f"(m_vis>40 && iso_1 < 0.15 && id{tau_id_algo}VSjet_2 >= {wp_VSjet} && id{tau_id_algo}VSe_2 >= 6 && id{tau_id_algo}VSmu_2 >= 4 && %s)"
+            f"(m_vis>40 && iso_1 < 0.15 && id{algo_VSjet}VSjet_2 >= {wp_VSjet} && idDeepTau2018v2p5VSe_2 >= 6 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
         if args.do_aiso:
@@ -226,8 +226,8 @@ if args.era in available_eras:
             )
 
         categories["lt_ff_AR"] = categories["baseline"].replace(
-            f"id{tau_id_algo}VSjet_2 >= {wp_VSjet}",
-            f"id{tau_id_algo}VSjet_2 < {wp_VSjet} && id{tau_id_algo}VSjet_2 >= 1",
+            f"id{algo_VSjet}VSjet_2 >= {wp_VSjet}",
+            f"id{algo_VSjet}VSjet_2 < {wp_VSjet} && id{algo_VSjet}VSjet_2 >= 1",
         )
 
     if args.channel == "tt":
@@ -235,23 +235,23 @@ if args.era in available_eras:
         doubletaujet_only_trg = "(trg_doubletauandjet && pt_1 > 35 && pt_2 > 35 && jpt_1 > 60)"  # might need to revise jet cut later on
         trg_full = "(%s || %s)" % (doubletau_only_trg, doubletaujet_only_trg)
         categories["baseline"] = (
-            f"(m_vis > 40 && id{tau_id_algo}VSjet_1 >= {wp_VSjet} && id{tau_id_algo}VSjet_2 >= {wp_VSjet} && id{tau_id_algo}VSe_1 >= 2 && id{tau_id_algo}VSe_2 >= 2 && id{tau_id_algo}VSmu_1 >= 4 && id{tau_id_algo}VSmu_2 >= 4 && %s)"
+            f"(m_vis > 40 && id{algo_VSjet}VSjet_1 >= {wp_VSjet} && id{algo_VSjet}VSjet_2 >= {wp_VSjet} && idDeepTau2018v2p5VSe_1 >= 2 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_1 >= 4 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
 
         if args.do_aiso:
             categories["baseline"] = categories["baseline"].replace(
-                f"id{tau_id_algo}VSjet_2 >= {wp_VSjet}",
-                f"id{tau_id_algo}VSjet_2 < {wp_VSjet} && id{tau_id_algo}VSjet_2 >= 1",
+                f"id{algo_VSjet}VSjet_2 >= {wp_VSjet}",
+                f"id{algo_VSjet}VSjet_2 < {wp_VSjet} && id{algo_VSjet}VSjet_2 >= 1",
             )
 
         categories["tt_qcd_norm"] = categories["baseline"].replace(
-            f"id{tau_id_algo}VSjet_1 >= {wp_VSjet}",
-            f"id{tau_id_algo}VSjet_1 < {wp_VSjet} && id{tau_id_algo}VSjet_1 >= 1",
+            f"id{algo_VSjet}VSjet_1 >= {wp_VSjet}",
+            f"id{algo_VSjet}VSjet_1 < {wp_VSjet} && id{algo_VSjet}VSjet_1 >= 1",
         )
         categories["tt_ff_AR"] = categories["baseline"].replace(
-            f"id{tau_id_algo}VSjet_1 >= {wp_VSjet}",
-            f"id{tau_id_algo}VSjet_1 < {wp_VSjet} && id{tau_id_algo}VSjet_1 >= 1",
+            f"id{algo_VSjet}VSjet_1 >= {wp_VSjet}",
+            f"id{algo_VSjet}VSjet_1 < {wp_VSjet} && id{algo_VSjet}VSjet_1 >= 1",
         )
         categories["subleadfake"] = (
             categories["baseline"] + "&& genPartFlav_1 != 0 && genPartFlav_2 == 0"
@@ -1260,7 +1260,7 @@ res_corrections_2024 = {
     'UParT': {'5': 0.9508, '6': 0.9296, '7': 0.9094},
 }
 
-genuine_sf = res_corrections_2024[tau_id_algo][wp_VSjet] if args.era == "Run3_2024" else 1.0
+genuine_sf = res_corrections_2024[algo_VSjet][wp_VSjet] if args.era == "Run3_2024" else 1.0
 
 weight = "(weight)"
 if args.add_weight:
