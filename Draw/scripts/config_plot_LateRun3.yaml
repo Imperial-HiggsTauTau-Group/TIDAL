@@ -5,6 +5,7 @@ eras: [Run3_2024]
 parameter_path: /vols/cms/dmw25/HiggsDNA/scripts/ditau/config
 schemes: [control]
 run_systematics: false
+tau_id: DeepTau2018v2p5,7
 
 control:
 
