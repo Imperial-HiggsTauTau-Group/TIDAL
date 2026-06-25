@@ -131,6 +131,7 @@ parser.add_argument(
     "--auto_rebin", action="store_true", help="Automatically rebin histograms"
 )
 parser.add_argument("--stats-check", action="store_true", help="Make datacards for statistical checks")
+parser.add_argument("--tau_id", default="DeepTau2018v2p5VSjet", help="Tau ID discriminant prefix (e.g. DeepTau2018v2p5VSjet, PNet, UParT)")
 
 # ------------------------------------------------------------------------------------------------------------------------
 args = parser.parse_args()
@@ -171,6 +172,24 @@ method = int(args.method)
 # ------------------------------------------------------------------------------------------------------------------------
 # Define baseline selections and different categories
 # TODO: add option to change triggers
+
+# Set Tau ID algorithm:
+if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:
+    tau_id_algo = "DeepTau2018v2p5"
+elif args.era in ["Run3_2024"]:
+    tau_id_algo = "PNet"
+tau_id_wp =  args.tau_id.split(',')[1]
+
+# res_corrections = {
+#     'DeepTau2018v2p5': {'5': 0.9927, '6': 0.9793, '7': 0.9647},
+#     'PNet': {'5': 0.9636, '6': 0.9387, '7': 0.9194},
+#     'UParT': {'5': 0.9508, '6': 0.9296, '7': 0.9094},
+# }
+
+# genuine_sf = res_corrections[tau_id_algo][tau_id_wp]
+
+# print(f"\n Tau ID genuine SF being applied: {genuine_sf} \n")
+
 categories = {}
 available_eras = [
     "Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix", "Run3_2024",
@@ -189,17 +208,17 @@ if args.era in available_eras:
         single_muon_only = "(trg_singlemuon && pt_1 > 26  && abs(eta_1) < 2.4)"
         trg_full = single_muon_only #"(%s || %s)" % (mt_cross_only, single_muon_only)
         categories["baseline"] = (
-            "(m_vis>40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            f"(m_vis>40 && iso_1 < 0.15 && id{tau_id_algo}VSjet_2 >= {tau_id_wp} && id{tau_id_algo}VSe_2 >= 2 && id{tau_id_algo}VSmu_2 >= 4 && %s)"
             % trg_full
         )
         if args.do_aiso:
             categories["baseline"] = re.sub(
                 "iso_1\s*<\s*0.15", "iso_1 > 0.05 && iso_1 < 0.2", categories["baseline"] # aiso cut based on what is used for the FF DR
             )
-            
+
         categories["lt_ff_AR"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_2 >= 7",
-            "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+            f"id{tau_id_algo}VSjet_2 >= {tau_id_wp}",
+            f"id{tau_id_algo}VSjet_2 < {tau_id_wp} && id{tau_id_algo}VSjet_2 >= 1",
         )
         
     if args.channel == "et":
@@ -207,7 +226,7 @@ if args.era in available_eras:
         single_electron_only = "(trg_singleelectron && pt_1 >= 32 && abs(eta_1) < 2.1 )"
         trg_full = single_electron_only # remove et cross trigger until Nanoprod v3
         categories["baseline"] = ( # Tight VSe for et
-            "(m_vis>40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 6 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            f"(m_vis>40 && iso_1 < 0.15 && id{tau_id_algo}VSjet_2 >= {tau_id_wp} && id{tau_id_algo}VSe_2 >= 6 && id{tau_id_algo}VSmu_2 >= 4 && %s)"
             % trg_full
         )
         if args.do_aiso:
@@ -216,8 +235,8 @@ if args.era in available_eras:
             )
 
         categories["lt_ff_AR"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_2 >= 7",
-            "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+            f"id{tau_id_algo}VSjet_2 >= {tau_id_wp}",
+            f"id{tau_id_algo}VSjet_2 < {tau_id_wp} && id{tau_id_algo}VSjet_2 >= 1",
         )
 
     if args.channel == "tt":
@@ -225,23 +244,23 @@ if args.era in available_eras:
         doubletaujet_only_trg = "(trg_doubletauandjet && pt_1 > 35 && pt_2 > 35 && jpt_1 > 60)"  # might need to revise jet cut later on
         trg_full = "(%s || %s)" % (doubletau_only_trg, doubletaujet_only_trg)
         categories["baseline"] = (
-            "(m_vis > 40 && idDeepTau2018v2p5VSjet_1 >= 7 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_1 >= 2 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_1 >= 4 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            f"(m_vis > 40 && id{tau_id_algo}VSjet_1 >= {tau_id_wp} && id{tau_id_algo}VSjet_2 >= {tau_id_wp} && id{tau_id_algo}VSe_1 >= 2 && id{tau_id_algo}VSe_2 >= 2 && id{tau_id_algo}VSmu_1 >= 4 && id{tau_id_algo}VSmu_2 >= 4 && %s)"
             % trg_full
         )
 
         if args.do_aiso:
             categories["baseline"] = categories["baseline"].replace(
-                "idDeepTau2018v2p5VSjet_2 >= 7",
-                "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+                f"id{tau_id_algo}VSjet_2 >= {tau_id_wp}",
+                f"id{tau_id_algo}VSjet_2 < {tau_id_wp} && id{tau_id_algo}VSjet_2 >= 1",
             )
 
         categories["tt_qcd_norm"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_1 >= 7",
-            "idDeepTau2018v2p5VSjet_1 < 7 && idDeepTau2018v2p5VSjet_1 >= 1",
+            f"id{tau_id_algo}VSjet_1 >= {tau_id_wp}",
+            f"id{tau_id_algo}VSjet_1 < {tau_id_wp} && id{tau_id_algo}VSjet_1 >= 1",
         )
         categories["tt_ff_AR"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_1 >= 7",
-            "idDeepTau2018v2p5VSjet_1 < 7 && idDeepTau2018v2p5VSjet_1 >= 1",
+            f"id{tau_id_algo}VSjet_1 >= {tau_id_wp}",
+            f"id{tau_id_algo}VSjet_1 < {tau_id_wp} && id{tau_id_algo}VSjet_1 >= 1",
         )
         categories["subleadfake"] = (
             categories["baseline"] + "&& genPartFlav_1 != 0 && genPartFlav_2 == 0"
@@ -1183,7 +1202,11 @@ else:
 weight = "(weight)"
 if args.add_weight:
     weight += "*" + args.add_weight
-# weight += "/(w_Tau_e_FakeRate*w_Tau_mu_FakeRate)"
+# weight += "/(w_Tau_ID)"
+# if args.channel == 'mt':
+#     weight += f'*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
+# elif args.channel == 'tt':
+#     weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
 # set systematics:
 # - 1st index sets folder name contaning systematic samples
 # - 2nd index sets string to be appended to output histograms

@@ -105,6 +105,7 @@ def create_shell_script(
     use_filtered_DY=False,
     nodename="",
     stats_check=False,
+    tau_id="DeepTau2018v2p5VSjet",
 ):
     shell_script = f"""
 #!/bin/bash
@@ -151,6 +152,8 @@ python3 Draw/scripts/HiggsTauTauPlot.py \\
         shell_script += f" \\\n--nodename {nodename}"
     if stats_check:
         shell_script += " \\\n--stats-check"
+    if tau_id != "DeepTau2018v2p5VSjet":
+        shell_script += f" \\\n--tau_id {tau_id}"
 
     with open(script_path, "w") as script_file:
         print(shell_script)
@@ -206,6 +209,7 @@ if __name__ == "__main__":
     parameter_path = config["parameter_path"]
     schemes = config["schemes"]
     run_systematics = config["run_systematics"]
+    tau_id = config.get("tau_id", "DeepTau2018v2p5VSjet")
 
     available_channels = ["mm", "ee", "mt", "tt", "et"]
     for channel in channels:
@@ -377,6 +381,7 @@ if __name__ == "__main__":
                                     use_filtered_DY=use_filtered_DY,
                                     nodename=nodename,
                                     stats_check=stats_check,
+                                    tau_id=tau_id,
                                 )
 
                                 submit_file = os.path.join(
