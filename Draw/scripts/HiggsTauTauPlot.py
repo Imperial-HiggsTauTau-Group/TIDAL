@@ -173,8 +173,18 @@ method = int(args.method)
 # TODO: add option to change triggers
 categories = {}
 available_eras = [
-    "Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix", "Run3_2024",
+    "Run3_2022",
+    "Run3_2022EE",
+    "Run3_2023",
+    "Run3_2023BPix",
+    "Run3_2024",
+    "Run3_2025",
 ]
+early_run_3 = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
+
+algo_VSjet = 'PNet' if (args.era in early_run_3 and args.channel == "tt") else 'DeepTau2018v2p5'
+wp_VSjet = '7'  # VTight
+
 if args.era in available_eras:
     if args.channel == "ee":
         categories["baseline"] = (
@@ -189,7 +199,7 @@ if args.era in available_eras:
         single_muon_only = "(trg_singlemuon && pt_1 > 26  && abs(eta_1) < 2.4)"
         trg_full = single_muon_only #"(%s || %s)" % (mt_cross_only, single_muon_only)
         categories["baseline"] = (
-            "(m_vis>40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            f"(m_vis>40 && iso_1 < 0.15 && id{algo_VSjet}VSjet_2 >= {wp_VSjet} && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
         if args.do_aiso:
@@ -198,8 +208,8 @@ if args.era in available_eras:
             )
             
         categories["lt_ff_AR"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_2 >= 7",
-            "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+            f"id{algo_VSjet}VSjet_2 >= {wp_VSjet}",
+            f"id{algo_VSjet}VSjet_2 < {wp_VSjet} && id{algo_VSjet}VSjet_2 >= 1",
         )
         
     if args.channel == "et":
@@ -207,7 +217,7 @@ if args.era in available_eras:
         single_electron_only = "(trg_singleelectron && pt_1 >= 32 && abs(eta_1) < 2.1 )"
         trg_full = single_electron_only # remove et cross trigger until Nanoprod v3
         categories["baseline"] = ( # Tight VSe for et
-            "(m_vis>40 && iso_1 < 0.15 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_2 >= 6 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            f"(m_vis>40 && iso_1 < 0.15 && id{algo_VSjet}VSjet_2 >= {wp_VSjet} && idDeepTau2018v2p5VSe_2 >= 6 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
         if args.do_aiso:
@@ -216,8 +226,8 @@ if args.era in available_eras:
             )
 
         categories["lt_ff_AR"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_2 >= 7",
-            "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+            f"id{algo_VSjet}VSjet_2 >= {wp_VSjet}",
+            f"id{algo_VSjet}VSjet_2 < {wp_VSjet} && id{algo_VSjet}VSjet_2 >= 1",
         )
 
     if args.channel == "tt":
@@ -225,23 +235,23 @@ if args.era in available_eras:
         doubletaujet_only_trg = "(trg_doubletauandjet && pt_1 > 35 && pt_2 > 35 && jpt_1 > 60)"  # might need to revise jet cut later on
         trg_full = "(%s || %s)" % (doubletau_only_trg, doubletaujet_only_trg)
         categories["baseline"] = (
-            "(m_vis > 40 && idDeepTau2018v2p5VSjet_1 >= 7 && idDeepTau2018v2p5VSjet_2 >= 7 && idDeepTau2018v2p5VSe_1 >= 2 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_1 >= 4 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
+            f"(m_vis > 40 && id{algo_VSjet}VSjet_1 >= {wp_VSjet} && id{algo_VSjet}VSjet_2 >= {wp_VSjet} && idDeepTau2018v2p5VSe_1 >= 2 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_1 >= 4 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
         )
 
         if args.do_aiso:
             categories["baseline"] = categories["baseline"].replace(
-                "idDeepTau2018v2p5VSjet_2 >= 7",
-                "idDeepTau2018v2p5VSjet_2 < 7 && idDeepTau2018v2p5VSjet_2 >= 1",
+                f"id{algo_VSjet}VSjet_2 >= {wp_VSjet}",
+                f"id{algo_VSjet}VSjet_2 < {wp_VSjet} && id{algo_VSjet}VSjet_2 >= 1",
             )
 
         categories["tt_qcd_norm"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_1 >= 7",
-            "idDeepTau2018v2p5VSjet_1 < 7 && idDeepTau2018v2p5VSjet_1 >= 1",
+            f"id{algo_VSjet}VSjet_1 >= {wp_VSjet}",
+            f"id{algo_VSjet}VSjet_1 < {wp_VSjet} && id{algo_VSjet}VSjet_1 >= 1",
         )
         categories["tt_ff_AR"] = categories["baseline"].replace(
-            "idDeepTau2018v2p5VSjet_1 >= 7",
-            "idDeepTau2018v2p5VSjet_1 < 7 && idDeepTau2018v2p5VSjet_1 >= 1",
+            f"id{algo_VSjet}VSjet_1 >= {wp_VSjet}",
+            f"id{algo_VSjet}VSjet_1 < {wp_VSjet} && id{algo_VSjet}VSjet_1 >= 1",
         )
         categories["subleadfake"] = (
             categories["baseline"] + "&& genPartFlav_1 != 0 && genPartFlav_2 == 0"
@@ -263,11 +273,13 @@ categories["xt_dM1"] = "(decayMode_2 == 1)"
 categories["xt_dM10"] = "(decayMode_2 == 10)"
 categories["xt_dM11"] = "(decayMode_2 == 11)"
 
-if args.channel == "tt":
+cut_IPsig = 1.25
+cut_Esplit = 0.2 if args.era in early_run_3 else 0.15
 
-    sel_pi = "decayModePNet_X==0 && ip_LengthSig_X>=1.25"
-    sel_rho = "decayMode_X==1 && decayModePNet_X==1 && pion_E_split_X>0.2"
-    sel_a11pr = "decayMode_X==1 && decayModePNet_X==2 && pion_E_split_X>0.2"
+if args.channel == "tt":
+    sel_pi = f"decayModePNet_X==0 && ip_LengthSig_X>={cut_IPsig}"
+    sel_rho = f"decayMode_X==1 && decayModePNet_X==1 && pion_E_split_X>{cut_Esplit}"
+    sel_a11pr = f"decayMode_X==1 && decayModePNet_X==2 && pion_E_split_X>{cut_Esplit}"
     sel_a1 = "decayModePNet_X==10 && hasRefitSV_X"
 
     sel_pi_1 = sel_pi.replace("X", "1")
@@ -359,11 +371,11 @@ if args.channel == "tt":
 
 elif args.channel == "mt":
     # PNet DM separated categories for SFs (with CP selections)
-    categories["DM0_tau_cp"] = "decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
-    categories["DM1_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
-    categories["DM2_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
-    categories["DM10_tau_cp"] = "decayModePNet_2 == 10 && hasRefitSV_2"
-    categories["DM11_tau_cp"] = "decayModePNet_2 == 11 && hasRefitSV_2"
+    categories["DM0_tau_cp"] = f"decayModePNet_2 == 0 && ip_LengthSig_2 >= {cut_IPsig}"
+    categories["DM1_tau_cp"] = f"decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > {cut_Esplit}"
+    categories["DM2_tau_cp"] = f"decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > {cut_Esplit}"
+    categories["DM10_tau_cp"] = f"decayModePNet_2 == 10 && hasRefitSV_2"
+    categories["DM11_tau_cp"] = f"decayModePNet_2 == 11 && hasRefitSV_2"
 
     # HPS DM separate categories (inclusive)
     categories["DM0_tau"] = "decayMode_2 == 0"
@@ -372,10 +384,10 @@ elif args.channel == "mt":
     categories["DM11_tau"] = "decayMode_2==11"
 
     # CP measurement categories
-    categories["sel_mupi"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
-    categories["sel_murho"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
-    categories["sel_mua11pr"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
-    categories["sel_mua1"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2"
+    categories["sel_mupi"] = f"ip_LengthSig_1>1.0 && decayModePNet_2 == 0 && ip_LengthSig_2 >= {cut_IPsig}"
+    categories["sel_murho"] = f"ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > {cut_Esplit}"
+    categories["sel_mua11pr"] = f"ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > {cut_Esplit}"
+    categories["sel_mua1"] = f"ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2"
     # inclusive category including an mT cut to suppress W+jets
     categories['cp_inclusive'] = f"(({categories['sel_mupi']}) || ({categories['sel_murho']}) || ({categories['sel_mua11pr']}) || ({categories['sel_mua1']}))"
 
@@ -409,11 +421,11 @@ elif args.channel == "mt":
 
 elif args.channel == "et":
     # PNet DM separated categories for SFs (with CP selections)
-    categories["DM0_tau_cp"] = "decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
-    categories["DM1_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
-    categories["DM2_tau_cp"] = "decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
-    categories["DM10_tau_cp"] = "decayModePNet_2 == 10 && hasRefitSV_2"
-    categories["DM11_tau_cp"] = "decayModePNet_2 == 11 && hasRefitSV_2"
+    categories["DM0_tau_cp"] = f"decayModePNet_2 == 0 && ip_LengthSig_2 >= {cut_IPsig}"
+    categories["DM1_tau_cp"] = f"decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > {cut_Esplit}"
+    categories["DM2_tau_cp"] = f"decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > {cut_Esplit}"
+    categories["DM10_tau_cp"] = f"decayModePNet_2 == 10 && hasRefitSV_2"
+    categories["DM11_tau_cp"] = f"decayModePNet_2 == 11 && hasRefitSV_2"
 
     # HPS DM separate categories (inclusive)
     categories["DM0_tau"] = "decayMode_2 == 0"
@@ -422,10 +434,10 @@ elif args.channel == "et":
     categories["DM11_tau"] = "decayMode_2==11"
 
     # CP measurement categories
-    categories["sel_epi"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 0 && ip_LengthSig_2 >= 1.25"
-    categories["sel_erho"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > 0.2"
-    categories["sel_ea11pr"] = "ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > 0.2"
-    categories["sel_ea1"] = "ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2"
+    categories["sel_epi"] = f"ip_LengthSig_1>1.0 && decayModePNet_2 == 0 && ip_LengthSig_2 >= {cut_IPsig}"
+    categories["sel_erho"] = f"ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > {cut_Esplit}"
+    categories["sel_ea11pr"] = f"ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > {cut_Esplit}"
+    categories["sel_ea1"] = f"ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2"
     # inclusive category including an mT cut to suppress W+jets
     categories['cp_inclusive'] = f"(({categories['sel_epi']}) || ({categories['sel_erho']}) || ({categories['sel_ea11pr']}) || ({categories['sel_ea1']}))"
 
@@ -609,10 +621,72 @@ if args.era in available_eras:
                 "Tau_Run2024I_v2",
             ]
 
+    elif args.era == "Run3_2025":
+        if args.channel in ["ee", "et"]:
+            data_samples = [
+                'EGamma0_Run2025C_v1',
+                'EGamma0_Run2025C_v2',
+                'EGamma0_Run2025D',
+                'EGamma0_Run2025E',
+                'EGamma0_Run2025F_v1',
+                'EGamma0_Run2025F_v2',
+                'EGamma0_Run2025G',
+                'EGamma1_Run2025C_v1',
+                'EGamma1_Run2025C_v2',
+                'EGamma1_Run2025D',
+                'EGamma1_Run2025E',
+                'EGamma1_Run2025F_v1',
+                'EGamma1_Run2025F_v2',
+                'EGamma1_Run2025G',
+                'EGamma2_Run2025C_v1',
+                'EGamma2_Run2025C_v2',
+                'EGamma2_Run2025D',
+                'EGamma2_Run2025E',
+                'EGamma2_Run2025F_v1',
+                'EGamma2_Run2025F_v2',
+                'EGamma2_Run2025G',
+                'EGamma3_Run2025C_v1',
+                'EGamma3_Run2025C_v2',
+                'EGamma3_Run2025D',
+                'EGamma3_Run2025E',
+                'EGamma3_Run2025F_v1',
+                'EGamma3_Run2025F_v2',
+                'EGamma3_Run2025G'
+            ] 
+
+        elif args.channel in ["mm", "mt"]:
+            data_samples = [
+                'Muon0_Run2025C_v1',
+                'Muon0_Run2025C_v2',
+                'Muon0_Run2025D',
+                'Muon0_Run2025E',
+                'Muon0_Run2025F_v1',
+                'Muon0_Run2025F_v2',
+                'Muon0_Run2025G',
+                'Muon1_Run2025C_v1',
+                'Muon1_Run2025C_v2',
+                'Muon1_Run2025D',
+                'Muon1_Run2025E',
+                'Muon1_Run2025F_v1',
+                'Muon1_Run2025F_v2',
+                'Muon1_Run2025G'
+            ]
+
+        elif args.channel == "tt":
+            data_samples = [
+                'Tau_Run2025C_v1',
+                'Tau_Run2025C_v2',
+                'Tau_Run2025D',
+                'Tau_Run2025E',
+                'Tau_Run2025F_v1',
+                'Tau_Run2025F_v2',
+                'Tau_Run2025G'
+            ]
+
     samples_dict["data_samples"] = data_samples
 
     # MC (background) samples
-    if args.era in ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]:  
+    if args.era in early_run_3:  
         if args.LO_DY:
             print("WARNING: Using LO DY samples")
             ztt_samples = [
@@ -712,7 +786,7 @@ if args.era in available_eras:
             vv_samples.remove("ST_tW_antitop_LNu2Q_ext1")
             wjets_samples.remove("WtoLNu_madgraphMLM_ext1")
 
-    elif args.era in ["Run3_2024"]:
+    elif args.era in ["Run3_2024", "Run3_2025"]:
         # MC (background) samples
         ztt_samples = [
             'DYto2Tau_MLL_50_amcatnloFXFX',
@@ -1183,6 +1257,7 @@ else:
 weight = "(weight)"
 if args.add_weight:
     weight += "*" + args.add_weight
+
 # weight += "/(w_Tau_e_FakeRate*w_Tau_mu_FakeRate)"
 # set systematics:
 # - 1st index sets folder name contaning systematic samples

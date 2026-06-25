@@ -25,6 +25,18 @@ def find_variable(dir_name, channel, config):
         return 'Bin number'
 
 
+def find_config(input_files):
+    channel_dir = os.path.dirname(input_files[0])
+    scheme_dir = os.path.dirname(channel_dir)
+    year_dir = os.path.dirname(scheme_dir)
+    output_dir = os.path.dirname(year_dir)
+    ls = os.listdir(output_dir)
+    for f in ls:
+        if f.endswith('.yaml') and f.startswith('cpdecay_datacards'):
+            return os.path.join(output_dir, f)
+    return 'Draw/scripts/cpdecay_datacards.yaml'  # default if not found
+
+
 def hadd_root_files(
         input_files,
         output_file,
@@ -206,6 +218,8 @@ def hadd_root_files(
         era = config['eras'][0]
     elif set(config['eras']) == {'Run3_2022', 'Run3_2022EE', 'Run3_2023', 'Run3_2023BPix'}:
         era = 'earlyrun3'
+    elif set(config['eras']) == {'Run3_2024', 'Run3_2025'}:
+        era = 'laterun3'
     else:
         era = '...'
 
@@ -281,13 +295,13 @@ if __name__ == "__main__":
 
     # Load the configuration file
     if args.config is None:
+        args.config = find_config(args.input)
         print(
-"""\033[1;91mWARNING: No config file provided, using default: \
-'Draw/scripts/cpdecay_datacards.yaml' — luminosity and BDT labels may not be \
+f"""\033[1;91mWARNING: No config file provided, using default: \
+{args.config} — luminosity and BDT labels may not be \
 correct!\033[0m"""
         )
-        args.config = 'Draw/scripts/cpdecay_datacards.yaml'
-
+        
     with open(args.config, 'r') as f:
         config = yaml.safe_load(f)
 
