@@ -182,7 +182,7 @@ available_eras = [
 ]
 early_run_3 = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
 
-algo_VSjet = 'PNet' if (args.era == 'Run3_2024' and args.channel == "tt") else 'DeepTau2018v2p5'
+algo_VSjet = 'PNet' if (args.era in early_run_3 and args.channel == "tt") else 'DeepTau2018v2p5'
 wp_VSjet = '7'  # VTight
 
 if args.era in available_eras:
@@ -275,15 +275,12 @@ categories["xt_dM11"] = "(decayMode_2 == 11)"
 
 cut_IPsig = 1.25
 cut_Esplit = 0.2 if args.era in early_run_3 else 0.15
-cut_SVsig = 30.0
 
 if args.channel == "tt":
-    sel_SVsig = "" if args.era in early_run_3 else f" && sv_LengthSig_X>={cut_SVsig}"
-
     sel_pi = f"decayModePNet_X==0 && ip_LengthSig_X>={cut_IPsig}"
     sel_rho = f"decayMode_X==1 && decayModePNet_X==1 && pion_E_split_X>{cut_Esplit}"
     sel_a11pr = f"decayMode_X==1 && decayModePNet_X==2 && pion_E_split_X>{cut_Esplit}"
-    sel_a1 = "decayModePNet_X==10 && hasRefitSV_X" + sel_SVsig
+    sel_a1 = "decayModePNet_X==10 && hasRefitSV_X"
 
     sel_pi_1 = sel_pi.replace("X", "1")
     sel_pi_2 = sel_pi.replace("X", "2")
@@ -373,14 +370,12 @@ if args.channel == "tt":
 
 
 elif args.channel == "mt":
-    sel_SVsig = "" if args.era in early_run_3 else f" && sv_LengthSig_2>={cut_SVsig}"
-
     # PNet DM separated categories for SFs (with CP selections)
     categories["DM0_tau_cp"] = f"decayModePNet_2 == 0 && ip_LengthSig_2 >= {cut_IPsig}"
     categories["DM1_tau_cp"] = f"decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > {cut_Esplit}"
     categories["DM2_tau_cp"] = f"decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > {cut_Esplit}"
-    categories["DM10_tau_cp"] = f"decayModePNet_2 == 10 && hasRefitSV_2" + sel_SVsig
-    categories["DM11_tau_cp"] = f"decayModePNet_2 == 11 && hasRefitSV_2" + sel_SVsig
+    categories["DM10_tau_cp"] = f"decayModePNet_2 == 10 && hasRefitSV_2"
+    categories["DM11_tau_cp"] = f"decayModePNet_2 == 11 && hasRefitSV_2"
 
     # HPS DM separate categories (inclusive)
     categories["DM0_tau"] = "decayMode_2 == 0"
@@ -392,7 +387,7 @@ elif args.channel == "mt":
     categories["sel_mupi"] = f"ip_LengthSig_1>1.0 && decayModePNet_2 == 0 && ip_LengthSig_2 >= {cut_IPsig}"
     categories["sel_murho"] = f"ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > {cut_Esplit}"
     categories["sel_mua11pr"] = f"ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > {cut_Esplit}"
-    categories["sel_mua1"] = f"ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2" + sel_SVsig
+    categories["sel_mua1"] = f"ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2"
     # inclusive category including an mT cut to suppress W+jets
     categories['cp_inclusive'] = f"(({categories['sel_mupi']}) || ({categories['sel_murho']}) || ({categories['sel_mua11pr']}) || ({categories['sel_mua1']}))"
 
@@ -425,14 +420,12 @@ elif args.channel == "mt":
 
 
 elif args.channel == "et":
-    sel_SVsig = "" if args.era in early_run_3 else f" && sv_LengthSig_2>={cut_SVsig}"
-
     # PNet DM separated categories for SFs (with CP selections)
     categories["DM0_tau_cp"] = f"decayModePNet_2 == 0 && ip_LengthSig_2 >= {cut_IPsig}"
     categories["DM1_tau_cp"] = f"decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > {cut_Esplit}"
     categories["DM2_tau_cp"] = f"decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > {cut_Esplit}"
-    categories["DM10_tau_cp"] = f"decayModePNet_2 == 10 && hasRefitSV_2" + sel_SVsig
-    categories["DM11_tau_cp"] = f"decayModePNet_2 == 11 && hasRefitSV_2" + sel_SVsig
+    categories["DM10_tau_cp"] = f"decayModePNet_2 == 10 && hasRefitSV_2"
+    categories["DM11_tau_cp"] = f"decayModePNet_2 == 11 && hasRefitSV_2"
 
     # HPS DM separate categories (inclusive)
     categories["DM0_tau"] = "decayMode_2 == 0"
@@ -444,7 +437,7 @@ elif args.channel == "et":
     categories["sel_epi"] = f"ip_LengthSig_1>1.0 && decayModePNet_2 == 0 && ip_LengthSig_2 >= {cut_IPsig}"
     categories["sel_erho"] = f"ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 1 && pion_E_split_2 > {cut_Esplit}"
     categories["sel_ea11pr"] = f"ip_LengthSig_1>1.0 && decayMode_2==1 && decayModePNet_2 == 2 && pion_E_split_2 > {cut_Esplit}"
-    categories["sel_ea1"] = f"ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2" + sel_SVsig
+    categories["sel_ea1"] = f"ip_LengthSig_1>1.0 && decayModePNet_2 == 10 && hasRefitSV_2"
     # inclusive category including an mT cut to suppress W+jets
     categories['cp_inclusive'] = f"(({categories['sel_epi']}) || ({categories['sel_erho']}) || ({categories['sel_ea11pr']}) || ({categories['sel_ea1']}))"
 
@@ -1261,19 +1254,9 @@ elif args.channel == "et":
 else:
     qcd_factor = 1.0
 
-res_corrections_2024 = {
-    'DeepTau2018v2p5': {'5': 0.9927, '6': 0.9793, '7': 0.9647},
-    'PNet': {'5': 0.9636, '6': 0.9387, '7': 0.9194},
-    'UParT': {'5': 0.9508, '6': 0.9296, '7': 0.9094},
-}
-
-genuine_sf = res_corrections_2024[algo_VSjet][wp_VSjet] if args.era == "Run3_2024" else 1.0
-
 weight = "(weight)"
 if args.add_weight:
     weight += "*" + args.add_weight
-if args.channel == "tt":
-    weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
 
 # weight += "/(w_Tau_e_FakeRate*w_Tau_mu_FakeRate)"
 # set systematics:
