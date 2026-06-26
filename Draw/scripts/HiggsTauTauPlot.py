@@ -198,8 +198,11 @@ res_corrections = {
               'UParT': {'5': 1.0146, '6': 0.9900, '7': 0.9625}}
 }
 
-genuine_sf = res_corrections[args.era][algo_VSjet][wp_VSjet]
-print(f"WARNING: Applying flat SF of {genuine_sf:.4f} for genuine taus in {args.era}")
+if args.era not in early_run_3:
+    genuine_sf = res_corrections[args.era][algo_VSjet][wp_VSjet]
+    print(f"WARNING: Applying flat SF of {genuine_sf:.4f} for genuine taus in {args.era}")
+else:
+    genuine_sf = 1.0
 
 if args.era in available_eras:
     if args.channel == "ee":
@@ -1273,11 +1276,12 @@ else:
 weight = "(weight)"
 if args.add_weight:
     weight += "*" + args.add_weight
-# TEMPORARY flat SFs
-if args.channel in ['et', 'mt']:
-    weight += f'*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
-elif args.channel == 'tt':
-    weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
+if args.era in early_run_3:
+    # TEMPORARY flat SFs
+    if args.channel in ['et', 'mt']:
+        weight += f'*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
+    elif args.channel == 'tt':
+        weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
 
 # example of how to remove a :
 # weight += "/(w_Tau_e_FakeRate*w_Tau_mu_FakeRate)"
