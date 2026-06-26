@@ -187,15 +187,19 @@ early_run_3 = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
 algo_VSjet = args.tau_id.split(',')[0]
 wp_VSjet =  args.tau_id.split(',')[1]
 
-# TODO: make these era dependant and remeasure
-# res_corrections = {
-#     'DeepTau2018v2p5': {'5': 0.9927, '6': 0.9793, '7': 0.9647},
-#     'PNet': {'5': 0.9636, '6': 0.9387, '7': 0.9194},
-#     'UParT': {'5': 0.9508, '6': 0.9296, '7': 0.9094},
-# }
 
-# genuine_sf = res_corrections[tau_id_algo][tau_id_wp]
 
+res_corrections = {
+'Run3_2024': {'DeepTau2018v2p5': {'5': 0.9927, '6': 0.9801, '7': 0.9649},
+			  'PNet': {'5': 0.9588, '6': 0.9339, '7': 0.9163},
+              'UParT': {'5': 0.9475, '6': 0.9258, '7': 0.9051}},
+'Run3_2025': {'DeepTau2018v2p5': {'5': 1.0548, '6': 1.0341, '7': 1.0100},
+			  'PNet': {'5': 0.9992, '6': 0.9656, '7': 0.9365},
+              'UParT': {'5': 1.0146, '6': 0.9900, '7': 0.9625}}
+}
+
+genuine_sf = res_corrections[args.era][algo_VSjet][wp_VSjet]
+print(f"WARNING: Applying flat SF of {genuine_sf:.4f} for genuine taus in {args.era}")
 
 if args.era in available_eras:
     if args.channel == "ee":
@@ -1270,10 +1274,10 @@ weight = "(weight)"
 if args.add_weight:
     weight += "*" + args.add_weight
 # TEMPORARY flat SFs
-# if args.channel in ['et', 'mt']:
-#     weight += f'*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
-# elif args.channel == 'tt':
-#     weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
+if args.channel in ['et', 'mt']:
+    weight += f'*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
+elif args.channel == 'tt':
+    weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
 
 # example of how to remove a :
 # weight += "/(w_Tau_e_FakeRate*w_Tau_mu_FakeRate)"
