@@ -1,6 +1,6 @@
 input_folder: /vols/cms/dmw25/HiggsDNA/output/LateRun3
-output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/DeriveFlatIDSFs/PNet_7/
-channels: [mt]
+output_path: /vols/cms/lcr119/offline/HiggsCP/TIDAL/Draw/Plots/WithFlatIDSFs/PNet_7/
+channels: [mt,tt]
 eras: [Run3_2024, Run3_2025]
 parameter_path: /vols/cms/dmw25/HiggsDNA/scripts/ditau/config
 schemes: [control]
