@@ -190,25 +190,25 @@ def hadd_root_files(
         hist.Write(hist_name)
 
     # Uncomment the below if you want to manually create 'JetFakes' histograms by summing MC jet backgrounds
-    # if channel in ['mt', 'et']: # manually create jet fakes while without FFs
-    #     for key in output.GetListOfKeys():
-    #         if key.GetClassName() != "TDirectoryFile":
-    #             continue
-    #         dirname = key.GetName()
-    #         print(f"Processing directory: {dirname}")
-    #         dir_obj = output.GetDirectory(dirname)
-    #         hists = [dir_obj.Get(hn) for hn in ["TTJ", "VVJ", "W", "QCD", "ZJ"]]
-    #         hists_to_sum = [h for h in hists if h is not None]
-    #         if not hists_to_sum:
-    #             continue
-    #         # Clone first histo and add others
-    #         h_sum = hists_to_sum[0].Clone("JetFakes")
-    #         h_sum.Reset() # clear
-    #         for h in hists_to_sum:
-    #             h_sum.Add(h)
-    #         # Write to directory
-    #         dir_obj.cd()
-    #         h_sum.Write("JetFakes")
+    if channel in ['mt', 'et']: # manually create jet fakes while without FFs
+        for key in output.GetListOfKeys():
+            if key.GetClassName() != "TDirectoryFile":
+                continue
+            dirname = key.GetName()
+            print(f"Processing directory: {dirname}")
+            dir_obj = output.GetDirectory(dirname)
+            hists = [dir_obj.Get(hn) for hn in ["TTJ", "VVJ", "W", "QCD", "ZJ"]]
+            hists_to_sum = [h for h in hists if h is not None]
+            if not hists_to_sum:
+                continue
+            # Clone first histo and add others
+            h_sum = hists_to_sum[0].Clone("JetFakes")
+            h_sum.Reset() # clear
+            for h in hists_to_sum:
+                h_sum.Add(h)
+            # Write to directory
+            dir_obj.cd()
+            h_sum.Write("JetFakes")
 
 
     # Close the output file

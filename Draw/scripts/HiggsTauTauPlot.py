@@ -57,6 +57,7 @@ parser.add_argument("--method", default=1, help="Method to run on")
 parser.add_argument("--category", default="inclusive", help="Category to run on")
 parser.add_argument("--var", type=str, help="Variable to plot")
 parser.add_argument("--run_systematics", action="store_true", help="Run systematics")
+parser.add_argument("--tau_id", default="DeepTau2018v2p5VSjet,7", help="Tau ID discriminant prefix (e.g. DeepTau2018v2p5VSjet, PNet, UParT)")
 
 # Available Systematic Options:
 # ------------------------------------------------------------------------------------------------------------------------
@@ -182,8 +183,26 @@ available_eras = [
 ]
 early_run_3 = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
 
-algo_VSjet = 'PNet' if (args.era in early_run_3 and args.channel == "tt") else 'DeepTau2018v2p5'
-wp_VSjet = '7'  # VTight
+# Set Tau ID algorithm
+algo_VSjet = args.tau_id.split(',')[0]
+wp_VSjet =  args.tau_id.split(',')[1]
+
+
+
+res_corrections = {
+'Run3_2024': {'DeepTau2018v2p5': {'5': 0.9927, '6': 0.9801, '7': 0.9649},
+			  'PNet': {'5': 0.9588, '6': 0.9339, '7': 0.9163},
+              'UParT': {'5': 0.9475, '6': 0.9258, '7': 0.9051}},
+'Run3_2025': {'DeepTau2018v2p5': {'5': 1.0548, '6': 1.0341, '7': 1.0100},
+			  'PNet': {'5': 0.9992, '6': 0.9656, '7': 0.9365},
+              'UParT': {'5': 1.0146, '6': 0.9900, '7': 0.9625}}
+}
+
+if args.era not in early_run_3:
+    genuine_sf = res_corrections[args.era][algo_VSjet][wp_VSjet]
+    print(f"WARNING: Applying flat SF of {genuine_sf:.4f} for genuine taus in {args.era}")
+else:
+    genuine_sf = 1.0
 
 if args.era in available_eras:
     if args.channel == "ee":
@@ -1257,7 +1276,14 @@ else:
 weight = "(weight)"
 if args.add_weight:
     weight += "*" + args.add_weight
+if args.era in early_run_3:
+    # TEMPORARY flat SFs
+    if args.channel in ['et', 'mt']:
+        weight += f'*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
+    elif args.channel == 'tt':
+        weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
 
+# example of how to remove a :
 # weight += "/(w_Tau_e_FakeRate*w_Tau_mu_FakeRate)"
 # set systematics:
 # - 1st index sets folder name contaning systematic samples
