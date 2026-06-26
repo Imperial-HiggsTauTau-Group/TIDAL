@@ -56,7 +56,8 @@ rax.set_xlabel(r"$m_{vis}$")
 rax.set_ylabel("Ratio")
 rax.set_ylim(0.5, 1.5)
 
-hep.cms.label(ax=ax, text="Work in progress", data=True, lumi=109.08, com=13.6, fontsize=16)
+lumi = 109.08 if "2024" in args.file else 110.58
+hep.cms.label(ax=ax, text="Work in progress", data=True, lumi=lumi, com=13.6, fontsize=16)
 
 fig.savefig(args.file.replace('.root', "_correction.pdf"), bbox_inches="tight")
 plt.close(fig)
