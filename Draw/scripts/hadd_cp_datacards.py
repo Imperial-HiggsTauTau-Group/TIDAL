@@ -245,9 +245,12 @@ def hadd_root_files(
             blind = False 
         if 'mva_fake' in dir_name or 'mva_tau' in dir_name or 'mva_higgs' in dir_name:
             var_name = "BDT score"
-        elif dir_name in aco_categories:
-            is2Dunrolled = True
-            var_name = find_variable(dir_name, channel, config)
+        else:
+            for aco_category in aco_categories:
+                if aco_category in dir_name:
+                    is2Dunrolled = True
+                    var_name = find_variable(aco_category, channel, config)
+                    break
             
         method = 6 # method that plots jetfakes
         # make a plot of the combined histograms

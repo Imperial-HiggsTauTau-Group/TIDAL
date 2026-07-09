@@ -842,6 +842,9 @@ if args.era in available_eras:
             'WtoTauNu_madgraphMLM',
         ]
 
+        if args.channel == "ee":
+            wjets_samples.remove('WtoMuNu_madgraphMLM')
+
     # MC (signal) samples
     if args.channel in ["et", "mt", "tt"]:
         signal_samples = {
@@ -1282,6 +1285,10 @@ if args.era in early_run_3:
         weight += f'*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
     elif args.channel == 'tt':
         weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
+
+# electronHlt.json.gz not available for 2025 yet
+if args.era == "Run3_2025" and args.channel in ["ee", "et"]:
+    weight += "/(w_Trigger)"
 
 # example of how to remove a :
 # weight += "/(w_Tau_e_FakeRate*w_Tau_mu_FakeRate)"

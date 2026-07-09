@@ -428,7 +428,7 @@ class HTT_Histogram:
                 self.ax.axvline(b, color='black', linestyle='--', linewidth=2)
             if "BDT_" in self.variable:
                 # add text for binning of variable 1
-                label_loc = (np.arange(nrows)/nrows) + 0.01
+                label_loc = (np.arange(nrows)/nrows) + 0.02
                 for i, l in zip(range(nrows), label_loc):
                     # print(self.var_dim_1[i], self.var_dim_1[i+1])
                     self.ax.text(l, 0.84, f"BDT ({self.var_dim_1[i]}, {self.var_dim_1[i+1]})", fontsize=16, transform=self.ax.transAxes)
