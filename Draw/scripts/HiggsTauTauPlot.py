@@ -1260,6 +1260,10 @@ weight = "(weight)"
 if args.add_weight:
     weight += "*" + args.add_weight
 
+# Remove this once we have electronHlt.json.gz for 2025 implemented
+if args.era == "Run3_2025" and args.channel in ["ee", "et"]:
+    weight += "/(w_Trigger)"
+
 # weight += "/(w_Tau_e_FakeRate*w_Tau_mu_FakeRate)"
 # set systematics:
 # - 1st index sets folder name contaning systematic samples
