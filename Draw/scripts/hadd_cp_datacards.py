@@ -228,8 +228,7 @@ def hadd_root_files(
     aco_categories = []
     for entry in config['cpdecay'][channel]:
         if 'aco' in entry['plotting_variable'][0]:
-            aco_categories.append(ch + '_' + entry['category'][0])
-            aco_categories.append(ch + '_' + entry['category'][0] + '_aiso')
+            aco_categories.append(channel + '_' + entry['category'][0])
     aco_categories = set(aco_categories)
 
     for dir_name in dir_names:
@@ -245,9 +244,12 @@ def hadd_root_files(
             blind = False 
         if 'mva_fake' in dir_name or 'mva_tau' in dir_name or 'mva_higgs' in dir_name:
             var_name = "BDT score"
-        elif dir_name in aco_categories:
-            is2Dunrolled = True
-            var_name = find_variable(dir_name, channel, config)
+        else:
+            for aco_category in aco_categories:
+                if aco_category in dir_name:
+                    is2Dunrolled = True
+                    var_name = find_variable(aco_category, channel, config)
+                    break
             
         method = 6 # method that plots jetfakes
         # make a plot of the combined histograms
