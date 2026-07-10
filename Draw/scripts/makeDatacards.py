@@ -374,6 +374,8 @@ if __name__ == "__main__":
                                     additional_weight,
                                     variable_name,
                                     script_path,
+                                    IPsig=IPsig,
+                                    Esplit=Esplit,
                                     run_systematics=run_systematics,
                                     systematics_to_run=systematics_to_run,
                                     blind=blind,

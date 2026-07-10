@@ -17,47 +17,63 @@ def get_args():
     return parser.parse_args()
 
 
-def update_config(config, output, IPsig, Esplit):
+def to_string(value: float) -> str:
+    return str(value).replace(".", "p")
+
+
+def create_temp_config(config, output, IPsig, Esplit):
     with open(config, "r") as f:
         config_dict = yaml.safe_load(f)
 
-    config_dict["output_path"] = f"{output}/IPsig_{IPsig}_Esplit_{Esplit}"
+    temp_config_dir = "Draw/scripts/temp_configs"
+    os.makedirs(temp_config_dir, exist_ok=True)
+    temp_config = os.path.join(
+        temp_config_dir,
+        f"IPsig_{to_string(IPsig)}_Esplit_{to_string(Esplit)}.yaml"
+    )
+
+    config_dict["output_path"] = f"{output}/IPsig_{to_string(IPsig)}_Esplit_{to_string(Esplit)}"
     config_dict["IPsig"] = IPsig
     config_dict["Esplit"] = Esplit
 
-    with open(config, "w") as f:
-        yaml.dump(config_dict, f)
+    with open(temp_config, "w") as f:
+        yaml.dump(config_dict, f, sort_keys=False)
+
+    return temp_config
 
 
 def main(args):
     config = config_files[args.step]
-
     IPsig_values = [1.25]
     Esplit_values = [0.20]
 
     for IPsig in IPsig_values:
         for Esplit in Esplit_values:
-
             if args.step in ["control", "cpdecay"]:
-                update_config(config, args.output, IPsig, Esplit)
+                temp_config = create_temp_config(config, args.output, IPsig, Esplit)
                 subprocess.run([
                     "python",
                     "Draw/scripts/makeDatacards.py",
                     "--config",
-                    config,
+                    temp_config,
                     "--batch"
                 ])
             
             if args.step == "hadd":
-                os.makedirs(f"{args.output}/IPsig_{IPsig}_Esplit_{Esplit}/Combined", exist_ok=True)
-
+                os.makedirs(f"{args.output}/IPsig_{to_string(IPsig)}_Esplit_{to_string(Esplit)}/Combined", exist_ok=True)
                 hadd_command = (
-                    ["python", "Draw/scripts/hadd_datacards.py", "-i"]
-                    + glob(f"{args.output}/IPsig_{IPsig}_Esplit_{Esplit}/Run3_*/cpdecay/*/*.root")
-                    + ["-o", f"{args.output}/IPsig_{IPsig}_Esplit_{Esplit}/Combined/added_histo.root"]
+                    ["python", "Draw/scripts/hadd_cp_datacards.py", "-i"]
+                    + glob(f"{args.output}/IPsig_{to_string(IPsig)}_Esplit_{to_string(Esplit)}/Run3_*/cpdecay/*/*.root")
+                    + ["-o", f"{args.output}/IPsig_{to_string(IPsig)}_Esplit_{to_string(Esplit)}/Combined/added_histo.root"]
                 )
-                
                 subprocess.run(hadd_command)
+
+    if args.step in ["control", "cpdecay"]:
+        # Clean up temporary config files
+        temp_config_dir = "Draw/scripts/temp_configs"
+        for temp_file in glob(os.path.join(temp_config_dir, "*.yaml")):
+            os.remove(temp_file)
+
 
 if __name__ == "__main__":
     args = get_args()
