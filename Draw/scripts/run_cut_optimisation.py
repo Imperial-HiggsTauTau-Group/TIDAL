@@ -59,7 +59,7 @@ def main(args):
                     "--batch"
                 ])
             
-            if args.step == "hadd":
+            elif args.step == "hadd":
                 os.makedirs(f"{args.output}/IPsig_{to_string(IPsig)}_Esplit_{to_string(Esplit)}/Combined", exist_ok=True)
                 hadd_command = (
                     ["python", "Draw/scripts/hadd_cp_datacards.py", "-i"]
