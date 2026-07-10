@@ -1,6 +1,6 @@
 input_folder: /vols/cms/dmw25/HiggsDNA/output/LateRun3
 output_path: /vols/cms/dmw25/TIDAL/Draw/plots/setting_up_LateRun3
-channels: [mm]
+channels: [et, mt, tt]
 eras: [Run3_2024]
 parameter_path: /vols/cms/dmw25/HiggsDNA/scripts/ditau/config
 schemes: [control]
@@ -66,7 +66,7 @@ control:
 
   et:
   # GENERAL CONTROL
-  - { method: "6", category:  [ cp_inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ], additional_selections: ["(mt_1<65)"]}
+  - { method: "1", category:  [ cp_inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ], additional_selections: ["(mt_1<65)"]}
 
   tt:
   # GENERAL CONTROL

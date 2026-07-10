@@ -130,23 +130,23 @@ cpdecay:
 
   mt:
     # Nominal plots
-     - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_mupi'], plotting_variable: [ MVA_vs_aco_mu_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_murho'], plotting_variable: [ MVA_vs_aco_mu_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_mua11pr'], plotting_variable: [ MVA_vs_aco_mu_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_mua1'], plotting_variable: [ MVA_vs_aco_mu_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_mupi'], plotting_variable: [ MVA_vs_aco_mu_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_murho'], plotting_variable: [ MVA_vs_aco_mu_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_mua11pr'], plotting_variable: [ MVA_vs_aco_mu_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_mua1'], plotting_variable: [ MVA_vs_aco_mu_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
 
   et:
     # Nominal plots
-     - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_epi'], plotting_variable: [ MVA_vs_aco_e_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_erho'], plotting_variable: [ MVA_vs_aco_e_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_ea11pr'], plotting_variable: [ MVA_vs_aco_e_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_ea1'], plotting_variable: [ MVA_vs_aco_e_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_epi'], plotting_variable: [ MVA_vs_aco_e_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_erho'], plotting_variable: [ MVA_vs_aco_e_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_ea11pr'], plotting_variable: [ MVA_vs_aco_e_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_ea1'], plotting_variable: [ MVA_vs_aco_e_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
 
 cp_chi2_tests:
 
@@ -263,31 +263,31 @@ cp_chi2_tests:
 
   mt:
     # Nominal plots
-     - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_mupi'], plotting_variable: [ MVA_vs_aco_mu_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_murho'], plotting_variable: [ MVA_vs_aco_mu_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_mua11pr'], plotting_variable: [ MVA_vs_aco_mu_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_mua1'], plotting_variable: [ MVA_vs_aco_mu_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['tau_mupi', 'fake_mupi'], plotting_variable: [ aco_mu_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['tau_murho', 'fake_murho'], plotting_variable: [ aco_mu_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['tau_mua11pr', 'fake_mua11pr'], plotting_variable: [ aco_mu_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['tau_mua1', 'fake_mua1'], plotting_variable: [ aco_mu_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_mupi'], plotting_variable: [ MVA_vs_aco_mu_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_murho'], plotting_variable: [ MVA_vs_aco_mu_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_mua11pr'], plotting_variable: [ MVA_vs_aco_mu_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_mua1'], plotting_variable: [ MVA_vs_aco_mu_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['tau_mupi', 'fake_mupi'], plotting_variable: [ aco_mu_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['tau_murho', 'fake_murho'], plotting_variable: [ aco_mu_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['tau_mua11pr', 'fake_mua11pr'], plotting_variable: [ aco_mu_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['tau_mua1', 'fake_mua1'], plotting_variable: [ aco_mu_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
 
   et:
     # Nominal plots
-     - { method: '6', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_epi'], plotting_variable: [ MVA_vs_aco_e_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_erho'], plotting_variable: [ MVA_vs_aco_e_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_ea11pr'], plotting_variable: [ MVA_vs_aco_e_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['higgs_ea1'], plotting_variable: [ MVA_vs_aco_e_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['tau_epi', 'fake_epi'], plotting_variable: [ aco_e_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['tau_erho', 'fake_erho'], plotting_variable: [ aco_e_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['tau_ea11pr', 'fake_ea11pr'], plotting_variable: [ aco_e_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
-     - { method: '6', category:  ['tau_ea1', 'fake_ea1'], plotting_variable: [ aco_e_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_higgs'], plotting_variable: [ MVA_score], blind: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_tau'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['mva_fake'], plotting_variable: [ MVA_score], use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_epi'], plotting_variable: [ MVA_vs_aco_e_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_erho'], plotting_variable: [ MVA_vs_aco_e_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_ea11pr'], plotting_variable: [ MVA_vs_aco_e_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['higgs_ea1'], plotting_variable: [ MVA_vs_aco_e_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['tau_epi', 'fake_epi'], plotting_variable: [ aco_e_pi], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['tau_erho', 'fake_erho'], plotting_variable: [ aco_e_rho], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['tau_ea11pr', 'fake_ea11pr'], plotting_variable: [ aco_e_a11pr], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
+     - { method: '1', category:  ['tau_ea1', 'fake_ea1'], plotting_variable: [ aco_e_a1], blind: true, unroll: true, use_filtered_DY: false, additional_selections: ["(mt_1<65)"]}
 
 
 cp_acoplanarity:

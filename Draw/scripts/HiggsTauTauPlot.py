@@ -182,7 +182,7 @@ available_eras = [
 ]
 early_run_3 = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
 
-algo_VSjet = 'PNet' if (args.era in early_run_3 and args.channel == "tt") else 'DeepTau2018v2p5'
+algo_VSjet = 'DeepTau2018v2p5' if args.era in early_run_3 else 'PNet'  # Need to investigate if PNet also optimal for Early Run 3.
 wp_VSjet = '7'  # VTight
 
 if args.era in available_eras:
@@ -822,6 +822,8 @@ if args.era in available_eras:
             'WtoMuNu_madgraphMLM',
             'WtoTauNu_madgraphMLM',
         ]
+        if args.channel == "ee":
+            wjets_samples.remove("WtoMuNu_madgraphMLM")  # None of these make it through HiggsDNA for ee channel
 
     # MC (signal) samples
     if args.channel in ["et", "mt", "tt"]:
