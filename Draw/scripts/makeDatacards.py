@@ -91,6 +91,8 @@ def create_shell_script(
     additional_weight,
     datacard_name,
     script_path,
+    IPsig,
+    Esplit,
     run_systematics=False,
     systematics_to_run=[],
     blind=False,
@@ -120,7 +122,9 @@ python3 Draw/scripts/HiggsTauTauPlot.py \\
 --var {variable} \\
 --sel '{additional_selection}' \\
 --add_weight '{additional_weight}' \\
---datacard_name {datacard_name}"""
+--datacard_name {datacard_name} \\
+--IPsig {IPsig} \\
+--Esplit {Esplit}"""
 
     if blind:
         shell_script += " \\\n--blind"
@@ -206,6 +210,8 @@ if __name__ == "__main__":
     parameter_path = config["parameter_path"]
     schemes = config["schemes"]
     run_systematics = config["run_systematics"]
+    IPsig = config.get("IPsig", 1.25)
+    Esplit = config.get("Esplit", 0.20)
 
     available_channels = ["mm", "ee", "mt", "tt", "et"]
     for channel in channels:

@@ -57,6 +57,8 @@ parser.add_argument("--method", default=1, help="Method to run on")
 parser.add_argument("--category", default="inclusive", help="Category to run on")
 parser.add_argument("--var", type=str, help="Variable to plot")
 parser.add_argument("--run_systematics", action="store_true", help="Run systematics")
+parser.add_argument("--IPsig", type=float, default=1.25, help="IP significance cut for PNet DM categories")
+parser.add_argument("--Esplit", type=float, default=0.20, help="Energy split cut for PNet DM categories")
 
 # Available Systematic Options:
 # ------------------------------------------------------------------------------------------------------------------------
@@ -273,8 +275,8 @@ categories["xt_dM1"] = "(decayMode_2 == 1)"
 categories["xt_dM10"] = "(decayMode_2 == 10)"
 categories["xt_dM11"] = "(decayMode_2 == 11)"
 
-cut_IPsig = 1.25
-cut_Esplit = 0.2 if args.era in early_run_3 else 0.15
+cut_IPsig = args.IPsig
+cut_Esplit = args.Esplit
 
 if args.channel == "tt":
     sel_pi = f"decayModePNet_X==0 && ip_LengthSig_X>={cut_IPsig}"
