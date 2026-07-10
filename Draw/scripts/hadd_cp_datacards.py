@@ -32,7 +32,7 @@ def find_config(input_files):
     output_dir = os.path.dirname(year_dir)
     ls = os.listdir(output_dir)
     for f in ls:
-        if f.endswith('.yaml') and f.startswith('cpdecay_datacards'):
+        if f.endswith('.yaml') and f.startswith('cpdecay'):
             return os.path.join(output_dir, f)
     return 'Draw/scripts/cpdecay_datacards.yaml'  # default if not found
 
@@ -190,25 +190,25 @@ def hadd_root_files(
         hist.Write(hist_name)
 
     # Uncomment the below if you want to manually create 'JetFakes' histograms by summing MC jet backgrounds
-    # if channel in ['mt', 'et']: # manually create jet fakes while without FFs
-    #     for key in output.GetListOfKeys():
-    #         if key.GetClassName() != "TDirectoryFile":
-    #             continue
-    #         dirname = key.GetName()
-    #         print(f"Processing directory: {dirname}")
-    #         dir_obj = output.GetDirectory(dirname)
-    #         hists = [dir_obj.Get(hn) for hn in ["TTJ", "VVJ", "W", "QCD", "ZJ"]]
-    #         hists_to_sum = [h for h in hists if h is not None]
-    #         if not hists_to_sum:
-    #             continue
-    #         # Clone first histo and add others
-    #         h_sum = hists_to_sum[0].Clone("JetFakes")
-    #         h_sum.Reset() # clear
-    #         for h in hists_to_sum:
-    #             h_sum.Add(h)
-    #         # Write to directory
-    #         dir_obj.cd()
-    #         h_sum.Write("JetFakes")
+    if channel in ['mt', 'et']: # manually create jet fakes while without FFs
+        for key in output.GetListOfKeys():
+            if key.GetClassName() != "TDirectoryFile":
+                continue
+            dirname = key.GetName()
+            print(f"Processing directory: {dirname}")
+            dir_obj = output.GetDirectory(dirname)
+            hists = [dir_obj.Get(hn) for hn in ["TTJ", "VVJ", "W", "QCD", "ZJ"]]
+            hists_to_sum = [h for h in hists if h is not None]
+            if not hists_to_sum:
+                continue
+            # Clone first histo and add others
+            h_sum = hists_to_sum[0].Clone("JetFakes")
+            h_sum.Reset() # clear
+            for h in hists_to_sum:
+                h_sum.Add(h)
+            # Write to directory
+            dir_obj.cd()
+            h_sum.Write("JetFakes")
 
 
     # Close the output file
@@ -228,8 +228,7 @@ def hadd_root_files(
     aco_categories = []
     for entry in config['cpdecay'][channel]:
         if 'aco' in entry['plotting_variable'][0]:
-            aco_categories.append(ch + '_' + entry['category'][0])
-            aco_categories.append(ch + '_' + entry['category'][0] + '_aiso')
+            aco_categories.append(channel + '_' + entry['category'][0])
     aco_categories = set(aco_categories)
 
     for dir_name in dir_names:
@@ -245,9 +244,12 @@ def hadd_root_files(
             blind = False 
         if 'mva_fake' in dir_name or 'mva_tau' in dir_name or 'mva_higgs' in dir_name:
             var_name = "BDT score"
-        elif dir_name in aco_categories:
-            is2Dunrolled = True
-            var_name = find_variable(dir_name, channel, config)
+        else:
+            for aco_category in aco_categories:
+                if aco_category in dir_name:
+                    is2Dunrolled = True
+                    var_name = find_variable(aco_category, channel, config)
+                    break
             
         method = 6 # method that plots jetfakes
         # make a plot of the combined histograms
