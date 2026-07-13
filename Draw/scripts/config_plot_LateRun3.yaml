@@ -1,7 +1,7 @@
 input_folder: /vols/cms/dmw25/HiggsDNA/output/LateRun3
-output_path: /vols/cms/dmw25/TIDAL/Draw/plots/setting_up_LateRun3
+output_path: /vols/cms/dmw25/TIDAL/Draw/plots/LateRun3
 channels: [et, mt, tt]
-eras: [Run3_2024]
+eras: [Run3_2024, Run3_2025]
 parameter_path: /vols/cms/dmw25/HiggsDNA/scripts/ditau/config
 schemes: [control]
 run_systematics: false
