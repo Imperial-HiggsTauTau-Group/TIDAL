@@ -49,8 +49,8 @@ def create_temp_config(config, output, step, channels, IPsig, Esplit):
 
 def main(args):
     config = config_files[args.step]
-    IPsig_values = [1.25, 1.35, 1.45, 1.55, 1.65]
-    Esplit_values = [0.1, 0.125, 0.15, 0.175, 0.2]
+    IPsig_values = [1.25, 1.50, 1.75, 2.00, 2.25]
+    Esplit_values = [0.15, 0.175, 0.2]
 
     for IPsig in IPsig_values:
         for Esplit in Esplit_values:
@@ -85,3 +85,4 @@ def main(args):
 if __name__ == "__main__":
     args = get_args()
     main(args)
+
