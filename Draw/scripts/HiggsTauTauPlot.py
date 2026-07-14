@@ -1279,7 +1279,8 @@ else:
 weight = "(weight)"
 if args.add_weight:
     weight += "*" + args.add_weight
-if args.era in early_run_3:
+
+if args.era not in early_run_3:
     # TEMPORARY flat SFs
     if args.channel in ['et', 'mt']:
         weight += f'*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
