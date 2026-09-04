@@ -1,4 +1,6 @@
 import argparse
+import datetime
+import json
 import yaml
 import numpy
 import subprocess
@@ -179,12 +181,50 @@ def format_first_selection(selection):
         return readable_format
     return None
 
+def write_submission_records(args, submitted):
+    """Record what was submitted, so a caller can tell that it happened.
+
+    Without this the script submits and leaves nothing behind, so anything
+    driving it cannot distinguish a run that queued jobs from one that quietly
+    queued none. One record per era and channel, named the way HiggsDNA names
+    its own, so both can be checked the same way.
+    """
+    if not args.submission_manifest_dir or not submitted:
+        return
+    destination = os.path.abspath(os.path.expanduser(args.submission_manifest_dir))
+    os.makedirs(destination, exist_ok=True)
+    stamp = datetime.datetime.now().strftime("%d_%m_%Y")
+    for (era, channel), jobs in sorted(submitted.items()):
+        record = {
+            "schema_version": 1,
+            "submitted_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "era": era,
+            "channel": channel,
+            "config": os.path.abspath(args.config),
+            "job_count": len(jobs),
+            "jobs": jobs,
+        }
+        target = os.path.join(destination, f"{stamp}__{era}__{channel}__plots.json")
+        temporary = target + ".tmp"
+        with open(temporary, "w") as handle:
+            json.dump(record, handle, indent=2, sort_keys=True)
+        os.replace(temporary, target)
+        print(f"Recorded {len(jobs)} submitted job(s) in {target}")
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--config", type=str, help="Configuration file")
     parser.add_argument("--batch", action="store_true", help="Run in batch mode")
+    parser.add_argument(
+        "--submission-manifest-dir",
+        required=False,
+        help="Directory in which to record what was submitted. One record per era and "
+             "channel, naming every submit file, so a caller driving this script can tell "
+             "that a submission happened and which jobs it created.",
+    )
 
     args = parser.parse_args()
 
@@ -244,6 +284,8 @@ if __name__ == "__main__":
             raise ValueError(
                 f"Scheme {scheme} is not a valid scheme. Please choose from {available_schemes}"
             )
+
+    submitted = {}
 
     for era in eras:
         parameter_file = f"{parameter_path}/{era}/params.yaml"
@@ -392,6 +434,15 @@ if __name__ == "__main__":
                                 )
                                 if args.batch:
                                     subprocess.run(["condor_submit", submit_file])
+                                    submitted.setdefault((era, channel), []).append(
+                                        {
+                                            "submit_file": os.path.abspath(submit_file),
+                                            "script": os.path.abspath(script_path),
+                                            "variable": variable,
+                                        }
+                                    )
                                 else:
                                     os.chmod(script_path, 0o755)
                                     subprocess.run(["/bin/bash", script_path])
+
+    write_submission_records(args, submitted)
