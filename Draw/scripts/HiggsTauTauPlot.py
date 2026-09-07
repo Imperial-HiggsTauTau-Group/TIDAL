@@ -188,23 +188,14 @@ wp_VSjet = '7'  # VTight
 # —————————————————————————————————————————————————————————————————————————————
 # REMOVE ONCE HAGOP DERIVES PNET SFs
 # —————————————————————————————————————————————————————————————————————————————
-res_corrections = {
-    'Run3_2024': {''
-        'DeepTau2018v2p5': {'5': 0.9927, '6': 0.9801, '7': 0.9649},
-        'PNet': {'5': 0.9588, '6': 0.9339, '7': 0.9163},
-        'UParT': {'5': 0.9475, '6': 0.9258, '7': 0.9051}
-    },
-    'Run3_2025': {
-        'DeepTau2018v2p5': {'5': 1.0548, '6': 1.0341, '7': 1.0100},
-        'PNet': {'5': 0.9992, '6': 0.9656, '7': 0.9365},
-        'UParT': {'5': 1.0146, '6': 0.9900, '7': 0.9625}
-    }
+res_corrections_2025 = {
+    'DeepTau2018v2p5': {'5': 1.0548, '6': 1.0341, '7': 1.0100},
+    'PNet': {'5': 0.9992, '6': 0.9656, '7': 0.9365},
+    'UParT': {'5': 1.0146, '6': 0.9900, '7': 0.9625}
 }
-if args.era not in early_run_3:
-    genuine_sf = res_corrections[args.era][algo_VSjet][wp_VSjet]
+if args.era == "Run3_2025":
+    genuine_sf = res_corrections_2025[algo_VSjet][wp_VSjet]
     print(f"WARNING: Applying flat SF of {genuine_sf:.4f} for genuine taus in {args.era}")
-else:
-    genuine_sf = 1.0
 # —————————————————————————————————————————————————————————————————————————————
 
 if args.era in available_eras:
@@ -1286,12 +1277,15 @@ if args.add_weight:
 if args.era == "Run3_2025" and args.channel in ["ee", "et"]:
     weight += "/(w_Trigger)"
 
-if args.era not in early_run_3:
-    # TEMPORARY flat SFs
+# —————————————————————————————————————————————————————————————————————————————
+# For applying temporary flat SFs
+# —————————————————————————————————————————————————————————————————————————————
+if args.era == "Run3_2025":
     if args.channel in ['et', 'mt']:
         weight += f'*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
     elif args.channel == 'tt':
         weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
+# —————————————————————————————————————————————————————————————————————————————
 
 # weight += "/(w_Tau_e_FakeRate*w_Tau_mu_FakeRate)"
 # set systematics:
