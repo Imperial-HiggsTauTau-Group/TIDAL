@@ -34,48 +34,70 @@ def plot_combined(cmb_file, tree_name, channel, method, era, variable, blind, un
     )
     Histo_Plotter.plot_1D_histo()
 
+#: names kept for the combinations people already refer to by name; any other
+#: set of eras is named after the eras themselves
+NAMED_COMBINATIONS = {
+    ("Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"): ("combined_earlyRun3", "full2223", "earlyrun3"),
+    ("Run3_2022", "Run3_2022EE"): ("combined_2022", "full22", "full22"),
+    ("Run3_2023", "Run3_2023BPix"): ("combined_2023", "full23", "full23"),
+}
+
+
+def combination_names(eras_to_combine):
+    """Directory, file postfix and era label for a set of eras.
+
+    The label is what the plotter uses to find the luminosity: a known name
+    for the combinations that have one, otherwise the eras joined with "+",
+    which the plotter sums.
+    """
+    known = ("Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix", "Run3_2024", "Run3_2025")
+    # chronological for the eras we know, then anything else alphabetically
+    key = tuple(era for era in known if era in eras_to_combine)
+    key += tuple(sorted(era for era in eras_to_combine if era not in known))
+    if key in NAMED_COMBINATIONS:
+        return NAMED_COMBINATIONS[key]
+    joined = "_".join(key)
+    return f"combined_{joined}", joined, "+".join(key)
+
+
 def get_files_to_combine(eras_to_combine, channel, scheme, directory, f_name):
     print(f"\nERAS TO COMBINE: {eras_to_combine}")
+    if len(eras_to_combine) < 2:
+        raise ValueError("at least two eras are needed to combine")
 
     # Get the files
     files_to_combine = []
-    old_args = {}
+    missing = []
     for era in eras_to_combine:
         src_file = os.path.join(directory, era, scheme, channel, f_name.replace("$ERA", era))
         files_to_combine.append(src_file)
         print(f">> FILE: {src_file}")
-    # Combine histograms
-    if ("Run3_2022" in eras_to_combine) and ("Run3_2022EE" in eras_to_combine) and ("Run3_2023" in eras_to_combine) and ("Run3_2023BPix" in eras_to_combine):
-        cmb_directory = os.path.join(directory, "combined_earlyRun3", channel)
-        cmb_postfix = "full2223.root"
-        era = "earlyrun3"
-    elif ("Run3_2022" in eras_to_combine) and ("Run3_2022EE" in eras_to_combine):
-        cmb_directory = os.path.join(directory, "combined_2022", channel)
-        cmb_postfix = "full22.root"
-        era = "full22"
-    elif ("Run3_2023" in eras_to_combine) and ("Run3_2023BPix" in eras_to_combine):
-        cmb_directory = os.path.join(directory, "combined_2023", channel)
-        cmb_postfix = "full23.root"
-        era = "full23"
-    else:
-        raise ValueError("Combination of eras not supported!")
+        if not os.path.isfile(src_file):
+            missing.append(src_file)
+    if missing:
+        raise FileNotFoundError("cannot combine, these inputs do not exist: " + ", ".join(missing))
+    cmb_dirname, cmb_postfix, era = combination_names(eras_to_combine)
+    cmb_directory = os.path.join(directory, cmb_dirname, channel)
     # output file name
-    cmb_file = os.path.join(cmb_directory, f_name.replace("$ERA", "").replace(".root", "") + cmb_postfix)
+    cmb_file = os.path.join(cmb_directory, f_name.replace("$ERA", "").replace(".root", "") + cmb_postfix + ".root")
     # make output directory
     os.makedirs(cmb_directory, exist_ok=True)
 
     return files_to_combine, cmb_file, era
+
 
 def main(args, eras):
 
     # NEW
     with open(args.config) as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
+    combined = []  # what was written, for the record
 
     input_folder = config["input_folder"]
     output_path = config["output_path"]
     channels = config["channels"]
-    eras = config["eras"]
+    # the eras named on the command line, else all the eras the configuration lists
+    eras = eras or config["eras"]
     parameter_path = config["parameter_path"]
     schemes = config["schemes"]
     run_systematics = config["run_systematics"]
@@ -144,19 +166,35 @@ def main(args, eras):
                             # Actually combine the histos
                             tree_name = f"{channel}_{cat}{nodename}"
                             combine_histos(files_to_combine, cmb_file)
+                            combined.append({"inputs": files_to_combine, "output": cmb_file,
+                                             "channel": channel, "scheme": scheme, "era": era_name})
                             # plot the combined histograms
                             if variable_name.count(",") > 1 and not unroll: # check if unrolled (for CP)
                                 print("2D variable cannot be plotted directly, skipping plotting step.")
                             else:
                                 plot_combined(cmb_file, tree_name, channel, method, era_name, variable, blind, unroll)
 
+    if args.record:
+        # A record of what was actually combined, for whatever drives this
+        # script; a wrapper cannot know from the outside which files came out.
+        import json
+        os.makedirs(os.path.dirname(os.path.abspath(args.record)), exist_ok=True)
+        with open(args.record, "w") as handle:
+            json.dump({"eras": list(eras), "config": os.path.abspath(args.config),
+                       "combined": combined}, handle, indent=2)
+        print(f"Record written to {args.record}")
+
 
 def get_args():
     parser = argparse.ArgumentParser(description="Combine datacards from different eras and plot them")
     parser.add_argument('--config', type=str, required=True, help='Path to the configuration YAML file')
-    parser.add_argument('--all', action='store_true', help='Combine all eras')
-    parser.add_argument('--only22', action='store_true', help='Combine 2022 eras')
-    parser.add_argument('--only23', action='store_true', help='Combine 2023 eras')
+    parser.add_argument('--eras', nargs='+', default=None,
+                        help='Eras to combine; default: every era the configuration lists')
+    parser.add_argument('--record', type=str, default=None,
+                        help='Write a JSON record of the combined files to this path')
+    parser.add_argument('--all', action='store_true', help='Combine Run3_2022, Run3_2022EE, Run3_2023 and Run3_2023BPix')
+    parser.add_argument('--only22', action='store_true', help='Combine the 2022 eras')
+    parser.add_argument('--only23', action='store_true', help='Combine the 2023 eras')
     input_args = parser.parse_args()
     return input_args
 
@@ -170,7 +208,6 @@ if __name__ == "__main__":
     elif input_args.only23:
         eras_to_combine = ['Run3_2023', 'Run3_2023BPix']
     else:
-        raise ValueError("Please specify which eras to combine using --all, --only22, or --only23")
+        eras_to_combine = input_args.eras  # None means: whatever the configuration lists
 
     main(input_args, eras_to_combine)
-

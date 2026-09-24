@@ -8,6 +8,36 @@ plt.style.use(hep.style.CMS)
 plt.rcParams.update({"font.size": 16})
 
 
+#: integrated luminosity in fb^-1 by era, and by the names given to combinations
+LUMINOSITY = {
+    "Run3_2022": 7.98,
+    "Run3_2022EE": 26.67,
+    "Run3_2023": 18.06,
+    "Run3_2023BPix": 9.69,
+    "Run3_2024": 109.08,
+    "Run3_2025": 110.58,
+    "full22": 7.98 + 26.67,
+    "full23": 18.06 + 9.69,
+    "earlyrun3": 7.98 + 26.67 + 18.06 + 9.69,
+    "laterun3": 109.08 + 110.58,  # update when we add 2026
+}
+
+
+def luminosity(era):
+    """The luminosity for an era, a named combination, or eras joined with "+".
+
+    Combinations of eras that have no name of their own are labelled by the
+    eras themselves, "Run3_2022+Run3_2022EE", and their luminosities add up.
+    An unknown label gives 0.0, as before, so the plot still draws.
+    """
+    if era in LUMINOSITY:
+        return LUMINOSITY[era]
+    parts = era.split("+") if era else []
+    if len(parts) > 1 and all(part in LUMINOSITY for part in parts):
+        return sum(LUMINOSITY[part] for part in parts)
+    return 0.0
+
+
 class HTT_Histogram:
 
     def __init__(self, file, category, channel, era, variable, method, blind=False, log_y=False, is2Dunrolled=False, save_name=None):
@@ -235,28 +265,7 @@ class HTT_Histogram:
             self.lep1 = "\\mu_1"
             self.lep2 = "\\mu_2"
         # get luminosity
-        if self.era == "Run3_2022":
-            self.lumi = 7.98
-        elif self.era == "Run3_2022EE":
-            self.lumi = 26.67
-        elif self.era == "Run3_2023":
-            self.lumi = 18.06
-        elif self.era == "Run3_2023BPix":
-            self.lumi = 9.69
-        elif self.era == 'full22':
-            self.lumi = 34.65
-        elif self.era == 'full23':
-            self.lumi = 27.76
-        elif self.era == 'earlyrun3':
-            self.lumi = 62.41
-        elif self.era == 'Run3_2024':
-            self.lumi = 109.08
-        elif self.era == 'Run3_2025':
-            self.lumi = 110.58
-        elif self.era == 'laterun3':
-            self.lumi = 109.08 + 110.58  # update when we add 2026
-        else: 
-            self.lumi = 0.0
+        self.lumi = luminosity(self.era)
         # get color for each background
         for bkg, info in self.backgrounds.items():
             info['color'] = self.colors[info["color"]]  # replace color name with hex code
