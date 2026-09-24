@@ -31,10 +31,11 @@ def luminosity(era):
     An unknown label gives 0.0, as before, so the plot still draws.
     """
     if era in LUMINOSITY:
-        return LUMINOSITY[era]
+        return round(LUMINOSITY[era], 2)
     parts = era.split("+") if era else []
     if len(parts) > 1 and all(part in LUMINOSITY for part in parts):
-        return sum(LUMINOSITY[part] for part in parts)
+        # rounded so that a sum such as 7.98 + 26.67 labels the plot as 34.65
+        return round(sum(LUMINOSITY[part] for part in parts), 2)
     return 0.0
 
 
