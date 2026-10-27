@@ -539,7 +539,7 @@ class HttWOSSSNode(BaseNode):
 
 
 class HttQCDNode(BaseNode):
-    def __init__(self, name, data, subtract, factor, qcd_shape=None, ratio_num_node=None, ratio_den_node=None,WriteSubnodes=True, add_weight=None):
+    def __init__(self, name, data, subtract, factor, qcd_shape=None, ratio_num_node=None, ratio_den_node=None,WriteSubnodes=True, add_weight=None, ss_closure=False):
         BaseNode.__init__(self, name,WriteSubnodes)
         self.shape = None
         self.data_node = data
@@ -549,16 +549,24 @@ class HttQCDNode(BaseNode):
         self.ratio_den_node = ratio_den_node
         self.qcd_shape = qcd_shape
         self.add_weight = add_weight
+        self.ss_closure = ss_closure
 
     def RunSelf(self):
-        if self.subtract_node is not None:
-            self.shape = self.factor * (self.data_node.shape - self.subtract_node.shape)
-        else:
-            self.shape = self.factor * self.data_node.shape
-        if self.ratio_num_node is not None and self.ratio_den_node is not None:
-            self.shape *= self.ratio_num_node.shape.rate / self.ratio_den_node.shape.rate
         if self.qcd_shape is not None:
             self.shape = self.shape.rate / self.qcd_shape.shape.rate * self.qcd_shape.shape
+        elif self.ss_closure:
+            if self.subtract_node is not None:
+                self.shape = self.factor * (self.data_node.shape - self.subtract_node.shape)
+            else: 
+                self.shape = self.factor * self.data_node.shape
+            self.shape *= self.ratio_num_node.shape / self.ratio_den_node.shape
+        else:
+            if self.subtract_node is not None:
+                self.shape = self.factor * (self.data_node.shape - self.subtract_node.shape)
+            else:
+                self.shape = self.factor * self.data_node.shape
+            if self.ratio_num_node is not None and self.ratio_den_node is not None:
+                self.shape *= self.ratio_num_node.shape.rate / self.ratio_den_node.shape.rate
         if self.add_weight is not None:
             self.shape *= self.add_weight
 

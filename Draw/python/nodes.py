@@ -313,9 +313,10 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
     else:
         syst_weight = 1.0
 
-    if method in [3,4]: # fake factor for tt channel are different
+    if method in [3,4,7]: # fake factor for tt channel are different
         
-        if method == 3: # Flat fake factor method
+        if method in [3, 7]: # 3 = Flat fake factor method, 7 = Fake factor which produces SS closure
+            ss_closure = True if method == 7 else False
             data_weight = '(weight)'
 
             categories['qcd_sdb_cat'] = categories[cat_name]+'&&'+categories['tt_qcd_norm']
@@ -344,7 +345,8 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
                 shape_node,
                 num_node,
                 den_node,
-                add_weight=syst_weight))
+                add_weight=syst_weight,
+                ss_closure=ss_closure))
 
         elif method == 4:  # Full Fake Factor Method for tt channel
             if systematic == 'nominal' or 'sub_syst' in add_name or 'FF_syst:' not in systematic: ff_weight = f'(weight) * (w_FakeFactor_cmb)' # apply the nominal fake factor weight

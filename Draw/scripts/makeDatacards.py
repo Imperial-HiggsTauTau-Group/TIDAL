@@ -54,7 +54,7 @@ priority = 15
 output = {logs_path}/condor_{variable_name}.out
 error = {logs_path}/condor_{variable_name}.err
 log = {logs_path}/condor_{variable_name}.log
-request_memory = 8000
+request_memory = 1000
 request_cpus = 1
 getenv = True
 +MaxRuntime = 10500
@@ -88,7 +88,7 @@ def create_shell_script(
     category,
     variable,
     additional_selection,
-    additional_weight,
+    reweighting,
     datacard_name,
     script_path,
     run_systematics=False,
@@ -105,6 +105,7 @@ def create_shell_script(
     use_filtered_DY=False,
     nodename="",
     stats_check=False,
+    specific_tt_trg=None
 ):
     shell_script = f"""
 #!/bin/bash
@@ -119,7 +120,7 @@ python3 Draw/scripts/HiggsTauTauPlot.py \\
 --category {category} \\
 --var {variable} \\
 --sel '{additional_selection}' \\
---add_weight '{additional_weight}' \\
+--reweighting '{reweighting}' \\
 --datacard_name {datacard_name}"""
 
     if blind:
@@ -150,8 +151,9 @@ python3 Draw/scripts/HiggsTauTauPlot.py \\
     if nodename != "":
         shell_script += f" \\\n--nodename {nodename}"
     if stats_check:
-        shell_script += " \\\n--stats-check"
-
+        shell_script += " \\\n--stats_check"
+    if specific_tt_trg is not None:
+        shell_script += f" \\\n--specific_tt_trg {specific_tt_trg}"
     with open(script_path, "w") as script_file:
         print(shell_script)
         script_file.write(shell_script)
@@ -296,7 +298,7 @@ if __name__ == "__main__":
                     if isinstance(additional_selections, str):
                         additional_selections = [additional_selections]
                     set_alias = setting.get("set_alias", "")
-                    additional_weight = setting.get("additional_weight", "(1)")
+                    reweighting = setting.get("reweighting", "*(1)")
                     extra_identifier = setting.get("extra_identifier", "")
                     aiso = setting.get("aiso", False)
                     same_sign = setting.get("same_sign", False)
@@ -305,6 +307,7 @@ if __name__ == "__main__":
                     dy_LO= setting.get("dy_LO", False)
                     dy_NLO = setting.get("dy_NLO", False)
                     use_filtered_DY = setting.get('use_filtered_DY', False)
+                    specific_tt_trg = setting.get("specific_tt_trg", None)
                     if use_filtered_DY:
                         print("WARNING: To use filtered DY, different parameters will be sourced (automatically)")
                         parameter_file = f"{parameter_path}/{era}/params_DYfiltered.yaml"
@@ -365,7 +368,7 @@ if __name__ == "__main__":
                                     cat,
                                     variable,
                                     additional_selection,
-                                    additional_weight,
+                                    reweighting,
                                     variable_name,
                                     script_path,
                                     run_systematics=run_systematics,
@@ -382,6 +385,7 @@ if __name__ == "__main__":
                                     use_filtered_DY=use_filtered_DY,
                                     nodename=nodename,
                                     stats_check=stats_check,
+                                    specific_tt_trg=specific_tt_trg
                                 )
 
                                 submit_file = os.path.join(

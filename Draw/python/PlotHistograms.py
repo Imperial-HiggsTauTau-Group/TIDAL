@@ -152,7 +152,7 @@ class HTT_Histogram:
             "down": "total_bkg_full_uncerts_down",
         }
         if self.channel == "tt":
-            if self.method in [3, 4, 6]:
+            if self.method in [3, 4, 6, 7]:
                 self.backgrounds = {
                                     "Jet$\\to\\tau_h$": {"nodes": ["JetFakes", "JetFakesSublead"], "color": "green"},
                                     "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},

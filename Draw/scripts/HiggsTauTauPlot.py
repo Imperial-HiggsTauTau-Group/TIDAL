@@ -114,7 +114,7 @@ parser.add_argument(
     default=None,
     help="Overwrite alias selection using this options. Specify with the form --set_alias=nameofaliastoreset:newselection",
 )
-parser.add_argument("--add_weight", default="", help="Additional weight to apply")
+parser.add_argument("--reweighting", default="", help="Additional weight to apply")
 parser.add_argument("--do_aiso", action="store_true", help="Do Anti-Isolated")
 parser.add_argument("--do_ss", action="store_true", help="Do SS")
 parser.add_argument("--blind", action="store_true", help="Blind the plot (remove data)")
@@ -130,7 +130,8 @@ parser.add_argument("--nodename", help="Override the nodename")
 parser.add_argument(
     "--auto_rebin", action="store_true", help="Automatically rebin histograms"
 )
-parser.add_argument("--stats-check", action="store_true", help="Make datacards for statistical checks")
+parser.add_argument("--stats_check", action="store_true", help="Make datacards for statistical checks")
+parser.add_argument("--specific_tt_trg", type=str, help="Override the tt trigger selection for the tt channel")
 
 # ------------------------------------------------------------------------------------------------------------------------
 args = parser.parse_args()
@@ -143,9 +144,17 @@ if args.channel not in available_channels:
     raise ValueError(
         "Invalid channel. Please choose from: {}".format(available_channels)
     )
-available_methods = ["1", "2", "3", "4", "5", "6"]
+available_methods = ["1", "2", "3", "4", "5", "6", "7"]
 if args.method not in available_methods:
     raise ValueError("Invalid method. Please choose from: {}".format(available_methods))
+
+available_tt_trg = ["ditau", "ditaujet"]
+
+if args.specific_tt_trg:
+    if args.channel != "tt":
+        raise ValueError("The specific_tt_trg option can only be used with the tt channel.")
+    elif args.specific_tt_trg not in available_tt_trg:
+        raise ValueError("Invalid tt trigger. Please choose from: {}".format(available_tt_trg))
 
 table = PrettyTable()
 table.field_names = ["Details", "Choices"]
@@ -159,7 +168,7 @@ table.add_row(["Category", args.category])
 table.add_row(["Variable", args.var])
 table.add_row(["Run Systematics", args.run_systematics])
 table.add_row(["Selection", args.sel])
-table.add_row(["Additional Weight", args.add_weight])
+table.add_row(["Reweighting", args.reweighting])
 table.add_row(["Do SS", args.do_ss])
 table.add_row(["Blind", args.blind])
 table.add_row(["Masses", args.masses])
@@ -182,8 +191,11 @@ available_eras = [
 ]
 early_run_3 = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
 
+# Used WP definitions from https://tau-wiki.docs.cern.ch/Algorithms/#summary-of-available-tau-algorithms-run-3
+# VSjet/VSe: 1 = VVVLoose, 2 = VVLoose, 3 = VLoose, 4 = Loose, 5 = Medium, 6 = Tight, 7 = VTight, 8 = VVTight
+# VSmu: 1 = VLoose, 2 = Loose, 3 = Medium, 4 = Tight
 algo_VSjet = 'DeepTau2018v2p5' if args.era in early_run_3 else 'PNet'  # Need to investigate if PNet also optimal for Early Run 3.
-wp_VSjet = '7'  # VTight
+wp_VSjet = '7'
 
 # —————————————————————————————————————————————————————————————————————————————
 # REMOVE ONCE HAGOP DERIVES PNET SFs
@@ -246,7 +258,13 @@ if args.era in available_eras:
     if args.channel == "tt":
         doubletau_only_trg = "(trg_doubletau && pt_1 > 40 && pt_2 > 40)"
         doubletaujet_only_trg = "(trg_doubletauandjet && pt_1 > 35 && pt_2 > 35 && jpt_1 > 60)"  # might need to revise jet cut later on
-        trg_full = "(%s || %s)" % (doubletau_only_trg, doubletaujet_only_trg)
+        if args.specific_tt_trg:
+            if args.specific_tt_trg == "ditau":
+                trg_full = doubletau_only_trg
+            elif args.specific_tt_trg == "ditaujet":
+                trg_full = doubletaujet_only_trg
+        else:
+            trg_full = "(%s || %s)" % (doubletau_only_trg, doubletaujet_only_trg)
         categories["baseline"] = (
             f"(m_vis > 40 && id{algo_VSjet}VSjet_1 >= {wp_VSjet} && id{algo_VSjet}VSjet_2 >= {wp_VSjet} && idDeepTau2018v2p5VSe_1 >= 2 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_1 >= 4 && idDeepTau2018v2p5VSmu_2 >= 4 && %s)"
             % trg_full
@@ -306,7 +324,11 @@ if args.channel == "tt":
 
     categories["cp_inclusive"] = (
         f"( ({sel_pi_1}) || ({sel_rho_1}) || ({sel_a1_1}) || ({sel_a11pr_1}) ) && ( ({sel_pi_2}) || ({sel_rho_2}) || ({sel_a1_2}) || ({sel_a11pr_2}) )"
-    )
+    ) 
+
+    categories["problem_region"] = f"({sel_a1_1} && pt_1 < 55) || ({sel_a1_2} && pt_2 < 45)"
+    categories["cp_problem_region"] = f"{categories['cp_inclusive']} && ( {categories['problem_region']} )"
+    categories["cp_minus_problem"] = f"{categories['cp_inclusive']} && !( {categories['problem_region']} )"
 
     categories["inclusive_PNet_rhorho"] = "(%(sel_rho_1)s && %(sel_rho_2)s)" % vars()
     categories["inclusive_PNet_pipi"] = "(%(sel_pi_1)s && %(sel_pi_2)s)" % vars()
@@ -1061,7 +1083,7 @@ def RunPlotting(
     doVVJ = True if "VVJ" not in nodes_to_skip else False
 
 
-    if method in [3,4,6]: # jet fake estimate so don't include other MC jet fakes:
+    if method in [3,4,6,7]: # jet fake estimate so don't include other MC jet fakes:
         doTTJ = False
         doZJ = False
         doVVJ = False
@@ -1174,7 +1196,7 @@ def RunPlotting(
             qcd_factor=qcd_factor,
             get_os=not args.do_ss,
         )
-    elif "JetFakes" not in nodes_to_skip and method in [3,4,6]:  # Jet Fakes
+    elif "JetFakes" not in nodes_to_skip and method in [3,4,6,7]:  # Jet Fakes
         if method == 6 and "BDT_pred_score,aco" in args.var:
             print("WARNING: For CP datacards with variable names matching: `BDT_pred_score,aco*`, jet fake fractions are computed per BDT bin")
             flatten_y = True
@@ -1270,8 +1292,15 @@ else:
     qcd_factor = 1.0
 
 weight = "(weight)"
-if args.add_weight:
-    weight += "*" + args.add_weight
+if args.reweighting:
+    weight += args.reweighting
+
+if args.specific_tt_trg:
+    weight += "/(w_Trigger)"
+    if args.specific_tt_trg == "ditau":
+        weight += "*(w_DoubleTauTrigger)"
+    elif args.specific_tt_trg == "ditaujet":
+        weight += "*(w_DoubleTauJetTrigger)"
 
 # Remove this once we have electronHlt.json.gz for 2025 implemented
 if args.era == "Run3_2025" and args.channel in ["ee", "et"]:
@@ -1287,7 +1316,65 @@ if args.era == "Run3_2025":
         weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
 # —————————————————————————————————————————————————————————————————————————————
 
-# weight += "/(w_Tau_e_FakeRate*w_Tau_mu_FakeRate)"
+# —————————————————————————————————————————————————————————————————————————————
+# For applying temporary a1 pT correction for 2024
+# —————————————————————————————————————————————————————————————————————————————
+a1_corr = {
+    '20-25': 0.9697490296535463,
+    '25-30': 0.9514969358123572,
+    '30-35': 0.9081895633231537,
+    '35-40': 0.9093904783797526,
+    '40-45': 0.909819018096307,
+    '45-50': 0.9801871246651513
+}
+
+if args.era == "Run3_2024":
+    if args.channel in ['et', 'mt']:
+        weight = (
+            weight
+            + "*( (genPartFlav_2!=5)"
+            + " + (genPartFlav_2==5 && decayModePNet_2!=10)"
+            + " + (genPartFlav_2==5 && decayModePNet_2==10)"
+            + "*( 1.0*(pt_2<20)"
+            + f" + {a1_corr['20-25']}*(pt_2>=20 && pt_2<25)"
+            + f" + {a1_corr['25-30']}*(pt_2>=25 && pt_2<30)"
+            + f" + {a1_corr['30-35']}*(pt_2>=30 && pt_2<35)"
+            + f" + {a1_corr['35-40']}*(pt_2>=35 && pt_2<40)"
+            + f" + {a1_corr['40-45']}*(pt_2>=40 && pt_2<45)"
+            + f" + {a1_corr['45-50']}*(pt_2>=45 && pt_2<50)"
+            + " + 1.0*(pt_2>=50) )"
+            + ")"
+        )
+    elif args.channel == 'tt':
+        weight = (
+            weight
+            + "*( (genPartFlav_1!=5)"
+            + " + (genPartFlav_1==5 && decayModePNet_1!=10)"
+            + " + (genPartFlav_1==5 && decayModePNet_1==10)"
+            + "*( 1.0*(pt_1<20)"
+            + f" + {a1_corr['20-25']}*(pt_1>=20 && pt_1<25)"
+            + f" + {a1_corr['25-30']}*(pt_1>=25 && pt_1<30)"
+            + f" + {a1_corr['30-35']}*(pt_1>=30 && pt_1<35)"
+            + f" + {a1_corr['35-40']}*(pt_1>=35 && pt_1<40)"
+            + f" + {a1_corr['40-45']}*(pt_1>=40 && pt_1<45)"
+            + f" + {a1_corr['45-50']}*(pt_1>=45 && pt_1<50)"
+            + " + 1.0*(pt_1>=50) )"
+            + ")"
+            + "*( (genPartFlav_2!=5)"
+            + " + (genPartFlav_2==5 && decayModePNet_2!=10)"
+            + " + (genPartFlav_2==5 && decayModePNet_2==10)"
+            + "*( 1.0*(pt_2<20)"
+            + f" + {a1_corr['20-25']}*(pt_2>=20 && pt_2<25)"
+            + f" + {a1_corr['25-30']}*(pt_2>=25 && pt_2<30)"
+            + f" + {a1_corr['30-35']}*(pt_2>=30 && pt_2<35)"
+            + f" + {a1_corr['35-40']}*(pt_2>=35 && pt_2<40)"
+            + f" + {a1_corr['40-45']}*(pt_2>=40 && pt_2<45)"
+            + f" + {a1_corr['45-50']}*(pt_2>=45 && pt_2<50)"
+            + " + 1.0*(pt_2>=50) )"
+            + ")"
+        )
+# —————————————————————————————————————————————————————————————————————————————
+
 # set systematics:
 # - 1st index sets folder name contaning systematic samples
 # - 2nd index sets string to be appended to output histograms
