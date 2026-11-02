@@ -92,6 +92,8 @@ def create_shell_script(
     datacard_name,
     script_path,
     run_systematics=False,
+    id_vsjet_algo="PNet",
+    id_vsjet_wp=7,
     systematics_to_run=[],
     blind=False,
     auto_rebin=False,
@@ -118,6 +120,8 @@ python3 Draw/scripts/HiggsTauTauPlot.py \\
 --era {era} \\
 --method {method} \\
 --category {category} \\
+--id_vsjet_algo {id_vsjet_algo} \\
+--id_vsjet_wp {id_vsjet_wp} \\
 --var {variable} \\
 --sel '{additional_selection}' \\
 --reweighting '{reweighting}' \\
@@ -208,6 +212,8 @@ if __name__ == "__main__":
     parameter_path = config["parameter_path"]
     schemes = config["schemes"]
     run_systematics = config["run_systematics"]
+    id_vsjet_algo = config.get("id_vsjet_algo", "PNet")
+    id_vsjet_wp = config.get("id_vsjet_wp", 7)
 
     available_channels = ["mm", "ee", "mt", "tt", "et"]
     for channel in channels:
@@ -372,6 +378,8 @@ if __name__ == "__main__":
                                     variable_name,
                                     script_path,
                                     run_systematics=run_systematics,
+                                    id_vsjet_algo=id_vsjet_algo,
+                                    id_vsjet_wp=id_vsjet_wp,
                                     systematics_to_run=systematics_to_run,
                                     blind=blind,
                                     auto_rebin=auto_rebin,

@@ -57,6 +57,8 @@ parser.add_argument("--method", default=1, help="Method to run on")
 parser.add_argument("--category", default="inclusive", help="Category to run on")
 parser.add_argument("--var", type=str, help="Variable to plot")
 parser.add_argument("--run_systematics", action="store_true", help="Run systematics")
+parser.add_argument("--id_vsjet_algo", default="PNet", help="Tau ID vs jet algorithm to use (DeepTau2018v2p5 or PNet)")
+parser.add_argument("--id_vsjet_wp", default='7', help="Tau ID vs jet working point to use")
 
 # Available Systematic Options:
 # ------------------------------------------------------------------------------------------------------------------------
@@ -194,8 +196,8 @@ early_run_3 = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
 # Used WP definitions from https://tau-wiki.docs.cern.ch/Algorithms/#summary-of-available-tau-algorithms-run-3
 # VSjet/VSe: 1 = VVVLoose, 2 = VVLoose, 3 = VLoose, 4 = Loose, 5 = Medium, 6 = Tight, 7 = VTight, 8 = VVTight
 # VSmu: 1 = VLoose, 2 = Loose, 3 = Medium, 4 = Tight
-algo_VSjet = 'DeepTau2018v2p5' if args.era in early_run_3 else 'PNet'  # Need to investigate if PNet also optimal for Early Run 3.
-wp_VSjet = '7'
+algo_VSjet = args.id_vsjet_algo
+wp_VSjet = args.id_vsjet_wp
 
 # —————————————————————————————————————————————————————————————————————————————
 # REMOVE ONCE HAGOP DERIVES PNET SFs
@@ -256,7 +258,7 @@ if args.era in available_eras:
         )
 
     if args.channel == "tt":
-        doubletau_only_trg = "(trg_doubletau && pt_1 > 40 && pt_2 > 40)"
+        doubletau_only_trg = "(trg_doubletau && pt_1 > 40 && pt_2 > 40 && !trg_doubletauandjet)"
         doubletaujet_only_trg = "(trg_doubletauandjet && pt_1 > 35 && pt_2 > 35 && jpt_1 > 60)"  # might need to revise jet cut later on
         if args.specific_tt_trg:
             if args.specific_tt_trg == "ditau":
@@ -1319,60 +1321,60 @@ if args.era == "Run3_2025":
 # —————————————————————————————————————————————————————————————————————————————
 # For applying temporary a1 pT correction for 2024
 # —————————————————————————————————————————————————————————————————————————————
-a1_corr = {
-    '20-25': 0.9697490296535463,
-    '25-30': 0.9514969358123572,
-    '30-35': 0.9081895633231537,
-    '35-40': 0.9093904783797526,
-    '40-45': 0.909819018096307,
-    '45-50': 0.9801871246651513
-}
+# a1_corr = {
+#     '20-25': 0.9697490296535463,
+#     '25-30': 0.9514969358123572,
+#     '30-35': 0.9081895633231537,
+#     '35-40': 0.9093904783797526,
+#     '40-45': 0.909819018096307,
+#     '45-50': 0.9801871246651513
+# }
 
-if args.era == "Run3_2024":
-    if args.channel in ['et', 'mt']:
-        weight = (
-            weight
-            + "*( (genPartFlav_2!=5)"
-            + " + (genPartFlav_2==5 && decayModePNet_2!=10)"
-            + " + (genPartFlav_2==5 && decayModePNet_2==10)"
-            + "*( 1.0*(pt_2<20)"
-            + f" + {a1_corr['20-25']}*(pt_2>=20 && pt_2<25)"
-            + f" + {a1_corr['25-30']}*(pt_2>=25 && pt_2<30)"
-            + f" + {a1_corr['30-35']}*(pt_2>=30 && pt_2<35)"
-            + f" + {a1_corr['35-40']}*(pt_2>=35 && pt_2<40)"
-            + f" + {a1_corr['40-45']}*(pt_2>=40 && pt_2<45)"
-            + f" + {a1_corr['45-50']}*(pt_2>=45 && pt_2<50)"
-            + " + 1.0*(pt_2>=50) )"
-            + ")"
-        )
-    elif args.channel == 'tt':
-        weight = (
-            weight
-            + "*( (genPartFlav_1!=5)"
-            + " + (genPartFlav_1==5 && decayModePNet_1!=10)"
-            + " + (genPartFlav_1==5 && decayModePNet_1==10)"
-            + "*( 1.0*(pt_1<20)"
-            + f" + {a1_corr['20-25']}*(pt_1>=20 && pt_1<25)"
-            + f" + {a1_corr['25-30']}*(pt_1>=25 && pt_1<30)"
-            + f" + {a1_corr['30-35']}*(pt_1>=30 && pt_1<35)"
-            + f" + {a1_corr['35-40']}*(pt_1>=35 && pt_1<40)"
-            + f" + {a1_corr['40-45']}*(pt_1>=40 && pt_1<45)"
-            + f" + {a1_corr['45-50']}*(pt_1>=45 && pt_1<50)"
-            + " + 1.0*(pt_1>=50) )"
-            + ")"
-            + "*( (genPartFlav_2!=5)"
-            + " + (genPartFlav_2==5 && decayModePNet_2!=10)"
-            + " + (genPartFlav_2==5 && decayModePNet_2==10)"
-            + "*( 1.0*(pt_2<20)"
-            + f" + {a1_corr['20-25']}*(pt_2>=20 && pt_2<25)"
-            + f" + {a1_corr['25-30']}*(pt_2>=25 && pt_2<30)"
-            + f" + {a1_corr['30-35']}*(pt_2>=30 && pt_2<35)"
-            + f" + {a1_corr['35-40']}*(pt_2>=35 && pt_2<40)"
-            + f" + {a1_corr['40-45']}*(pt_2>=40 && pt_2<45)"
-            + f" + {a1_corr['45-50']}*(pt_2>=45 && pt_2<50)"
-            + " + 1.0*(pt_2>=50) )"
-            + ")"
-        )
+# if args.era == "Run3_2024":
+#     if args.channel in ['et', 'mt']:
+#         weight = (
+#             weight
+#             + "*( (genPartFlav_2!=5)"
+#             + " + (genPartFlav_2==5 && decayModePNet_2!=10)"
+#             + " + (genPartFlav_2==5 && decayModePNet_2==10)"
+#             + "*( 1.0*(pt_2<20)"
+#             + f" + {a1_corr['20-25']}*(pt_2>=20 && pt_2<25)"
+#             + f" + {a1_corr['25-30']}*(pt_2>=25 && pt_2<30)"
+#             + f" + {a1_corr['30-35']}*(pt_2>=30 && pt_2<35)"
+#             + f" + {a1_corr['35-40']}*(pt_2>=35 && pt_2<40)"
+#             + f" + {a1_corr['40-45']}*(pt_2>=40 && pt_2<45)"
+#             + f" + {a1_corr['45-50']}*(pt_2>=45 && pt_2<50)"
+#             + " + 1.0*(pt_2>=50) )"
+#             + ")"
+#         )
+#     elif args.channel == 'tt':
+#         weight = (
+#             weight
+#             + "*( (genPartFlav_1!=5)"
+#             + " + (genPartFlav_1==5 && decayModePNet_1!=10)"
+#             + " + (genPartFlav_1==5 && decayModePNet_1==10)"
+#             + "*( 1.0*(pt_1<20)"
+#             + f" + {a1_corr['20-25']}*(pt_1>=20 && pt_1<25)"
+#             + f" + {a1_corr['25-30']}*(pt_1>=25 && pt_1<30)"
+#             + f" + {a1_corr['30-35']}*(pt_1>=30 && pt_1<35)"
+#             + f" + {a1_corr['35-40']}*(pt_1>=35 && pt_1<40)"
+#             + f" + {a1_corr['40-45']}*(pt_1>=40 && pt_1<45)"
+#             + f" + {a1_corr['45-50']}*(pt_1>=45 && pt_1<50)"
+#             + " + 1.0*(pt_1>=50) )"
+#             + ")"
+#             + "*( (genPartFlav_2!=5)"
+#             + " + (genPartFlav_2==5 && decayModePNet_2!=10)"
+#             + " + (genPartFlav_2==5 && decayModePNet_2==10)"
+#             + "*( 1.0*(pt_2<20)"
+#             + f" + {a1_corr['20-25']}*(pt_2>=20 && pt_2<25)"
+#             + f" + {a1_corr['25-30']}*(pt_2>=25 && pt_2<30)"
+#             + f" + {a1_corr['30-35']}*(pt_2>=30 && pt_2<35)"
+#             + f" + {a1_corr['35-40']}*(pt_2>=35 && pt_2<40)"
+#             + f" + {a1_corr['40-45']}*(pt_2>=40 && pt_2<45)"
+#             + f" + {a1_corr['45-50']}*(pt_2>=45 && pt_2<50)"
+#             + " + 1.0*(pt_2>=50) )"
+#             + ")"
+#         )
 # —————————————————————————————————————————————————————————————————————————————
 
 # set systematics:

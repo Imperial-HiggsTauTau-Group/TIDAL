@@ -1,10 +1,12 @@
-input_folder: /vols/cms/dmw25/HiggsDNA/output/LateRun3
-output_path: /vols/cms/dmw25/TIDAL/Draw/plots/LateRun3
-channels: [et, mt, tt]
-eras: [Run3_2024, Run3_2025]
+input_folder: /vols/cms/dmw25/HiggsDNA/output/TriggerSFs/fixed
+output_path: /vols/cms/dmw25/TIDAL/Draw/plots/a1-investigation/post-post-meeting/6-checking-dm10-all-variables
+channels: [ tt ]
+eras: [ Run3_2024 ]
 parameter_path: /vols/cms/dmw25/HiggsDNA/scripts/ditau/config
-schemes: [control]
+schemes: [ control ]
 run_systematics: false
+id_vsjet_algo: PNet
+id_vsjet_wp: 7
 
 control:
 
@@ -59,6 +61,7 @@ control:
     met_pt: "met_pt(40,0,200)"
     pt_tt: "pt_tt(50,0,400)"
     met_phi: "met_phi(32,-pi,pi)"
+    jpt_1: "jpt_1(50,0,400)"
 
   mt:
   # GENERAL CONTROL
@@ -70,7 +73,7 @@ control:
 
   tt:
   # GENERAL CONTROL
-  - { method: "3", category:  [ cp_inclusive ], plotting_variable: [ m_vis_tt, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
+  - { method: "3", category:  [ cp_inclusive ], plotting_variable: [ m_vis_tt, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt, jpt_1 ]}
 
   mm:
   # GENERAL CONTROL
