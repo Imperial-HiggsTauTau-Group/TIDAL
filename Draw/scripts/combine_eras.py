@@ -72,13 +72,9 @@ def main(args, eras):
     with open(args.config) as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
 
-    input_folder = config["input_folder"]
     output_path = config["output_path"]
     channels = config["channels"]
-    eras = config["eras"]
-    parameter_path = config["parameter_path"]
     schemes = config["schemes"]
-    run_systematics = config["run_systematics"]
 
     for channel in channels:
         for scheme in schemes:

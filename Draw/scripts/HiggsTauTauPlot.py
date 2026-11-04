@@ -134,6 +134,7 @@ parser.add_argument(
 )
 parser.add_argument("--stats_check", action="store_true", help="Make datacards for statistical checks")
 parser.add_argument("--specific_tt_trg", type=str, help="Override the tt trigger selection for the tt channel")
+parser.add_argument("--specific_era", type=str, default=None, help="Breakdown by specific eras (e.g. Run2024B, Run2024C, etc.)")
 
 # ------------------------------------------------------------------------------------------------------------------------
 args = parser.parse_args()
@@ -258,7 +259,7 @@ if args.era in available_eras:
         )
 
     if args.channel == "tt":
-        doubletau_only_trg = "(trg_doubletau && pt_1 > 40 && pt_2 > 40 && !trg_doubletauandjet)"
+        doubletau_only_trg = "(trg_doubletau && pt_1 > 40 && pt_2 > 40)"
         doubletaujet_only_trg = "(trg_doubletauandjet && pt_1 > 35 && pt_2 > 35 && jpt_1 > 60)"  # might need to revise jet cut later on
         if args.specific_tt_trg:
             if args.specific_tt_trg == "ditau":
@@ -795,7 +796,7 @@ if args.era in available_eras:
             "ZZ",
             "ST_t_channel_top_4f_InclusiveDecays",
             "ST_t_channel_antitop_4f_InclusiveDecays",
-            "EWKZ_MLL-50_TuneCP5_13p6TeV_madgraph-pythia8",
+            #"EWKZ_MLL-50_TuneCP5_13p6TeV_madgraph-pythia8",
             "ST_tW_top_2L2Nu",
             "ST_tW_top_2L2Nu_ext1",
             "ST_tW_antitop_2L2Nu",

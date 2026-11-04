@@ -1,0 +1,257 @@
+BUGGED_EWKZ_MLL-50_TuneCP5_13p6TeV_madgraph-pythia8:
+  eff: 3488000
+  filter_efficiency: 1.0
+  xs: 7.12287
+DYto2L_M_10to50_amcatnloFXFX:
+  eff: 74917918
+  filter_efficiency: 1.0
+  xs: 20950.0
+DYto2L_M_10to50_madgraphMLM:
+  eff: 150291788
+  filter_efficiency: 1.0
+  xs: 17380.0
+DYto2L_M_50_0J_amcatnloFXFX:
+  eff: 63684562.0
+  filter_efficiency: 1.0
+  xs: 6282.6
+DYto2L_M_50_1J_amcatnloFXFX:
+  eff: 63684562.0
+  filter_efficiency: 1.0
+  xs: 6282.6
+DYto2L_M_50_1J_madgraphMLM:
+  eff: 69398459.0
+  filter_efficiency: 1.0
+  xs: 6282.6
+DYto2L_M_50_2J_amcatnloFXFX:
+  eff: 63684562.0
+  filter_efficiency: 1.0
+  xs: 6282.6
+DYto2L_M_50_2J_madgraphMLM:
+  eff: 69398459.0
+  filter_efficiency: 1.0
+  xs: 6282.6
+DYto2L_M_50_3J_madgraphMLM:
+  eff: 69398459.0
+  filter_efficiency: 1.0
+  xs: 6282.6
+DYto2L_M_50_4J_madgraphMLM:
+  eff: 69398459.0
+  filter_efficiency: 1.0
+  xs: 6282.6
+DYto2L_M_50_amcatnloFXFX:
+  eff: 63684562.0
+  filter_efficiency: 1.0
+  xs: 6282.6
+DYto2L_M_50_amcatnloFXFX_ext1:
+  eff: 63684562.0
+  filter_efficiency: 1.0
+  xs: 6282.6
+DYto2L_M_50_madgraphMLM:
+  eff: 69398459.0
+  filter_efficiency: 1.0
+  xs: 6282.6
+DYto2L_M_50_madgraphMLM_ext1:
+  eff: 69398459.0
+  filter_efficiency: 1.0
+  xs: 6282.6
+DYto2Tau_MLL_50_0J_Filtered_amcatnloFXFX:
+  eff: 12163250
+  filter_efficiency: 1.0
+  xs: 1664.6841730883225
+DYto2Tau_MLL_50_0J_amcatnloFXFX:
+  eff: 35162586
+  filter_efficiency: 1.0
+  xs: 1664.6841730883225
+DYto2Tau_MLL_50_1J_Filtered_amcatnloFXFX:
+  eff: 10205589
+  filter_efficiency: 1.0
+  xs: 316.2403378778898
+DYto2Tau_MLL_50_1J_amcatnloFXFX:
+  eff: 33432375
+  filter_efficiency: 1.0
+  xs: 316.2403378778898
+DYto2Tau_MLL_50_2J_Filtered_amcatnloFXFX:
+  eff: 12165380
+  filter_efficiency: 1.0
+  xs: 116.47203023117962
+DYto2Tau_MLL_50_2J_amcatnloFXFX:
+  eff: 36561651
+  filter_efficiency: 1.0
+  xs: 116.47203023117962
+EWKZ_MLL-50_TuneCP5_13p6TeV_madgraph-pythia8:
+  eff: 3458000
+  filter_efficiency: 1.0
+  xs: 7.12287
+GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay:
+  eff: 9103069
+  filter_efficiency: 0.3848
+  xs: 3.2759
+GluGluHTo2Tau_UncorrelatedDecay_CPodd_UnFiltered_ProdAndDecay:
+  eff: 103696
+  filter_efficiency: 1.0
+  xs: 3.2759
+GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay:
+  eff: 9115963
+  filter_efficiency: 0.3848
+  xs: 3.2759
+GluGluHTo2Tau_UncorrelatedDecay_MM_UnFiltered_ProdAndDecay:
+  eff: 103290
+  filter_efficiency: 1.0
+  xs: 3.2759
+GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay:
+  eff: 8623785
+  filter_efficiency: 0.3847
+  xs: 3.2759
+GluGluHTo2Tau_UncorrelatedDecay_SM_UnFiltered_ProdAndDecay:
+  eff: 103106
+  filter_efficiency: 1.0
+  xs: 3.2759
+ST_tW_antitop_2L2Nu:
+  eff: 2487898.0
+  filter_efficiency: 1.0
+  xs: 3.8
+ST_tW_antitop_2L2Nu_ext1:
+  eff: 2487898.0
+  filter_efficiency: 1.0
+  xs: 3.8
+ST_tW_antitop_LNu2Q:
+  eff: 5146462.0
+  filter_efficiency: 1.0
+  xs: 15.9
+ST_tW_antitop_LNu2Q_ext1:
+  eff: 5146462.0
+  filter_efficiency: 1.0
+  xs: 15.9
+ST_tW_top_2L2Nu:
+  eff: 2478922.0
+  filter_efficiency: 1.0
+  xs: 3.8
+ST_tW_top_2L2Nu_ext1:
+  eff: 2478922.0
+  filter_efficiency: 1.0
+  xs: 3.8
+ST_tW_top_LNu2Q:
+  eff: 4943196.0
+  filter_efficiency: 1.0
+  xs: 15.8
+ST_tW_top_LNu2Q_ext1:
+  eff: 4943196.0
+  filter_efficiency: 1.0
+  xs: 15.8
+ST_t_channel_antitop_4f_InclusiveDecays:
+  eff: 1375656
+  filter_efficiency: 1.0
+  xs: 87.2
+ST_t_channel_top_4f_InclusiveDecays:
+  eff: 2719204
+  filter_efficiency: 1.0
+  xs: 145.0
+TTto2L2Nu:
+  eff: 24357456.0
+  filter_efficiency: 1.0
+  xs: 98.04387875606875
+TTto2L2Nu_ext1:
+  eff: 24357456.0
+  filter_efficiency: 1.0
+  xs: 98.04387875606875
+TTto4Q:
+  eff: 52422350.0
+  filter_efficiency: 1.0
+  xs: 419.8071644141188
+TTto4Q_ext1:
+  eff: 52422350.0
+  filter_efficiency: 1.0
+  xs: 419.8071644141188
+TTtoLNu2Q:
+  eff: 76050494.0
+  filter_efficiency: 1.0
+  xs: 405.74895682981236
+TTtoLNu2Q_ext1:
+  eff: 76050494.0
+  filter_efficiency: 1.0
+  xs: 405.74895682981236
+VBFHToTauTau_UncorrelatedDecay_Filtered:
+  eff: 7048003
+  filter_efficiency: 0.4091
+  xs: 0.2558
+VBFHToTauTau_UncorrelatedDecay_UnFiltered:
+  eff: 199756
+  filter_efficiency: 1.0
+  xs: 0.2558
+WW:
+  eff: 16545000
+  filter_efficiency: 1.0
+  xs: 122.27052
+WWW_4F:
+  eff: 423054
+  filter_efficiency: 1.0
+  xs: 0.2328
+WWZ_4F:
+  eff: 1585526
+  filter_efficiency: 1.0
+  xs: 0.1851
+WZ:
+  eff: 8379000
+  filter_efficiency: 1.0
+  xs: 41.1474
+WZZ:
+  eff: 1625116
+  filter_efficiency: 1.0
+  xs: 0.06206
+WminusHToTauTau_UncorrelatedDecay_Filtered:
+  eff: 718725
+  filter_efficiency: 0.3944
+  xs: 0.03561
+WminusHToTauTau_UncorrelatedDecay_UnFiltered:
+  eff: 28420
+  filter_efficiency: 1.0
+  xs: 0.03561
+WplusHToTauTau_UncorrelatedDecay_Filtered:
+  eff: 952493
+  filter_efficiency: 0.3743
+  xs: 0.05575
+WplusHToTauTau_UncorrelatedDecay_UnFiltered:
+  eff: 28316
+  filter_efficiency: 1.0
+  xs: 0.05575
+WtoLNu_1J_madgraphMLM:
+  eff: 94639090.0
+  filter_efficiency: 1.0
+  xs: 63425.09999999999
+WtoLNu_2J_madgraphMLM:
+  eff: 94639090.0
+  filter_efficiency: 1.0
+  xs: 63425.09999999999
+WtoLNu_3J_madgraphMLM:
+  eff: 94639090.0
+  filter_efficiency: 1.0
+  xs: 63425.09999999999
+WtoLNu_4J_madgraphMLM:
+  eff: 94639090.0
+  filter_efficiency: 1.0
+  xs: 63425.09999999999
+WtoLNu_madgraphMLM:
+  eff: 94639090.0
+  filter_efficiency: 1.0
+  xs: 63425.09999999999
+WtoLNu_madgraphMLM_ext1:
+  eff: 94639090.0
+  filter_efficiency: 1.0
+  xs: 63425.09999999999
+ZHToTauTau_UncorrelatedDecay_Filtered:
+  eff: 1007812
+  filter_efficiency: 0.3933
+  xs: 0.0592
+ZHToTauTau_UncorrelatedDecay_UnFiltered:
+  eff: 29949
+  filter_efficiency: 1.0
+  xs: 0.0592
+ZZ:
+  eff: 1254000
+  filter_efficiency: 1.0
+  xs: 19.431
+ZZZ:
+  eff: 1589388
+  filter_efficiency: 1.0
+  xs: 0.01591
+lumi: 9693

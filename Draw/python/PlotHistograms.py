@@ -250,11 +250,11 @@ class HTT_Histogram:
         elif self.era == 'earlyrun3':
             self.lumi = 62.41
         elif self.era == 'Run3_2024':
-            self.lumi = 109.08
+            self.lumi = 109.82
         elif self.era == 'Run3_2025':
-            self.lumi = 110.58
+            self.lumi = 110.38
         elif self.era == 'laterun3':
-            self.lumi = 109.08 + 110.58  # update when we add 2026
+            self.lumi = 109.08 + 110.38  # update when we add 2026
         else: 
             self.lumi = 0.0
         # get color for each background
