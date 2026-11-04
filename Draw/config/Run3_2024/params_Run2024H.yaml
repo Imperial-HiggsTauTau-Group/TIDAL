@@ -1,0 +1,153 @@
+DYto2E_MLL_50_0J_amcatnloFXFX:
+  eff: 162197196
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+DYto2E_MLL_50_1J_amcatnloFXFX:
+  eff: 162197196
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+DYto2E_MLL_50_2J_amcatnloFXFX:
+  eff: 162197196
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+DYto2E_MLL_50_amcatnloFXFX:
+  eff: 162197196
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+DYto2Mu_MLL_50_0J_amcatnloFXFX:
+  eff: 164095711
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+DYto2Mu_MLL_50_1J_amcatnloFXFX:
+  eff: 164095711
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+DYto2Mu_MLL_50_2J_amcatnloFXFX:
+  eff: 164095711
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+DYto2Mu_MLL_50_amcatnloFXFX:
+  eff: 164095711
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+DYto2Tau_MLL_50_0J_amcatnloFXFX:
+  eff: 116466835
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+DYto2Tau_MLL_50_1J_amcatnloFXFX:
+  eff: 116466835
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+DYto2Tau_MLL_50_2J_amcatnloFXFX:
+  eff: 116466835
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+DYto2Tau_MLL_50_amcatnloFXFX:
+  eff: 116466835
+  filter_efficiency: 1.0
+  xs: 2094.2000000000003
+GluGluHTo2Tau_UncorrelatedDecay_CPodd_Filtered_ProdAndDecay:
+  eff: 37025614
+  filter_efficiency: 0.3848
+  xs: 3.2759
+GluGluHTo2Tau_UncorrelatedDecay_CPodd_UnFiltered_ProdAndDecay:
+  eff: 895334
+  filter_efficiency: 1.0
+  xs: 3.2759
+GluGluHTo2Tau_UncorrelatedDecay_MM_Filtered_ProdAndDecay:
+  eff: 32769848
+  filter_efficiency: 0.3848
+  xs: 3.2759
+GluGluHTo2Tau_UncorrelatedDecay_MM_UnFiltered_ProdAndDecay:
+  eff: 891510
+  filter_efficiency: 1.0
+  xs: 3.2759
+GluGluHTo2Tau_UncorrelatedDecay_SM_Filtered_ProdAndDecay:
+  eff: 38650617
+  filter_efficiency: 0.3847
+  xs: 3.2759
+GluGluHTo2Tau_UncorrelatedDecay_SM_UnFiltered_ProdAndDecay:
+  eff: 889582
+  filter_efficiency: 1.0
+  xs: 3.2759
+ST_tW_antitop_2L2Nu:
+  eff: 7501499
+  filter_efficiency: 1.0
+  xs: 3.8
+ST_tW_antitop_LNu2Q:
+  eff: 14702865
+  filter_efficiency: 1.0
+  xs: 15.9
+ST_tW_top_2L2Nu:
+  eff: 7500406
+  filter_efficiency: 1.0
+  xs: 3.8
+ST_tW_top_LNu2Q:
+  eff: 14382095
+  filter_efficiency: 1.0
+  xs: 15.8
+TTto2L2Nu:
+  eff: 233169567
+  filter_efficiency: 1.0
+  xs: 98.04387875606875
+TTtoLNu2Q:
+  eff: 240281605
+  filter_efficiency: 1.0
+  xs: 405.74895682981236
+VBFHToTauTau_UncorrelatedDecay_Filtered:
+  eff: 27349658
+  filter_efficiency: 0.4091
+  xs: 0.2558
+VBFHToTauTau_UncorrelatedDecay_UnFiltered:
+  eff: 798603
+  filter_efficiency: 1.0
+  xs: 0.2558
+WW:
+  eff: 32002627
+  filter_efficiency: 1.0
+  xs: 122.27052
+WZ:
+  eff: 15275182
+  filter_efficiency: 1.0
+  xs: 41.1474
+WminusHToTauTau_UncorrelatedDecay_Filtered:
+  eff: 3103814
+  filter_efficiency: 0.3944
+  xs: 0.03561
+WminusHToTauTau_UncorrelatedDecay_UnFiltered:
+  eff: 132254
+  filter_efficiency: 1.0
+  xs: 0.03561
+WplusHToTauTau_UncorrelatedDecay_Filtered:
+  eff: 4300010
+  filter_efficiency: 0.3743
+  xs: 0.05575
+WplusHToTauTau_UncorrelatedDecay_UnFiltered:
+  eff: 132008
+  filter_efficiency: 1.0
+  xs: 0.05575
+WtoENu_madgraphMLM:
+  eff: 250407615
+  filter_efficiency: 1.0
+  xs: 21141.699999999997
+WtoMuNu_madgraphMLM:
+  eff: 212623581
+  filter_efficiency: 1.0
+  xs: 21141.699999999997
+WtoTauNu_madgraphMLM:
+  eff: 241019596
+  filter_efficiency: 1.0
+  xs: 21141.699999999997
+ZHToTauTau_UncorrelatedDecay_Filtered:
+  eff: 3800028
+  filter_efficiency: 0.3933
+  xs: 0.0592
+ZHToTauTau_UncorrelatedDecay_UnFiltered:
+  eff: 131648
+  filter_efficiency: 1.0
+  xs: 0.0592
+ZZ:
+  eff: 2399642
+  filter_efficiency: 1.0
+  xs: 19.431
+lumi: 5490

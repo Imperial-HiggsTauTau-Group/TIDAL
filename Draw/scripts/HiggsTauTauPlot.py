@@ -721,6 +721,10 @@ if args.era in available_eras:
                 'Tau_Run2025G'
             ]
 
+    if args.specific_era is not None:
+        data_samples = [s for s in data_samples if args.specific_era in s]
+        print(f"INFO: Using only data samples from era {args.specific_era}: {data_samples}")
+
     samples_dict["data_samples"] = data_samples
 
     # MC (background) samples
@@ -1507,7 +1511,8 @@ if not args.bypass_plotter:
                             None,
                             sample_name,
                         )
-
+            if args.specific_era:
+                args.parameter_file = args.parameter_file.replace(".yaml", f"_{args.specific_era}.yaml")
             analysis.AddInfo(args.parameter_file, scaleTo="data_obs")
 
             if systematic == "nominal":
@@ -1723,5 +1728,5 @@ if (not is_2d) or (is_2d and args.do_unrolling):
         is2Dunrolled=is_2d,
     )
 
-    Histo_Plotter.plot_1D_histo()
+    Histo_Plotter.plot_1D_histo(lumi = (analysis.lumi * 1e-3))
 

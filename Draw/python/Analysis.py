@@ -447,7 +447,7 @@ class Analysis(object):
         else:
             raise ValueError("Unsupported file format: only .json and .yaml are supported")
 
-        lumi = info["lumi"]
+        self.lumi = info["lumi"]
         for sample in info:
             name = sample
             if add_name is not None:
@@ -460,9 +460,9 @@ class Analysis(object):
         if scaleTo is not None:
             for name, params in self.info.items():
                 if 'xs' in params and 'eff' in params:
-                    params["sf"] = lumi * params["xs"] / params["eff"]
+                    params["sf"] = self.lumi * params["xs"] / params["eff"]
                 elif 'xs' in params and 'evt' in params:
-                    params["sf"] = lumi * params["xs"] / params["evt"]
+                    params["sf"] = self.lumi * params["xs"] / params["evt"]
                 else:
                     params["sf"] = 1.0
                 if 'filter_efficiency' in params:

@@ -375,7 +375,7 @@ class HTT_Histogram:
     #     return True
 
 
-    def plot_1D_histo(self, ratio_min=0.5, ratio_max=1.5):
+    def plot_1D_histo(self, ratio_min=0.5, ratio_max=1.5, lumi=None):
         print("Plotting 1D histogram")
         # plot 1D histogram
         self.fig, (self.ax, self.ax_ratio) = plt.subplots(2, 1, gridspec_kw={'height_ratios': [4, 1]}, sharex=True, figsize=(9, 8))
@@ -413,7 +413,8 @@ class HTT_Histogram:
             step="post", facecolor='none', hatch='////////', edgecolor='grey', linewidth=0)
 
         # legends and labels
-        hep.cms.label(ax=self.ax, text="Work in progress", data=True, lumi=self.lumi, com=13.6, fontsize=16)
+        lumi = self.lumi if lumi is None else lumi
+        hep.cms.label(ax=self.ax, text="Work in progress", data=True, lumi=lumi, com=13.6, fontsize=16)
         self.ax.text(0.035, self.ch_label_height, self.channel_label, fontsize=18, fontweight="bold", transform=self.ax.transAxes)
         handles, labels = self.ax.get_legend_handles_labels()
 

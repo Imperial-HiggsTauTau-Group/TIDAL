@@ -1,8 +1,8 @@
 input_folder: /vols/cms/dmw25/HiggsDNA/output/TriggerSFs/fixed
-output_path: /vols/cms/dmw25/TIDAL/Draw/plots/a1-investigation/mvis-by-era/I
-channels: [ tt, mt ]
+output_path: /vols/cms/dmw25/TIDAL/Draw/plots/a1-investigation/mvis-by-era/G
+channels: [ tt ]
 eras: [ Run3_2024 ]
-specific_era: Run2024B
+specific_era: Run2024G
 parameter_path: /vols/cms/dmw25/TIDAL/Draw/config
 schemes: [ control ]
 run_systematics: false
@@ -84,7 +84,7 @@ control:
 
   tt:
   # GENERAL CONTROL
-  - { method: "3", category: [ cp_inclusive ], plotting_variable: [ m_vis_tt ]}
+  - { method: "3", category: [ cp_inclusive ], plotting_variable: [ m_vis_tt, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
 
   mm:
   # GENERAL CONTROL
