@@ -414,7 +414,7 @@ class HTT_Histogram:
 
         # legends and labels
         lumi = self.lumi if lumi is None else lumi
-        hep.cms.label(ax=self.ax, text="Work in progress", data=True, lumi=lumi, com=13.6, fontsize=16)
+        hep.cms.label(ax=self.ax, text="Work in progress", data=True, lumi=f"{lumi:.1f}", com=13.6, fontsize=16)
         self.ax.text(0.035, self.ch_label_height, self.channel_label, fontsize=18, fontweight="bold", transform=self.ax.transAxes)
         handles, labels = self.ax.get_legend_handles_labels()
 
