@@ -436,16 +436,20 @@ class Analysis(object):
 
     def AddInfo(self, file, scaleTo=None,add_name=None):
 
-        file_ext = os.path.splitext(file)[1].lower()
+        if type(file) == str:
+            file_ext = os.path.splitext(file)[1].lower()
 
-        if file_ext == '.json':
-            with open(file) as f:
-                info = json.load(f)
-        elif file_ext == '.yaml' or file_ext == '.yml':
-            with open(file) as f:
-                info = yaml.load(f, Loader=yaml.FullLoader)
-        else:
-            raise ValueError("Unsupported file format: only .json and .yaml are supported")
+            if file_ext == '.json':
+                with open(file) as f:
+                    info = json.load(f)
+            elif file_ext == '.yaml' or file_ext == '.yml':
+                with open(file) as f:
+                    info = yaml.load(f, Loader=yaml.FullLoader)
+            else:
+                raise ValueError("Unsupported file format: only .json and .yaml are supported")
+
+        elif type(file) == dict:
+            info = file
 
         self.lumi = info["lumi"]
         for sample in info:

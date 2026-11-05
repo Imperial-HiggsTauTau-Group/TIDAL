@@ -1,9 +1,9 @@
 input_folder: /vols/cms/dmw25/HiggsDNA/output/TriggerSFs/fixed
-output_path: /vols/cms/dmw25/TIDAL/Draw/plots/a1-investigation/mvis-by-era/G
+output_path: /vols/cms/dmw25/TIDAL/Draw/plots/a1-investigation/tau-1-by-era/HI
 channels: [ tt ]
 eras: [ Run3_2024 ]
-specific_era: Run2024G
-parameter_path: /vols/cms/dmw25/TIDAL/Draw/config
+specific_eras: [ Run2024H, Run2024I ]
+parameter_path: Draw/config
 schemes: [ control ]
 run_systematics: false
 id_vsjet_algo: PNet
@@ -73,14 +73,15 @@ control:
     jdeta: "jdeta(50,0,10)"
     sjdphi: "sjdphi(32,-pi,pi)"
     dijetpt: "dijetpt(50,0,400)"
+    decayModePNet_1: "decayModePNet_1(12,-0.5,11.5)"
 
   mt:
   # GENERAL CONTROL
-  - { method: "1", category:  [ cp_inclusive ], plotting_variable: [ m_vis ], additional_selections: ["(mt_1<65)"]}
+  - { method: "1", category: [ cp_inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ], additional_selections: ["(mt_1<65)"]}
 
   et:
   # GENERAL CONTROL
-  - { method: "1", category:  [ cp_inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ], additional_selections: ["(mt_1<65)"]}
+  - { method: "1", category: [ cp_inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ], additional_selections: ["(mt_1<65)"]}
 
   tt:
   # GENERAL CONTROL
@@ -88,10 +89,10 @@ control:
 
   mm:
   # GENERAL CONTROL
-  - { method: "5", category:  [ inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
+  - { method: "5", category: [ inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
 
   ee:
   # GENERAL CONTROL
-  - { method: "5", category:  [ inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
+  - { method: "5", category: [ inclusive ], plotting_variable: [ m_vis, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
 
 

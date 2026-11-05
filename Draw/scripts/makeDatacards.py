@@ -108,7 +108,7 @@ def create_shell_script(
     nodename="",
     stats_check=False,
     specific_tt_trg=None,
-    specific_era=None
+    specific_eras=None
 ):
     shell_script = f"""
 #!/bin/bash
@@ -159,8 +159,8 @@ python3 Draw/scripts/HiggsTauTauPlot.py \\
         shell_script += " \\\n--stats_check"
     if specific_tt_trg is not None:
         shell_script += f" \\\n--specific_tt_trg {specific_tt_trg}"
-    if specific_era is not None:
-        shell_script += f" \\\n--specific_era {specific_era}"
+    if specific_eras is not None:
+        shell_script += f" \\\n--specific_eras {' '.join(specific_eras)}"
     with open(script_path, "w") as script_file:
         print(shell_script)
         script_file.write(shell_script)
@@ -212,16 +212,16 @@ if __name__ == "__main__":
 
     channels = config["channels"]
     eras = config["eras"]
-    specific_era = config.get("specific_era", None)
+    specific_eras = config.get("specific_eras", None)
     parameter_path = config["parameter_path"]
     schemes = config["schemes"]
     run_systematics = config["run_systematics"]
     id_vsjet_algo = config.get("id_vsjet_algo", "PNet")
     id_vsjet_wp = config.get("id_vsjet_wp", 7)
 
-    if specific_era is not None and len(eras) > 1:
+    if specific_eras is not None and len(eras) > 1:
         raise ValueError(
-            "You cannot specify both 'specific_era' and multiple 'eras' in the configuration."
+            "You cannot specify both 'specific_eras' and multiple 'eras' in the configuration."
         )
 
     available_channels = ["mm", "ee", "mt", "tt", "et"]
@@ -403,7 +403,7 @@ if __name__ == "__main__":
                                     nodename=nodename,
                                     stats_check=stats_check,
                                     specific_tt_trg=specific_tt_trg,
-                                    specific_era=specific_era
+                                    specific_eras=specific_eras
                                 )
 
                                 submit_file = os.path.join(

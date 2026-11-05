@@ -37,6 +37,7 @@ from Draw.python.HiggsTauTauPlot_utilities import (
     RenameDatacards,
     Total_Uncertainty
 )
+from Draw.python.era_utilities import build_temp_config
 from Draw.scripts.systematics.systematics import generate_systematics_dict
 from Draw.python.PlotHistograms import HTT_Histogram
 
@@ -134,7 +135,7 @@ parser.add_argument(
 )
 parser.add_argument("--stats_check", action="store_true", help="Make datacards for statistical checks")
 parser.add_argument("--specific_tt_trg", type=str, help="Override the tt trigger selection for the tt channel")
-parser.add_argument("--specific_era", type=str, default=None, help="Breakdown by specific eras (e.g. Run2024B, Run2024C, etc.)")
+parser.add_argument("--specific_eras", type=str, default=None, nargs="+", help="Breakdown by specific eras (e.g. Run2024B, Run2024C, etc.)")
 
 # ------------------------------------------------------------------------------------------------------------------------
 args = parser.parse_args()
@@ -721,9 +722,9 @@ if args.era in available_eras:
                 'Tau_Run2025G'
             ]
 
-    if args.specific_era is not None:
-        data_samples = [s for s in data_samples if args.specific_era in s]
-        print(f"INFO: Using only data samples from era {args.specific_era}: {data_samples}")
+    if args.specific_eras is not None:
+        data_samples = [s for s in data_samples if any(era in s for era in args.specific_eras)]
+        print(f"INFO: Using only data samples from specified eras: {data_samples}")
 
     samples_dict["data_samples"] = data_samples
 
@@ -1511,8 +1512,8 @@ if not args.bypass_plotter:
                             None,
                             sample_name,
                         )
-            if args.specific_era:
-                args.parameter_file = args.parameter_file.replace(".yaml", f"_{args.specific_era}.yaml")
+            if args.specific_eras:
+                args.parameter_file = build_temp_config(args.parameter_file, args.era, args.specific_eras)
             analysis.AddInfo(args.parameter_file, scaleTo="data_obs")
 
             if systematic == "nominal":
