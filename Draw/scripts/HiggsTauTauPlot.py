@@ -38,6 +38,7 @@ from Draw.python.HiggsTauTauPlot_utilities import (
     Total_Uncertainty
 )
 from Draw.python.era_utilities import build_temp_config
+from Draw.residual_correcting.reweight import reweighting_string
 from Draw.scripts.systematics.systematics import generate_systematics_dict
 from Draw.python.PlotHistograms import HTT_Histogram
 
@@ -1325,62 +1326,19 @@ if args.era == "Run3_2025":
 # —————————————————————————————————————————————————————————————————————————————
 
 # —————————————————————————————————————————————————————————————————————————————
-# For applying temporary a1 pT correction for 2024
+# For applying temporary pT dependent correction for 2024
 # —————————————————————————————————————————————————————————————————————————————
-# a1_corr = {
-#     '20-25': 0.9697490296535463,
-#     '25-30': 0.9514969358123572,
-#     '30-35': 0.9081895633231537,
-#     '35-40': 0.9093904783797526,
-#     '40-45': 0.909819018096307,
-#     '45-50': 0.9801871246651513
-# }
 
-# if args.era == "Run3_2024":
-#     if args.channel in ['et', 'mt']:
-#         weight = (
-#             weight
-#             + "*( (genPartFlav_2!=5)"
-#             + " + (genPartFlav_2==5 && decayModePNet_2!=10)"
-#             + " + (genPartFlav_2==5 && decayModePNet_2==10)"
-#             + "*( 1.0*(pt_2<20)"
-#             + f" + {a1_corr['20-25']}*(pt_2>=20 && pt_2<25)"
-#             + f" + {a1_corr['25-30']}*(pt_2>=25 && pt_2<30)"
-#             + f" + {a1_corr['30-35']}*(pt_2>=30 && pt_2<35)"
-#             + f" + {a1_corr['35-40']}*(pt_2>=35 && pt_2<40)"
-#             + f" + {a1_corr['40-45']}*(pt_2>=40 && pt_2<45)"
-#             + f" + {a1_corr['45-50']}*(pt_2>=45 && pt_2<50)"
-#             + " + 1.0*(pt_2>=50) )"
-#             + ")"
-#         )
-#     elif args.channel == 'tt':
-#         weight = (
-#             weight
-#             + "*( (genPartFlav_1!=5)"
-#             + " + (genPartFlav_1==5 && decayModePNet_1!=10)"
-#             + " + (genPartFlav_1==5 && decayModePNet_1==10)"
-#             + "*( 1.0*(pt_1<20)"
-#             + f" + {a1_corr['20-25']}*(pt_1>=20 && pt_1<25)"
-#             + f" + {a1_corr['25-30']}*(pt_1>=25 && pt_1<30)"
-#             + f" + {a1_corr['30-35']}*(pt_1>=30 && pt_1<35)"
-#             + f" + {a1_corr['35-40']}*(pt_1>=35 && pt_1<40)"
-#             + f" + {a1_corr['40-45']}*(pt_1>=40 && pt_1<45)"
-#             + f" + {a1_corr['45-50']}*(pt_1>=45 && pt_1<50)"
-#             + " + 1.0*(pt_1>=50) )"
-#             + ")"
-#             + "*( (genPartFlav_2!=5)"
-#             + " + (genPartFlav_2==5 && decayModePNet_2!=10)"
-#             + " + (genPartFlav_2==5 && decayModePNet_2==10)"
-#             + "*( 1.0*(pt_2<20)"
-#             + f" + {a1_corr['20-25']}*(pt_2>=20 && pt_2<25)"
-#             + f" + {a1_corr['25-30']}*(pt_2>=25 && pt_2<30)"
-#             + f" + {a1_corr['30-35']}*(pt_2>=30 && pt_2<35)"
-#             + f" + {a1_corr['35-40']}*(pt_2>=35 && pt_2<40)"
-#             + f" + {a1_corr['40-45']}*(pt_2>=40 && pt_2<45)"
-#             + f" + {a1_corr['45-50']}*(pt_2>=45 && pt_2<50)"
-#             + " + 1.0*(pt_2>=50) )"
-#             + ")"
-#         )
+if args.era == "Run3_2024":
+    if args.channel in ['et', 'mt']:
+        for _ in ["sel_mupi", "sel_murho", "sel_mua11pr", "sel_mua1"]:
+            weight += reweighting_string("I", _, "2")
+
+    elif args.channel == 'tt':
+        for _ in ["sel_mupi", "sel_murho", "sel_mua11pr", "sel_mua1"]:
+            weight += reweighting_string("I", _, "1")
+            weight += reweighting_string("I", _, "2")
+
 # —————————————————————————————————————————————————————————————————————————————
 
 # set systematics:
