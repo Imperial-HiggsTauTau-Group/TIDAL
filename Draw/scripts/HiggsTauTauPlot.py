@@ -1329,15 +1329,13 @@ if args.era == "Run3_2025":
 # For applying temporary pT dependent correction for 2024
 # —————————————————————————————————————————————————————————————————————————————
 
-if args.era == "Run3_2024":
-    if args.channel in ['et', 'mt']:
-        for _ in ["sel_mupi", "sel_murho", "sel_mua11pr", "sel_mua1"]:
-            weight += reweighting_string("I", _, "2")
+# if args.era == "Run3_2024":
+#     if args.channel in ['et', 'mt']:
+#         weight += reweighting_string("I", "2")
 
-    elif args.channel == 'tt':
-        for _ in ["sel_mupi", "sel_murho", "sel_mua11pr", "sel_mua1"]:
-            weight += reweighting_string("I", _, "1")
-            weight += reweighting_string("I", _, "2")
+#     elif args.channel == 'tt':
+#         weight += reweighting_string("I", "1")
+#         weight += reweighting_string("I", "2")
 
 # —————————————————————————————————————————————————————————————————————————————
 
