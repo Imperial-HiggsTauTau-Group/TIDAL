@@ -1,12 +1,27 @@
 {
-    "input_path": "Draw/plots/scale_factors_2024/trigger-mine_ID-hagop/Run3_2024/control/tt/datacard_m_vis_cp_inclusive_tt_Run3_2024.root",
-    "output_path": "Draw/compare_data_by_era/compare_eras.png",
+    "input_path": "Draw/plots/a1-investigation/data-to-data/Run3_2024/control/tt/datacard_decayModePNet_2_cp_inclusive_tt_Run3_2024.root",
+    "output_path": "Draw/plots/a1-investigation/data-to-data/Run3_2024/data-to-data/tt/dm.png",
     "year": "Run3_2024",
     "channel": "tt",
-    "reference_era": "Run2024C",
-    "variable": "m_vis_tt",
+    "reference_era": "2024CDE",
+    "variable": "decayModePNet_2",
     
     "variable_definitions": {
-        "m_vis_tt": "m_vis(50,0,400)"
+        "m_vis": "m_vis(50,0,200)",
+        "m_vis_tt": "m_vis(50,0,400)",
+        "pt_1": "pt_1(40,0,200)",
+        "pt_2": "pt_2(40,0,200)",
+        "met_pt": "met_pt(40,0,200)",
+        "pt_tt": "pt_tt(40,0,200)",
+        "l1pt_1": "l1pt_1(40,0,160)",
+        "l1pt_2": "l1pt_2(40,0,160)",
+        "decayModePNet_1": "decayModePNet_1(12,-0.5,11.5)",
+        "decayModePNet_2": "decayModePNet_2(12,-0.5,11.5)"
+    },
+
+    "era_definitions": {
+        "2024CDE": ["Run2024C", "Run2024D", "Run2024E"],
+        "2024FG": ["Run2024F", "Run2024G"],
+        "2024HI": ["Run2024H", "Run2024I"]
     }
 }

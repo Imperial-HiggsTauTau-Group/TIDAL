@@ -10,6 +10,24 @@ from Draw.residual_correcting.derive_correction import get_bin_edges
 
 plt.style.use(hep.style.CMS)
 
+RATIO_RANGE = (0.6, 1.4)
+VAR_LABELS = {
+    "m_vis": r"$m_{\mathrm{vis}}$ [GeV]",
+    "pt_1": r"$p_{\mathrm{T}}^{\tau_1}$ [GeV]",
+    "pt_2": r"$p_{\mathrm{T}}^{\tau_2}$ [GeV]",
+    "met_pt": r"$p_{\mathrm{T}}^{\mathrm{miss}}$ [GeV]",
+    "pt_tt": r"$p_{\mathrm{T}}^{\tau\tau}$ [GeV]",
+    "l1pt_1": r"Leading $\tau_h$ L1 $p_{\mathrm{T}}$ [GeV]",
+    "l1pt_2": r"Sub-leading $\tau_h$ L1 $p_{\mathrm{T}}$ [GeV]",
+    "decayModePNet_1": r"$\tau_1$ decay mode (PNet)",
+    "decayModePNet_2": r"$\tau_2$ decay mode (PNet)",
+}
+CHANNEL_LABELS = {
+    "tt": r"$\tau_h\tau_h$",
+    "mt": r"$\mu\tau_h$",
+    "et": r"$e\tau_h$",
+}
+
 
 def get_args():
     parser = argparse.ArgumentParser(description="Compare data from different eras")
@@ -39,30 +57,27 @@ def get_data_subnodes(input_path):
     return file, datacard_name, datasets
 
 
-RATIO_RANGE = (0.6, 1.4)
-VAR_LABELS = {
-    "m_vis": r"$m_{\mathrm{vis}}$ [GeV]",
-}
-CHANNEL_LABELS = {
-    "tt": r"$\tau_h\tau_h$",
-    "mt": r"$\mu\tau_h$",
-    "et": r"$e\tau_h$",
-}
-
-
-def get_counts(file, datacard_name, datasets, era, var):
+def get_counts(file, datacard_name, datasets, runs, var):
     """Return bin edges and raw (un-normalised) counts for one era."""
     bin_edges = get_bin_edges(var)
     N = len(bin_edges) - 1
     counts = np.zeros(N)
 
     for dataset in datasets:
-        if era in dataset:
+        if any(run in dataset for run in runs):
             hist = file.Get(datacard_name).Get("data_obs.subnodes").Get(dataset)
             for i in range(N):
                 counts[i] += hist.GetBinContent(i + 1)
 
     return bin_edges, counts
+
+
+def build_lumi_dict(era_definitions, lumi_by_run):
+    """Return a dictionary of integrated luminosities for each era."""
+    lumi_dict = {}
+    for era, runs in era_definitions.items():
+        lumi_dict[era] = sum(lumi_by_run[run] for run in runs)
+    return lumi_dict
 
 
 def save_fig(config, hist_dict, lumi_dict, var):
@@ -98,7 +113,7 @@ def save_fig(config, hist_dict, lumi_dict, var):
         lumi_fb = lumi_dict[era] / 1000.0
         norm = counts / lumi_fb
         err = np.sqrt(counts) / lumi_fb
-        label = f"{era.replace('Run', '')} ({lumi_fb:.1f} fb$^{{-1}}$)"
+        label = f"{era} ({lumi_fb:.1f} fb$^{{-1}}$)"
         if era == reference_era:
             label += " [ref]"
         hep.histplot(norm, bin_edges, yerr=err, ax=ax, histtype="step", color=colour, label=label)
@@ -114,7 +129,7 @@ def save_fig(config, hist_dict, lumi_dict, var):
     rax.stairs(1 + ref_rel_err, edges, baseline=1 - ref_rel_err, fill=True,
                color="grey", alpha=0.3, linewidth=0)
     rax.axhline(1.0, color="black", linestyle="--", linewidth=1)
-    rax.set_ylabel(f"Era / {reference_era.replace('Run', '')}", fontsize=20)
+    rax.set_ylabel(f"Era / {reference_era}", fontsize=20)
     rax.set_ylim(*RATIO_RANGE)
     # Drop the top and bottom tick labels (avoids clash with upper panel, keeps symmetry)
     rax.yaxis.set_major_locator(MaxNLocator(nbins=5, prune="both"))
@@ -123,12 +138,12 @@ def save_fig(config, hist_dict, lumi_dict, var):
 
     hep.cms.label("Preliminary", data=True, ax=ax, com=13.6, year=year.split("_")[-1],
                   lumi=f"{total_lumi_fb:.1f}")
-    ax.text(0.04, 0.80, f"{CHANNEL_LABELS.get(channel, channel)}",
+    ax.text(0.04, 0.90, f"{CHANNEL_LABELS.get(channel, channel)}",
             transform=ax.transAxes, fontsize=20)
 
     ax.set_ylabel(rf"Events / fb$^{{-1}}$ / {bin_width:g} GeV")
     ax.set_ylim(0, ax.get_ylim()[1] * 1.3)
-    ax.legend(title="Era", ncol=2, fontsize=16, title_fontsize=16, loc="upper right")
+    ax.legend(ncol=1, fontsize=16, title_fontsize=16, loc="upper right")
 
     for ext in ("png", "pdf"):
         fig.savefig(output_path.rsplit(".", 1)[0] + f".{ext}", bbox_inches="tight")
@@ -141,12 +156,14 @@ def main():
         config = json.load(f)
 
     file, datacard_name, datasets = get_data_subnodes(config["input_path"])
-    lumi_dict = LUMI[config["year"]]
     var = config["variable_definitions"][config["variable"]]
     hist_dict = {}
     
-    for era in lumi_dict:
-        hist_dict[era] = get_counts(file, datacard_name, datasets, era, var)
+    for era, runs in config["era_definitions"].items():
+        hist_dict[era] = get_counts(file, datacard_name, datasets, runs, var)
+
+    lumi_by_run = LUMI[config["year"]]
+    lumi_dict = build_lumi_dict(config["era_definitions"], lumi_by_run)
     save_fig(config, hist_dict, lumi_dict, var)
 
 
