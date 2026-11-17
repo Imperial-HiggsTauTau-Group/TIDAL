@@ -1329,13 +1329,24 @@ if args.era == "Run3_2025":
 # For applying temporary pT dependent correction for 2024
 # —————————————————————————————————————————————————————————————————————————————
 
+# if not args.specific_eras:
+#     corr_era = "inclusive"
+# elif "Run2024C" in args.specific_eras:
+#     corr_era = "CDE"
+# elif "Run2024F" in args.specific_eras:
+#     corr_era = "F"
+# elif "Run2024G" in args.specific_eras:
+#     corr_era = "G"
+# elif "Run2024H" in args.specific_eras:
+#     corr_era = "HI"
+
 # if args.era == "Run3_2024":
 #     if args.channel in ['et', 'mt']:
-#         weight += reweighting_string("I", "2")
+#         weight += reweighting_string(corr_era, "2")
 
 #     elif args.channel == 'tt':
-#         weight += reweighting_string("I", "1")
-#         weight += reweighting_string("I", "2")
+#         weight += reweighting_string(corr_era, "1")
+#         weight += reweighting_string(corr_era, "2")
 
 # —————————————————————————————————————————————————————————————————————————————
 

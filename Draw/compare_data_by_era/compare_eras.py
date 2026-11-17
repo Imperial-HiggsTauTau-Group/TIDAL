@@ -15,6 +15,12 @@ VAR_LABELS = {
     "m_vis": r"$m_{\mathrm{vis}}$ [GeV]",
     "pt_1": r"$p_{\mathrm{T}}^{\tau_1}$ [GeV]",
     "pt_2": r"$p_{\mathrm{T}}^{\tau_2}$ [GeV]",
+    "eta_1": r"$\eta^{\tau_1}$",
+    "eta_2": r"$\eta^{\tau_2}$",
+    "phi_1": r"$\phi^{\tau_1}$",
+    "phi_2": r"$\phi^{\tau_2}$",
+    "dR": r"$\Delta R(\tau_1, \tau_2)$",
+    "n_jets": r"$N_\mathrm{jets}$",
     "met_pt": r"$p_{\mathrm{T}}^{\mathrm{miss}}$ [GeV]",
     "pt_tt": r"$p_{\mathrm{T}}^{\tau\tau}$ [GeV]",
     "l1pt_1": r"Leading $\tau_h$ L1 $p_{\mathrm{T}}$ [GeV]",
@@ -91,7 +97,6 @@ def save_fig(config, hist_dict, lumi_dict, var):
 
     var_name = var.split("(")[0]
     edges = next(iter(hist_dict.values()))[0]
-    bin_width = edges[1] - edges[0]
 
     total_lumi_fb = sum(lumi_dict.values()) / 1000.0
 
@@ -141,7 +146,7 @@ def save_fig(config, hist_dict, lumi_dict, var):
     ax.text(0.04, 0.90, f"{CHANNEL_LABELS.get(channel, channel)}",
             transform=ax.transAxes, fontsize=20)
 
-    ax.set_ylabel(rf"Events / fb$^{{-1}}$ / {bin_width:g} GeV")
+    ax.set_ylabel(rf"Events / fb$^{{-1}}$")
     ax.set_ylim(0, ax.get_ylim()[1] * 1.3)
     ax.legend(ncol=1, fontsize=16, title_fontsize=16, loc="upper right")
 

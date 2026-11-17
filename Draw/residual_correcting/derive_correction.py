@@ -3,9 +3,9 @@ import ROOT
 import numpy as np
 
 BASE = "Draw/plots/a1-investigation/era-investigations/derive_residual_corr"
-ERAS = ["I"]
+ERAS = ["CDE", "F", "G", "HI", "inclusive"]
 CATS = ["sel_mupi", "sel_murho", "sel_mua11pr", "sel_mua1"]
-VAR = "pt_2(40,0,200)"
+VAR = "pt_2[0.0,35.0,40.0,50.0,200.0]"
 
 
 def get_path_and_name(base, era, cat):
@@ -24,11 +24,15 @@ def load_histograms(path, name):
 
 
 def get_bin_edges(var):
-    n, low, high = var.split("(")[1][:-1].split(",")
-    n = int(n)
-    low = float(low)
-    high = float(high)
-    return np.linspace(low, high, n + 1)
+    if "(" in var:
+        n, low, high = var.split("(")[1][:-1].split(",")
+        n = int(n)
+        low = float(low)
+        high = float(high)
+        return np.linspace(low, high, n + 1)
+    elif "[" in var:
+        edges = var.split("[")[1][:-1].split(",")
+        return [float(edge) for edge in edges]
 
 
 def derive_corrections(base, eras, cats, var):
@@ -50,7 +54,7 @@ def derive_corrections(base, eras, cats, var):
                     correction = 1.0
                 corrections_by_bin[f"{int(bin_edges[i])}-{int(bin_edges[i + 1])}"] = correction
             corrections[era][cat] = corrections_by_bin
-            print(f"\033[32mDerived corrections for era {era}, category {cat}\033[0m")
+            print(f"\033[32mDerived corrections for era '{era}', category {cat}\033[0m")
     return corrections
 
 
