@@ -70,6 +70,8 @@ class HTT_Histogram:
                 "em": "$e\\mu$",
                 "ee": "$ee$",
                 "mm": "$\\mu\\mu$",
+                "mtt": "$\\mu\\tau_h\\tau_h$",
+                "ett": "$e\\tau_h\\tau_h$",
             }
         self.channel_label = label_map[self.channel]
 
@@ -204,6 +206,17 @@ class HTT_Histogram:
                                 }
             self.lep1 = "e"
             self.lep2 = "\\tau"
+        elif self.channel in ["mtt", "ett"]:
+            # method 8: data-driven jet fakes; everything else is MC with both taus genuine
+            self.backgrounds = {
+                                "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
+                                "$t\\bar{t}$": {"nodes": ["TTT"], "color": "violet"},
+                                "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
+                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
+                                "Electroweak (incl. WZ)": {"nodes": ["VVT"], "color": "red"},
+                            }
+            self.lep1 = "\\tau_1"
+            self.lep2 = "\\tau_2"
         elif self.channel == "em":
             self.backgrounds = {
                                 "$t\\bar{t}$": {"nodes": ["TTT", "TTJ"], "color": "violet"},

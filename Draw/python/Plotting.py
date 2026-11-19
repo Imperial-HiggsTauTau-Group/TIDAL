@@ -38,6 +38,10 @@ def SetAxisTitles(plot, channel):
         chan_label = "e#mu"
         lep1_label = "e"
         lep2_label = "#mu"
+    elif channel in ["mtt", "ett"]:  # legs 1 and 2 are the two taus
+        chan_label = "#mu#tau#tau" if channel == "mtt" else "e#tau#tau"
+        lep1_label = "#tau_{1}"
+        lep2_label = "#tau_{2}"
     elif channel == "tt":
         chan_label = "#tau#tau"
         lep1_label = "#tau_{1}"
@@ -298,6 +302,10 @@ def SetAxisTitles2D(plot, channel):
         chan_label = "e#mu"
         lep1_label = "e"
         lep2_label = "#mu"
+    elif channel in ["mtt", "ett"]:  # legs 1 and 2 are the two taus
+        chan_label = "#mu#tau#tau" if channel == "mtt" else "e#tau#tau"
+        lep1_label = "#tau_{1}"
+        lep2_label = "#tau_{2}"
     elif channel == "tt":
         chan_label = "#tau#tau"
         lep1_label = "#tau_{1}"

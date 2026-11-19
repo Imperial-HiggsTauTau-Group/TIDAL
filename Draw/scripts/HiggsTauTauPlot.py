@@ -115,6 +115,7 @@ parser.add_argument(
     help="Overwrite alias selection using this options. Specify with the form --set_alias=nameofaliastoreset:newselection",
 )
 parser.add_argument("--add_weight", default="", help="Additional weight to apply")
+parser.add_argument("--id_vsjet_wp", default="7", help="VSjet working point for the hadronic taus (7 = VTight)")
 parser.add_argument("--do_aiso", action="store_true", help="Do Anti-Isolated")
 parser.add_argument("--do_ss", action="store_true", help="Do SS")
 parser.add_argument("--blind", action="store_true", help="Blind the plot (remove data)")
@@ -137,13 +138,13 @@ args = parser.parse_args()
 
 masses = args.masses.split(",")
 
-available_channels = ["ee", "mm", "em", "mt", "et", "tt"]
+available_channels = ["ee", "mm", "em", "mt", "et", "tt", "mtt", "ett"]  # mtt/ett: lepton + ditau (ditau trigger study)
 
 if args.channel not in available_channels:
     raise ValueError(
         "Invalid channel. Please choose from: {}".format(available_channels)
     )
-available_methods = ["1", "2", "3", "4", "5", "6"]
+available_methods = ["1", "2", "3", "4", "5", "6", "8"]  # 8: jet fakes on both taus, for mtt/ett
 if args.method not in available_methods:
     raise ValueError("Invalid method. Please choose from: {}".format(available_methods))
 
@@ -183,7 +184,7 @@ available_eras = [
 early_run_3 = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
 
 algo_VSjet = 'DeepTau2018v2p5' if args.era in early_run_3 else 'PNet'  # Need to investigate if PNet also optimal for Early Run 3.
-wp_VSjet = '7'  # VTight
+wp_VSjet = args.id_vsjet_wp  # 7 = VTight
 
 # —————————————————————————————————————————————————————————————————————————————
 # REMOVE ONCE HAGOP DERIVES PNET SFs
@@ -269,6 +270,24 @@ if args.era in available_eras:
         categories["subleadfake"] = (
             categories["baseline"] + "&& genPartFlav_1 != 0 && genPartFlav_2 == 0"
         )
+
+    if args.channel in ["mtt", "ett"]:
+        # Lepton + ditau channels for the ditau trigger study. The extra lepton
+        # (lep_*_1) fires the single-lepton trigger, and both taus are identified
+        # as in tt. Deliberately no ditau trigger requirement.
+        if args.channel == "mtt":
+            lep_trg = "(trg_singlemuon && lep_pt_1 > 26 && abs(lep_eta_1) < 2.4)"
+        else:
+            lep_trg = "(trg_singleelectron && lep_pt_1 >= 32 && abs(lep_eta_1) < 2.1)"
+        tau_iso = {leg: f"id{algo_VSjet}VSjet_{leg} >= {wp_VSjet}" for leg in (1, 2)}
+        tau_aiso = {leg: f"id{algo_VSjet}VSjet_{leg} < {wp_VSjet} && id{algo_VSjet}VSjet_{leg} >= 1" for leg in (1, 2)}
+        categories["baseline"] = (
+            f"(m_vis > 40 && lep_iso_1 < 0.15 && {tau_iso[1]} && {tau_iso[2]} && idDeepTau2018v2p5VSe_1 >= 2 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_1 >= 4 && idDeepTau2018v2p5VSmu_2 >= 4 && {lep_trg})"
+        )
+        # regions for the method 8 jet fakes: tau 1, tau 2 or both anti-isolated
+        categories["ltt_aiso_1"] = categories["baseline"].replace(tau_iso[1], tau_aiso[1])
+        categories["ltt_aiso_2"] = categories["baseline"].replace(tau_iso[2], tau_aiso[2])
+        categories["ltt_aiso_12"] = categories["ltt_aiso_1"].replace(tau_iso[2], tau_aiso[2])
 
 categories["inclusive"] = "(1)"
 categories["nobtag"] = "(n_bjets==0)"
@@ -519,21 +538,21 @@ if args.era in available_eras:
     samples_dict = {}
     # Data Samples
     if args.era in ["Run3_2022"]:
-        if args.channel in ["ee", "et"]:
+        if args.channel in ["ee", "et", "ett"]:
             data_samples = ["EGamma_Run2022C", "EGamma_Run2022D"]
-        elif args.channel in ["mm", "mt"]:
+        elif args.channel in ["mm", "mt", "mtt"]:
             data_samples = ["SingleMuon_Run2022C", "Muon_Run2022C", "Muon_Run2022D"]
         elif args.channel == "tt":
             data_samples = ["Tau_Run2022C", "Tau_Run2022D"]
     elif args.era in ["Run3_2022EE"]:
-        if args.channel in ["ee", "et"]:
+        if args.channel in ["ee", "et", "ett"]:
             data_samples = ["EGamma_Run2022E", "EGamma_Run2022F", "EGamma_Run2022G"]
-        elif args.channel in ["mm", "mt"]:
+        elif args.channel in ["mm", "mt", "mtt"]:
             data_samples = ["Muon_Run2022E", "Muon_Run2022F", "Muon_Run2022G"]
         elif args.channel == "tt":
             data_samples = ["Tau_Run2022E", "Tau_Run2022F", "Tau_Run2022G"]
     elif args.era in ["Run3_2023"]:
-        if args.channel in ["ee", "et"]:
+        if args.channel in ["ee", "et", "ett"]:
             data_samples = [
                 "EGamma0_Run2023C_v1",
                 "EGamma0_Run2023C_v2",
@@ -544,7 +563,7 @@ if args.era in available_eras:
                 "EGamma1_Run2023C_v3",
                 "EGamma1_Run2023C_v4",
             ]
-        elif args.channel in ["mm", "mt"]:
+        elif args.channel in ["mm", "mt", "mtt"]:
             data_samples = [
                 "Muon0_Run2023C_v1",
                 "Muon0_Run2023C_v2",
@@ -563,14 +582,14 @@ if args.era in available_eras:
                 "Tau_Run2023C_v4",
             ]
     elif args.era in ["Run3_2023BPix"]:
-        if args.channel in ["ee", "et"]:
+        if args.channel in ["ee", "et", "ett"]:
             data_samples = [
                 "EGamma0_Run2023D_v1",
                 "EGamma0_Run2023D_v2",
                 "EGamma1_Run2023D_v1",
                 "EGamma1_Run2023D_v2",
             ]
-        elif args.channel in ["mm", "mt"]:
+        elif args.channel in ["mm", "mt", "mtt"]:
             data_samples = [
                 "Muon0_Run2023D_v1",
                 "Muon0_Run2023D_v2",
@@ -581,7 +600,7 @@ if args.era in available_eras:
             data_samples = ["Tau_Run2023D_v1", "Tau_Run2023D_v2"]
 
     elif args.era == "Run3_2024":
-        if args.channel in ["ee", "et"]:
+        if args.channel in ["ee", "et", "ett"]:
             data_samples = [
                 "EGamma0_Run2024C",
                 "EGamma0_Run2024D",
@@ -602,7 +621,7 @@ if args.era in available_eras:
             ] 
 
 
-        elif args.channel in ["mm", "mt"]:
+        elif args.channel in ["mm", "mt", "mtt"]:
             data_samples = [
                 "Muon0_Run2024C",
                 "Muon0_Run2024D",
@@ -635,7 +654,7 @@ if args.era in available_eras:
             ]
 
     elif args.era == "Run3_2025":
-        if args.channel in ["ee", "et"]:
+        if args.channel in ["ee", "et", "ett"]:
             data_samples = [
                 'EGamma0_Run2025C_v1',
                 'EGamma0_Run2025C_v2',
@@ -667,7 +686,7 @@ if args.era in available_eras:
                 'EGamma3_Run2025G'
             ] 
 
-        elif args.channel in ["mm", "mt"]:
+        elif args.channel in ["mm", "mt", "mtt"]:
             data_samples = [
                 'Muon0_Run2025C_v1',
                 'Muon0_Run2025C_v2',
@@ -988,7 +1007,7 @@ if args.channel in ["mt", "et"]:
     vv_sels["vvt_sel"] = "!(" + gen_sels["j_sel"] + ")"
     vv_sels["vvj_sel"] = gen_sels["j_sel"]
 
-if args.channel in ["tt"]:
+if args.channel in ["tt", "mtt", "ett"]:
     gen_sels["tt_sel"] = "(genPartFlav_1==5 && genPartFlav_2==5)"
     gen_sels["ll_sel"] = (
         f"(!(genPartFlav_1==0 || genPartFlav_2==0) && !{gen_sels['tt_sel']})"
@@ -1061,7 +1080,7 @@ def RunPlotting(
     doVVJ = True if "VVJ" not in nodes_to_skip else False
 
 
-    if method in [3,4,6]: # jet fake estimate so don't include other MC jet fakes:
+    if method in [3,4,6,8]: # jet fake estimate so don't include other MC jet fakes:
         doTTJ = False
         doZJ = False
         doVVJ = False
@@ -1174,7 +1193,7 @@ def RunPlotting(
             qcd_factor=qcd_factor,
             get_os=not args.do_ss,
         )
-    elif "JetFakes" not in nodes_to_skip and method in [3,4,6]:  # Jet Fakes
+    elif "JetFakes" not in nodes_to_skip and method in [3,4,6,8]:  # Jet Fakes
         if method == 6 and "BDT_pred_score,aco" in args.var:
             print("WARNING: For CP datacards with variable names matching: `BDT_pred_score,aco*`, jet fake fractions are computed per BDT bin")
             flatten_y = True
@@ -1274,7 +1293,7 @@ if args.add_weight:
     weight += "*" + args.add_weight
 
 # Remove this once we have electronHlt.json.gz for 2025 implemented
-if args.era == "Run3_2025" and args.channel in ["ee", "et"]:
+if args.era == "Run3_2025" and args.channel in ["ee", "et", "ett"]:
     weight += "/(w_Trigger)"
 
 # —————————————————————————————————————————————————————————————————————————————
@@ -1302,7 +1321,7 @@ elif args.channel == "et":
     systematics["nominal"] = ("nominal", "", f"({weight})", [], None, None)
 elif args.channel in ["ee", "mm"]:
     systematics["nominal"] = ("nominal", "", f"({weight})", [], None, None)
-elif args.channel == "tt":
+elif args.channel in ["tt", "mtt", "ett"]:
     systematics["nominal"] = ("nominal", "", f"({weight})", [], None, None)
 
 if args.run_systematics and not args.do_aiso: # we dont run systematics for anti-iso region
@@ -1357,7 +1376,7 @@ if not args.bypass_plotter:
         analysis.nodes.AddNode(Analysis.ListNode(nodename))
         analysis.remaps = {}
 
-        if args.channel in ["mm", "mt"]:
+        if args.channel in ["mm", "mt", "mtt"]:
             analysis.remaps["Muon"] = "data_obs"
         if args.channel == "tt":
             analysis.remaps["Tau"] = "data_obs"

@@ -370,6 +370,55 @@ def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={},
             fake_sublead_node = ana.SummedFactory('JetFakesSublead'+add_name, samples_dict['ztt_samples']+samples_dict['zll_samples']+samples_dict['wjets_samples']+samples_dict['vv_samples']+samples_dict['top_samples'], plot_unmodified, fake_sublead_selection)
             ana.nodes[nodename].AddNode(fake_sublead_node)
             
+    if method == 8:  # lepton + ditau channels (mtt, ett): either tau can be a jet fake
+        # Jet fakes in the signal region (SR, both taus isolated):
+        #     x * [R1 - MC(tau 1 genuine)] + y * [R2 - MC(tau 2 genuine)] - z * [R3 - MC(either genuine)]
+        # R1 / R2: tau 1 / tau 2 anti-isolated, R3: both anti-isolated; genuine = not a jet fake
+        # (genPartFlav != 0). The x and y terms each count the events with that tau faked,
+        # so the both-faked events are counted twice and the z term removes them once.
+        # x, y, z are measured in same-sign events, e.g.
+        #     x = SS[SR - MC(tau 1 genuine)] / SS[R1 - MC(tau 1 genuine)],
+        # so the estimate closes exactly in SS. Everything else comes from MC with both taus
+        # genuine (the MC jet-fake nodes are switched off for this method).
+        data_weight = '(weight)'
+        regions = {
+            'R1': ('ltt_aiso_1', '(genPartFlav_1 != 0)'),
+            'R2': ('ltt_aiso_2', '(genPartFlav_2 != 0)'),
+            'R3': ('ltt_aiso_12', '(genPartFlav_1 != 0 || genPartFlav_2 != 0)'),
+        }
+        terms = {}
+        for term, (region, genuine) in regions.items():
+            region_cat = f'ltt_fakes_{term}_cat'
+            categories[region_cat] = categories[cat_name] + '&&' + categories[region]
+            categories_unmodified[region_cat] = categories_unmodified[cat_name] + '&&' + categories_unmodified[region]
+            genuine_sel = f'({sel})*{genuine}' if sel != '' else genuine
+
+            # ratio in same-sign events: SS[SR - MC genuine] / SS[region - MC genuine]
+            num_subtract = GetSubtractNode(ana, '', plot, plot_unmodified, wt+sub_wt, genuine_sel, 'cat', categories, categories_unmodified, method, qcd_factor, False, samples_dict, gen_sels_dict, includeW=True)
+            num_node = Analysis.SubtractNode('ratio_num',
+                        ana.SummedFactory('data', samples_dict['data_samples'], plot_unmodified, BuildCutString(data_weight, sel, cat_data, '!os')),
+                        num_subtract)
+            den_subtract = GetSubtractNode(ana, '', plot, plot_unmodified, wt+sub_wt, genuine_sel, region_cat, categories, categories_unmodified, method, qcd_factor, False, samples_dict, gen_sels_dict, includeW=True)
+            den_node = Analysis.SubtractNode('ratio_den',
+                        ana.SummedFactory('data', samples_dict['data_samples'], plot_unmodified, BuildCutString(data_weight, sel, categories_unmodified[region_cat], '!os')),
+                        den_subtract)
+
+            # region - MC genuine, with the signal-region charge requirement, scaled by the ratio
+            region_subtract = GetSubtractNode(ana, '', plot, plot_unmodified, wt+sub_wt, genuine_sel, region_cat, categories, categories_unmodified, method, qcd_factor, get_os, samples_dict, gen_sels_dict, includeW=True)
+            terms[term] = Analysis.HttQCDNode(f'JetFakes_{term}'+add_name,
+                ana.SummedFactory('data', samples_dict['data_samples'], plot_unmodified, BuildCutString(data_weight, sel, categories_unmodified[region_cat], OSSS)),
+                region_subtract,
+                1,
+                None,
+                num_node,
+                den_node,
+                add_weight=syst_weight)
+
+        single_fakes = Analysis.SummedNode('JetFakes_R1_plus_R2'+add_name)
+        single_fakes.AddNode(terms['R1'])
+        single_fakes.AddNode(terms['R2'])
+        ana.nodes[nodename].AddNode(Analysis.SubtractNode('JetFakes'+add_name, single_fakes, terms['R3']))
+
     if method == 6: # lt fake factor method
         
         # use nominal FF weights, which are overwritten for some systematics
