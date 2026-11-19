@@ -135,6 +135,7 @@ parser.add_argument(
     "--auto_rebin", action="store_true", help="Automatically rebin histograms"
 )
 parser.add_argument("--stats_check", action="store_true", help="Make datacards for statistical checks")
+parser.add_argument("--apply_residual_corrections", action="store_true", help="Apply residual corrections to the genuine tau SFs")
 parser.add_argument("--specific_tt_trg", type=str, help="Override the tt trigger selection for the tt channel")
 parser.add_argument("--specific_eras", type=str, default=None, nargs="+", help="Breakdown by specific eras (e.g. Run2024B, Run2024C, etc.)")
 
@@ -1315,40 +1316,41 @@ if args.specific_tt_trg:
 if args.era == "Run3_2025" and args.channel in ["ee", "et"]:
     weight += "/(w_Trigger)"
 
-# —————————————————————————————————————————————————————————————————————————————
-# For applying temporary flat SFs
-# —————————————————————————————————————————————————————————————————————————————
-if args.era == "Run3_2025":
-    if args.channel in ['et', 'mt']:
-        weight += f'*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
-    elif args.channel == 'tt':
-        weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
-# —————————————————————————————————————————————————————————————————————————————
+if args.apply_residual_corrections:
+    # —————————————————————————————————————————————————————————————————————————
+    # Applying temporary residual corrections for 2025
+    # —————————————————————————————————————————————————————————————————————————
+    if args.era == "Run3_2025":
+        if args.channel in ['et', 'mt']:
+            weight += f'*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
+        elif args.channel == 'tt':
+            weight += f'*({genuine_sf}*(genPartFlav_1==5)+(genPartFlav_1!=5))*({genuine_sf}*(genPartFlav_2==5)+(genPartFlav_2!=5))'
+    # —————————————————————————————————————————————————————————————————————————
 
-# —————————————————————————————————————————————————————————————————————————————
-# For applying temporary pT dependent correction for 2024
-# —————————————————————————————————————————————————————————————————————————————
+    # —————————————————————————————————————————————————————————————————————————
+    # For applying temporary pT dependent correction for 2024
+    # —————————————————————————————————————————————————————————————————————————
 
-# if not args.specific_eras:
-#     corr_era = "inclusive"
-# elif "Run2024C" in args.specific_eras:
-#     corr_era = "CDE"
-# elif "Run2024F" in args.specific_eras:
-#     corr_era = "F"
-# elif "Run2024G" in args.specific_eras:
-#     corr_era = "G"
-# elif "Run2024H" in args.specific_eras:
-#     corr_era = "HI"
+    if not args.specific_eras:
+        corr_era = "inclusive"
+    elif "Run2024C" in args.specific_eras:
+        corr_era = "CDE"
+    elif "Run2024F" in args.specific_eras:
+        corr_era = "F"
+    elif "Run2024G" in args.specific_eras:
+        corr_era = "G"
+    elif "Run2024H" in args.specific_eras:
+        corr_era = "HI"
 
-# if args.era == "Run3_2024":
-#     if args.channel in ['et', 'mt']:
-#         weight += reweighting_string(corr_era, "2")
+    if args.era == "Run3_2024":
+        if args.channel in ['et', 'mt']:
+            weight += reweighting_string(corr_era, "2")
 
-#     elif args.channel == 'tt':
-#         weight += reweighting_string(corr_era, "1")
-#         weight += reweighting_string(corr_era, "2")
+        elif args.channel == 'tt':
+            weight += reweighting_string(corr_era, "1")
+            weight += reweighting_string(corr_era, "2")
 
-# —————————————————————————————————————————————————————————————————————————————
+    # —————————————————————————————————————————————————————————————————————————
 
 # set systematics:
 # - 1st index sets folder name contaning systematic samples

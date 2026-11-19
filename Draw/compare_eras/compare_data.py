@@ -40,7 +40,7 @@ def get_args():
     parser.add_argument(
         "--config",
         type=str,
-        default="Draw/compare_data_by_era/config.json",
+        default="Draw/compare_eras/config.json",
         help="Path to the configuration .json file",
     )
     return parser.parse_args()

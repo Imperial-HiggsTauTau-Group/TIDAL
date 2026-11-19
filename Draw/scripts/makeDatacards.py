@@ -94,6 +94,7 @@ def create_shell_script(
     run_systematics=False,
     id_vsjet_algo="PNet",
     id_vsjet_wp=7,
+    apply_residual_corrections=False,
     systematics_to_run=[],
     blind=False,
     auto_rebin=False,
@@ -157,6 +158,8 @@ python3 Draw/scripts/HiggsTauTauPlot.py \\
         shell_script += f" \\\n--nodename {nodename}"
     if stats_check:
         shell_script += " \\\n--stats_check"
+    if apply_residual_corrections:
+        shell_script += " \\\n--apply_residual_corrections"
     if specific_tt_trg is not None:
         shell_script += f" \\\n--specific_tt_trg {specific_tt_trg}"
     if specific_eras is not None:
@@ -218,6 +221,7 @@ if __name__ == "__main__":
     run_systematics = config["run_systematics"]
     id_vsjet_algo = config.get("id_vsjet_algo", "PNet")
     id_vsjet_wp = config.get("id_vsjet_wp", 7)
+    apply_residual_corrections = config.get("apply_residual_corrections", False)
 
     if specific_eras is not None and len(eras) > 1:
         raise ValueError(
@@ -389,6 +393,7 @@ if __name__ == "__main__":
                                     run_systematics=run_systematics,
                                     id_vsjet_algo=id_vsjet_algo,
                                     id_vsjet_wp=id_vsjet_wp,
+                                    apply_residual_corrections=apply_residual_corrections,
                                     systematics_to_run=systematics_to_run,
                                     blind=blind,
                                     auto_rebin=auto_rebin,

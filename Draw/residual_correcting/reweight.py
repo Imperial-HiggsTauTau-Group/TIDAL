@@ -20,12 +20,14 @@ def reweighting_string(era, ind):
 
         # Putting the corrections in cumulative form
         corr = corrections[era][cat]
-        c35 = f"{(corr['35-40'] - 1.0):.4f}"
+        c0 = f"{(corr['0-35'] - 1.0):.4f}"
+        c35 = f"{(corr['35-40'] - corr['0-35']):.4f}"
         c40 = f"{(corr['40-50'] - corr['35-40']):.4f}"
         c50 = f"{(1.0 - corr['40-50']):.4f}"
 
         string += (
-            f"({c35})*(pt_X >= 35)"
+            f"({c0})"
+            f" + ({c35})*(pt_X >= 35)"
             f" + ({c40})*(pt_X >= 40)"
             f" + ({c50})*(pt_X >= 50)"
         )
