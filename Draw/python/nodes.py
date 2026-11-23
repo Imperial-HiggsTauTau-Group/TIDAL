@@ -289,6 +289,38 @@ def GenerateW(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={}, plo
   ana.nodes[nodename].AddNode(w_node)
 
 
+def GenerateLTTMC(ana, nodename, add_name='', samples_dict={}, plot='', wt='', sel='', cat='', get_os=True, do_jet_fakes=False):
+    """
+    MC for the lepton + ditau channels (mtt, ett), split by what the two taus are:
+      WZT          WZ with both taus genuine
+      ZTT/TTT/VVT  other processes with both taus genuine (VVT: diboson other than WZ, and single top)
+      ZL/TTL/VVL   neither tau from a jet, at least one from a lepton (l -> tau_h)
+      ZJ/TTJ/VVJ/W a jet faking either tau; only with do_jet_fakes (jet fakes from MC)
+    """
+    OSSS = 'os' if get_os else '!os'
+    genuine = '(genPartFlav_1==5 && genPartFlav_2==5)'
+    jet = '(genPartFlav_1==0 || genPartFlav_2==0)'
+    lepton = f'(!{jet} && !{genuine})'
+    z = samples_dict['ztt_samples'] + samples_dict['zll_samples']
+    top = samples_dict['top_samples']
+    vv = samples_dict['vv_samples']
+    # WZ: the inclusive LO sample or the NLO samples by decay (WZto3LNu, WZto2L2Q, ...)
+    is_wz = lambda s: s == 'WZ' or s.startswith('WZto')
+    nodes = [
+        ('WZT', [s for s in vv if is_wz(s)], genuine),
+        ('ZTT', samples_dict['ztt_samples'], genuine),
+        ('TTT', top, genuine),
+        ('VVT', [s for s in vv if not is_wz(s)], genuine),
+        ('ZL', z, lepton),
+        ('TTL', top, lepton),
+        ('VVL', vv, lepton),
+    ]
+    if do_jet_fakes:
+        nodes += [('ZJ', z, jet), ('TTJ', top, jet), ('VVJ', vv, jet), ('W', samples_dict['wjets_samples'], '')]
+    for name, samples, gen_sel in nodes:
+        ana.nodes[nodename].AddNode(ana.SummedFactory(name + add_name, samples, plot, BuildCutString(wt, sel, cat, OSSS, gen_sel)))
+
+
 def GenerateFakes(ana, nodename, add_name='', samples_dict={}, gen_sels_dict={}, systematic='', plot='', plot_unmodified='', wt='', sel='', cat_name='', categories={}, categories_unmodified={}, method=3, qcd_factor=1.0, get_os=True, flatten_y=False):
     shape_node = None
     if get_os:

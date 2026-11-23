@@ -72,6 +72,8 @@ class HTT_Histogram:
                 "mm": "$\\mu\\mu$",
                 "mtt": "$\\mu\\tau_h\\tau_h$",
                 "ett": "$e\\tau_h\\tau_h$",
+                "ltt": "$\\ell\\tau_h\\tau_h$",  # mtt + ett summed
+                "mmm": "$\\mu\\mu\\mu$",  # WZ -> 3 mu control channel
             }
         self.channel_label = label_map[self.channel]
 
@@ -206,17 +208,29 @@ class HTT_Histogram:
                                 }
             self.lep1 = "e"
             self.lep2 = "\\tau"
-        elif self.channel in ["mtt", "ett"]:
-            # method 8: data-driven jet fakes; everything else is MC with both taus genuine
+        elif self.channel in ["mtt", "ett", "ltt"]:
+            # four groups: jet -> tau_h fakes (data-driven for method 8, MC for method 9), l -> tau_h fakes,
+            # genuine tautau other than WZ, and WZ with both taus genuine (stacked in this order)
             self.backgrounds = {
-                                "Jet$\\to\\tau_h$": {"nodes": ["JetFakes"], "color": "green"},
-                                "$t\\bar{t}$": {"nodes": ["TTT"], "color": "violet"},
-                                "Z$\\to\\ell\\ell$": {"nodes": ["ZL"], "color": "lightblue"},
-                                "Z$\\to\\tau\\tau$": {"nodes": ["ZTT"], "color": "yellow"},
-                                "Electroweak (incl. WZ)": {"nodes": ["VVT"], "color": "red"},
+                                ("Jet$\\to\\tau_h$ (MC)" if self.method == 9 else "Jet$\\to\\tau_h$"): {"nodes": ["ZJ", "TTJ", "VVJ", "W"] if self.method == 9 else ["JetFakes"], "color": "green"},
+                                "$\\ell\\to\\tau_h$": {"nodes": ["ZL", "TTL", "VVL"], "color": "lightblue"},
+                                "Other genuine $\\tau_h\\tau_h$": {"nodes": ["ZTT", "TTT", "VVT"], "color": "yellow"},
+                                "WZ": {"nodes": ["WZT"], "color": "red"},
                             }
             self.lep1 = "\\tau_1"
             self.lep2 = "\\tau_2"
+        elif self.channel == "mmm":
+            # WZ -> 3 mu: MC only for now (datacards from scripts/mmm_plots.py); non-prompt = at least one
+            # of the three muons neither prompt nor from a tau decay
+            self.backgrounds = {
+                                "Non-prompt (top)": {"nodes": ["TNP"], "color": "violet"},
+                                "Non-prompt (Z+jets)": {"nodes": ["ZNP"], "color": "green"},
+                                "Other": {"nodes": ["ZTT", "OTH"], "color": "lightblue"},
+                                "ZZ": {"nodes": ["ZZT"], "color": "yellow"},
+                                "WZ": {"nodes": ["WZT"], "color": "red"},
+                            }
+            self.lep1 = "\\mu_1"
+            self.lep2 = "\\mu_2"
         elif self.channel == "em":
             self.backgrounds = {
                                 "$t\\bar{t}$": {"nodes": ["TTT", "TTJ"], "color": "violet"},

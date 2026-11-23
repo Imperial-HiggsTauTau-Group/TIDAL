@@ -23,6 +23,7 @@ from Draw.python.nodes import (
     GenerateTop,
     GenerateVV,
     GenerateW,
+    GenerateLTTMC,
     GenerateQCD,
     GenerateFakes,
     GenerateReweightedCPSignal
@@ -105,6 +106,7 @@ for systematic, description in systematic_options:
 parser.add_argument("--LO_DY", action="store_true", help="Use LO")
 parser.add_argument("--NLO_DY", action="store_true", help="Use NLO DY")
 parser.add_argument("--use_filtered_DY", action="store_true", help="Include filtered DY")
+parser.add_argument("--vv_nlo", action="store_true", help="Run3_2024: NLO diboson samples by decay (+ gg -> ZZ and triboson) instead of the inclusive LO WW/WZ/ZZ")
 parser.add_argument("--sel", type=str, help="Additional Selection to apply", default="")
 parser.add_argument(
     "--set_alias",
@@ -144,7 +146,7 @@ if args.channel not in available_channels:
     raise ValueError(
         "Invalid channel. Please choose from: {}".format(available_channels)
     )
-available_methods = ["1", "2", "3", "4", "5", "6", "8"]  # 8: jet fakes on both taus, for mtt/ett
+available_methods = ["1", "2", "3", "4", "5", "6", "8", "9"]  # 8: jet fakes on both taus, for mtt/ett; 9: all backgrounds from MC
 if args.method not in available_methods:
     raise ValueError("Invalid method. Please choose from: {}".format(available_methods))
 
@@ -281,13 +283,22 @@ if args.era in available_eras:
             lep_trg = "(trg_singleelectron && lep_pt_1 >= 32 && abs(lep_eta_1) < 2.1)"
         tau_iso = {leg: f"id{algo_VSjet}VSjet_{leg} >= {wp_VSjet}" for leg in (1, 2)}
         tau_aiso = {leg: f"id{algo_VSjet}VSjet_{leg} < {wp_VSjet} && id{algo_VSjet}VSjet_{leg} >= 1" for leg in (1, 2)}
+        # VSe: VVLoose (2) in mtt; Loose (4) in ett, which halves the Z -> ee events where the second
+        # electron fakes a tau_h (plus a jet -> tau_h) for ~7% of the WZ signal. NB the 2024 tau ID SF
+        # exists only for VVLoose and Tight, so the ett SF (evaluated at VVLoose) is not matched yet.
+        vse = 4 if args.channel == "ett" else 2
+        # No m_vis cut here (add one with --sel, which also reaches the fake regions)
         categories["baseline"] = (
-            f"(m_vis > 40 && lep_iso_1 < 0.15 && {tau_iso[1]} && {tau_iso[2]} && idDeepTau2018v2p5VSe_1 >= 2 && idDeepTau2018v2p5VSe_2 >= 2 && idDeepTau2018v2p5VSmu_1 >= 4 && idDeepTau2018v2p5VSmu_2 >= 4 && {lep_trg})"
+            f"(lep_iso_1 < 0.15 && {tau_iso[1]} && {tau_iso[2]} && idDeepTau2018v2p5VSe_1 >= {vse} && idDeepTau2018v2p5VSe_2 >= {vse} && idDeepTau2018v2p5VSmu_1 >= 4 && idDeepTau2018v2p5VSmu_2 >= 4 && {lep_trg})"
         )
         # regions for the method 8 jet fakes: tau 1, tau 2 or both anti-isolated
         categories["ltt_aiso_1"] = categories["baseline"].replace(tau_iso[1], tau_aiso[1])
         categories["ltt_aiso_2"] = categories["baseline"].replace(tau_iso[2], tau_aiso[2])
         categories["ltt_aiso_12"] = categories["ltt_aiso_1"].replace(tau_iso[2], tau_aiso[2])
+        # WZ-enriched categories for the ditau trigger study: b-jet veto and lepton-MET mT against
+        # ttbar and Z+jets fakes, with and without the m_vis window (35-85 GeV) around the Z -> tautau peak
+        categories["wz_nomvis"] = "(n_bjets == 0 && lep_mt_1 > 20)"
+        categories["wz"] = "(n_bjets == 0 && lep_mt_1 > 20 && m_vis > 35 && m_vis < 85)"
 
 categories["inclusive"] = "(1)"
 categories["nobtag"] = "(n_bjets==0)"
@@ -849,6 +860,18 @@ if args.era in available_eras:
             'ST_tW_top_LNu2Q',
             'ST_tW_antitop_LNu2Q',
         ]
+        if args.vv_nlo:
+            # NLO powheg diboson by decay instead of the inclusive LO WW/WZ/ZZ, plus gg -> ZZ (MCFM LO)
+            # and triboson (amcatnlo NLO)
+            vv_samples = [s for s in vv_samples if s not in ('WW', 'WZ', 'ZZ')] + [
+                'WZto3LNu', 'WZto2L2Q', 'WZtoLNu2Q', 'WZtoL3Nu',
+                'WWto2L2Nu', 'WWtoLNu2Q',
+                'ZZto4L', 'ZZto2L2Nu', 'ZZto2L2Q',
+                'GluGluToContinto2Zto4E', 'GluGluToContinto2Zto4Mu', 'GluGluToContinto2Zto4Tau',
+                'GluGluToContinto2Zto2E2Mu', 'GluGluToContinto2Zto2E2Tau', 'GluGluToContinto2Zto2Mu2Tau',
+                'GluGluToContinto2Zto2E2Nu', 'GluGluToContinto2Zto2Mu2Nu',
+                'WWW_4F', 'WWZ_4F', 'WZZ_5F', 'ZZZ_5F',
+            ]
         wjets_samples = [
             'WtoENu_madgraphMLM',
             'WtoMuNu_madgraphMLM',
@@ -1096,6 +1119,11 @@ def RunPlotting(
             ana.SummedFactory("data_obs", data_samples, plot_unmodified, full_selection)
         )
 
+    if args.channel in ["mtt", "ett"]:
+        # MC split into WZ / other genuine tautau / l->tau_h / jet->tau_h (MC jet fakes for method 9 only;
+        # method 8 takes them from data). Replaces the standard Z, top, diboson and W nodes.
+        GenerateLTTMC(ana, nodename, add_name, samples_dict, plot, wt, sel, cat, not args.do_ss, do_jet_fakes=(method == 9))
+        nodes_to_skip = list(nodes_to_skip) + ["ZTT", "ZLL", "TT", "VV", "W"]
     if "ZTT" not in nodes_to_skip:
         GenerateZTT(
             ana,
@@ -1531,7 +1559,7 @@ hists=[]
 
 # first process systematics affecting normalisation
 normalisation_systematics = {}
-normalisation_systematics['lumi'] = ((0.014), ["ZTT", "ZL", "TTT", "VVT"])
+normalisation_systematics['lumi'] = ((0.014), ["ZTT", "ZL", "TTT", "VVT", "WZT", "TTL", "VVL"])  # last three: mtt/ett
 normalisation_systematics['dy_xs'] = ((0.016, 0.013), ["ZTT", "ZL"])
 normalisation_systematics['top_xs'] = ((0.05), ["TTT"])
 
