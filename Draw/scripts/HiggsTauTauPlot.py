@@ -830,6 +830,17 @@ if args.era in available_eras:
             'ST_tW_top_LNu2Q',
             'ST_tW_antitop_LNu2Q',
         ]
+        if args.era == "Run3_2024":
+            # NLO powheg diboson by decay in place of the inclusive LO WW/WZ/ZZ, plus gg -> ZZ (MCFM LO).
+            # Run3_2025 keeps the LO samples until HiggsDNA has the effective events of the 2025 half.
+            vv_samples = [s for s in vv_samples if s not in ('WW', 'WZ', 'ZZ')] + [
+                'WZto3LNu', 'WZto2L2Q', 'WZtoLNu2Q', 'WZtoL3Nu',
+                'WWto2L2Nu', 'WWtoLNu2Q',
+                'ZZto4L', 'ZZto2L2Nu', 'ZZto2L2Q',
+                'GluGluToContinto2Zto4E', 'GluGluToContinto2Zto4Mu', 'GluGluToContinto2Zto4Tau',
+                'GluGluToContinto2Zto2E2Mu', 'GluGluToContinto2Zto2E2Tau', 'GluGluToContinto2Zto2Mu2Tau',
+                'GluGluToContinto2Zto2E2Nu', 'GluGluToContinto2Zto2Mu2Nu',
+            ]
         wjets_samples = [
             'WtoENu_madgraphMLM',
             'WtoMuNu_madgraphMLM',
