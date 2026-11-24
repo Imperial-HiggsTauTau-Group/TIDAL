@@ -106,7 +106,7 @@ for systematic, description in systematic_options:
 parser.add_argument("--LO_DY", action="store_true", help="Use LO")
 parser.add_argument("--NLO_DY", action="store_true", help="Use NLO DY")
 parser.add_argument("--use_filtered_DY", action="store_true", help="Include filtered DY")
-parser.add_argument("--vv_nlo", action="store_true", help="Run3_2024: NLO diboson samples by decay (+ gg -> ZZ and triboson) instead of the inclusive LO WW/WZ/ZZ")
+parser.add_argument("--vv_nlo", action="store_true", help="Run3_2024: NLO diboson samples by decay (+ gg -> ZZ) instead of the inclusive LO WW/WZ/ZZ")
 parser.add_argument("--sel", type=str, help="Additional Selection to apply", default="")
 parser.add_argument(
     "--set_alias",
@@ -861,8 +861,8 @@ if args.era in available_eras:
             'ST_tW_antitop_LNu2Q',
         ]
         if args.vv_nlo:
-            # NLO powheg diboson by decay instead of the inclusive LO WW/WZ/ZZ, plus gg -> ZZ (MCFM LO)
-            # and triboson (amcatnlo NLO)
+            # NLO powheg diboson by decay instead of the inclusive LO WW/WZ/ZZ, plus gg -> ZZ (MCFM LO);
+            # no triboson (about 1% of the data in mmm, mtt and ett)
             vv_samples = [s for s in vv_samples if s not in ('WW', 'WZ', 'ZZ')] + [
                 'WZto3LNu', 'WZto2L2Q', 'WZtoLNu2Q', 'WZtoL3Nu',
                 'WWto2L2Nu', 'WWtoLNu2Q',
@@ -870,7 +870,6 @@ if args.era in available_eras:
                 'GluGluToContinto2Zto4E', 'GluGluToContinto2Zto4Mu', 'GluGluToContinto2Zto4Tau',
                 'GluGluToContinto2Zto2E2Mu', 'GluGluToContinto2Zto2E2Tau', 'GluGluToContinto2Zto2Mu2Tau',
                 'GluGluToContinto2Zto2E2Nu', 'GluGluToContinto2Zto2Mu2Nu',
-                'WWW_4F', 'WWZ_4F', 'WZZ_5F', 'ZZZ_5F',
             ]
         wjets_samples = [
             'WtoENu_madgraphMLM',
