@@ -213,7 +213,6 @@ res_corrections_2025 = {
 }
 if args.era == "Run3_2025":
     genuine_sf = res_corrections_2025[algo_VSjet][wp_VSjet]
-    print(f"WARNING: Applying flat SF of {genuine_sf:.4f} for genuine taus in {args.era}")
 # —————————————————————————————————————————————————————————————————————————————
 
 if args.era in available_eras:

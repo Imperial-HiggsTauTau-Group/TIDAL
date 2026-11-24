@@ -1,10 +1,10 @@
 {
-    "input_path": "Draw/plots/a1-investigation/data-to-data/Run3_2024/control/tt/datacard_dR_cp_inclusive_tt_Run3_2024.root",
-    "output_path": "Draw/plots/a1-investigation/data-to-data/Run3_2024/data-to-data/tt/dR.png",
+    "input_path": "Draw/plots/a1-investigation/answering-queries/2-fakes-but-deeptau/Run3_2024/control/tt/datacard_m_vis_cp_inclusive_tt_Run3_2024.root",
+    "output_path": "Draw/plots/a1-investigation/answering-queries/2-fakes-but-deeptau/fakes.png",
     "year": "Run3_2024",
     "channel": "tt",
     "reference_era": "2024CDE",
-    "variable": "dR",
+    "variable": "m_vis_tt",
     
     "variable_definitions": {
         "m_vis": "m_vis(50,0,200)",

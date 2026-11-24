@@ -1,13 +1,14 @@
-input_folder: /vols/cms/dmw25/HiggsDNA/output/TriggerSFs/fixed
-output_path: /vols/cms/dmw25/TIDAL/Draw/plots/a1-investigation/tau-1-by-era/HI
+input_folder: /vols/cms/dmw25/HiggsDNA/output/WiktorFFs
+output_path: /vols/cms/dmw25/TIDAL/Draw/plots/a1-investigation/answering-queries
 channels: [ tt ]
 eras: [ Run3_2024 ]
-specific_eras: [ Run2024H, Run2024I ]
+specific_eras: [ Run2024C, Run2024D, Run2024E ]
 parameter_path: Draw/config
 schemes: [ control ]
 run_systematics: false
 id_vsjet_algo: PNet
 id_vsjet_wp: 7
+apply_residual_corrections: false
 
 control:
 
@@ -70,10 +71,12 @@ control:
     jeta_2: "jeta_2(48,-5,5)"
     jphi_2: "jphi_2(32,-pi,pi)"
     mjj: "mjj(50,0,1000)"
-    jdeta: "jdeta(50,0,10)"
-    sjdphi: "sjdphi(32,-pi,pi)"
-    dijetpt: "dijetpt(50,0,400)"
-    decayModePNet_1: "decayModePNet_1(12,-0.5,11.5)"
+    decayModePNet_1: "decayModePNet_1(12, -0.5,11.5)"
+    decayModePNet_2: "decayModePNet_2(12, -0.5,11.5)"
+    mass_1: "mass_1(40,0.25,1.75)"
+    mass_2: "mass_2(40,0.25,1.75)"
+    l1pt_1: "l1pt_1(40,0,160)"
+    l1pt_2: "l1pt_2(40,0,160)"
 
   mt:
   # GENERAL CONTROL
@@ -85,7 +88,7 @@ control:
 
   tt:
   # GENERAL CONTROL
-  - { method: "3", category: [ cp_inclusive ], plotting_variable: [ m_vis_tt, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ]}
+  - { method: "3", category: [ cp_inclusive ], plotting_variable: [ m_vis_tt, pt_tt, pt_1, pt_2, eta_1, eta_2, phi_1, phi_2, dR, n_jets, met_pt ], extra_identifier: "2024CDE"}
 
   mm:
   # GENERAL CONTROL
