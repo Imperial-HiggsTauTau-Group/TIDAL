@@ -1,10 +1,10 @@
 {
-    "input_path": "Draw/plots/a1-investigation/answering-queries/2-fakes-but-deeptau/Run3_2024/control/tt/datacard_m_vis_cp_inclusive_tt_Run3_2024.root",
-    "output_path": "Draw/plots/a1-investigation/answering-queries/2-fakes-but-deeptau/fakes.png",
+    "input_path": "Draw/plots/a1-investigation/answering-queries/4-claude-mm/Run3_2024/control/mm/datacard_m_vis_inclusive_mm_Run3_2024.root",
+    "output_path": "Draw/plots/a1-investigation/answering-queries/4-claude-mm/m_vis.png",
     "year": "Run3_2024",
-    "channel": "tt",
+    "channel": "mm",
     "reference_era": "2024CDE",
-    "variable": "m_vis_tt",
+    "variable": "m_vis",
     
     "variable_definitions": {
         "m_vis": "m_vis(50,0,200)",
@@ -22,7 +22,9 @@
         "l1pt_1": "l1pt_1(40,0,160)",
         "l1pt_2": "l1pt_2(40,0,160)",
         "decayModePNet_1": "decayModePNet_1(12,-0.5,11.5)",
-        "decayModePNet_2": "decayModePNet_2(12,-0.5,11.5)"
+        "decayModePNet_2": "decayModePNet_2(12,-0.5,11.5)",
+        "rawPNetVSjet_2": "rawPNetVSjet_2(45,0.1,1)",
+        "rawDeepTau2018v2p5VSjet_2": "rawDeepTau2018v2p5VSjet_2(45,0.1,1)"
     },
 
     "era_definitions": {

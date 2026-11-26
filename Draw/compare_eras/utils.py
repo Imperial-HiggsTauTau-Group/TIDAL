@@ -22,6 +22,7 @@ CHANNEL_LABELS = {
     "tt": r"$\tau_h\tau_h$",
     "mt": r"$\mu\tau_h$",
     "et": r"$e\tau_h$",
+    "mm": r"$\mu\mu$",
 }
 
 

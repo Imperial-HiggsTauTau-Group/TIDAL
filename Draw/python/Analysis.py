@@ -556,21 +556,16 @@ class HttQCDNode(BaseNode):
         self.ss_closure = ss_closure
 
     def RunSelf(self):
+        if self.subtract_node is not None:
+            self.shape = self.factor * (self.data_node.shape - self.subtract_node.shape)
+        else:
+            self.shape = self.factor * self.data_node.shape
+        if self.ss_closure:
+            self.shape *= self.ratio_num_node.shape / self.ratio_den_node.shape
+        elif self.ratio_num_node is not None and self.ratio_den_node is not None:
+            self.shape *= self.ratio_num_node.shape.rate / self.ratio_den_node.shape.rate
         if self.qcd_shape is not None:
             self.shape = self.shape.rate / self.qcd_shape.shape.rate * self.qcd_shape.shape
-        elif self.ss_closure:
-            if self.subtract_node is not None:
-                self.shape = self.factor * (self.data_node.shape - self.subtract_node.shape)
-            else: 
-                self.shape = self.factor * self.data_node.shape
-            self.shape *= self.ratio_num_node.shape / self.ratio_den_node.shape
-        else:
-            if self.subtract_node is not None:
-                self.shape = self.factor * (self.data_node.shape - self.subtract_node.shape)
-            else:
-                self.shape = self.factor * self.data_node.shape
-            if self.ratio_num_node is not None and self.ratio_den_node is not None:
-                self.shape *= self.ratio_num_node.shape.rate / self.ratio_den_node.shape.rate
         if self.add_weight is not None:
             self.shape *= self.add_weight
 

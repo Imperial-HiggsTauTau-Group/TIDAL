@@ -23,7 +23,7 @@ def get_args():
     return parser.parse_args()
 
 
-def get_counts(base_path, era, runs, var):
+def get_counts(base_path, era, var):
     """Return bin edges and raw (un-normalised) counts for one era."""
     bin_edges = get_bin_edges(var)
     N = len(bin_edges) - 1
@@ -125,8 +125,8 @@ def main():
     var = config["variable_definitions"][config["variable"]]
     hist_dict = {}
     
-    for era, runs in config["era_definitions"].items():
-        hist_dict[era] = get_counts(base_path, era, runs, var)
+    for era in config["era_definitions"]:
+        hist_dict[era] = get_counts(base_path, era, var)
 
     lumi_by_run = LUMI[config["year"]]
     lumi_dict = build_lumi_dict(config["era_definitions"], lumi_by_run)

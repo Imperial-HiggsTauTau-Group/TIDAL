@@ -66,6 +66,24 @@ def get_files_to_combine(eras_to_combine, channel, scheme, directory, f_name):
 
     return files_to_combine, cmb_file, era
 
+def get_sub_era_files_to_combine(sub_eras, era, channel, scheme, directory, f_name):
+    # Combine datacards of the same era produced separately for sub-eras (e.g. CDE, F, G, HI),
+    # stored as <directory>/<sub_era>/<era>/<scheme>/<channel>/<f_name>
+    print(f"\nSUB-ERAS OF {era} TO COMBINE: {sub_eras}")
+    era_f_name = f_name.replace("$ERA", era)
+    files_to_combine = []
+    for sub_era in sub_eras:
+        src_file = os.path.join(directory, sub_era, era, scheme, channel, era_f_name)
+        if not os.path.isfile(src_file):
+            raise FileNotFoundError(f"Missing datacard for sub-era {sub_era}: {src_file}")
+        files_to_combine.append(src_file)
+        print(f">> FILE: {src_file}")
+    cmb_directory = os.path.join(directory, "combined_" + "_".join(sub_eras), era, scheme, channel)
+    os.makedirs(cmb_directory, exist_ok=True)
+    cmb_file = os.path.join(cmb_directory, era_f_name)
+    # the era label is used by the plotter for the luminosity
+    return files_to_combine, cmb_file, era
+
 def main(args, eras):
 
     # NEW
@@ -75,6 +93,10 @@ def main(args, eras):
     output_path = config["output_path"]
     channels = config["channels"]
     schemes = config["schemes"]
+    if args.sub_eras:
+        # By default the sub-era folders are siblings of the config's output_path
+        # (e.g. output_path = .../after_residual_corr/CDE -> .../after_residual_corr)
+        sub_era_dir = args.sub_era_dir or os.path.dirname(os.path.normpath(output_path))
 
     for channel in channels:
         for scheme in schemes:
@@ -136,7 +158,10 @@ def main(args, eras):
                                 f_name = f_name.replace('$ERA', '$ERA_ss')
                             print(f"Identified files to merge: {f_name}")
                             # Get files to combine and target file
-                            files_to_combine, cmb_file, era_name = get_files_to_combine(eras, channel, scheme, output_path, f_name)
+                            if args.sub_eras:
+                                files_to_combine, cmb_file, era_name = get_sub_era_files_to_combine(args.sub_eras, eras[0], channel, scheme, sub_era_dir, f_name)
+                            else:
+                                files_to_combine, cmb_file, era_name = get_files_to_combine(eras, channel, scheme, output_path, f_name)
                             # Actually combine the histos
                             tree_name = f"{channel}_{cat}{nodename}"
                             combine_histos(files_to_combine, cmb_file)
@@ -153,20 +178,25 @@ def get_args():
     parser.add_argument('--all', action='store_true', help='Combine all eras')
     parser.add_argument('--only22', action='store_true', help='Combine 2022 eras')
     parser.add_argument('--only23', action='store_true', help='Combine 2023 eras')
+    parser.add_argument('--sub_eras', nargs='+', default=None, help='Combine sub-era datacards of a single era, e.g. --sub_eras CDE F G HI')
+    parser.add_argument('--era', type=str, default='Run3_2024', help='Era the sub-eras belong to (used with --sub_eras)')
+    parser.add_argument('--sub_era_dir', type=str, default=None, help='Directory containing the sub-era folders (default: parent of output_path in the config)')
     input_args = parser.parse_args()
     return input_args
 
 if __name__ == "__main__":
 
     input_args = get_args()
-    if input_args.all:
+    if input_args.sub_eras:
+        eras_to_combine = [input_args.era]
+    elif input_args.all:
         eras_to_combine = ['Run3_2022', 'Run3_2022EE', 'Run3_2023', 'Run3_2023BPix']
     elif input_args.only22:
         eras_to_combine = ['Run3_2022', 'Run3_2022EE']
     elif input_args.only23:
         eras_to_combine = ['Run3_2023', 'Run3_2023BPix']
     else:
-        raise ValueError("Please specify which eras to combine using --all, --only22, or --only23")
+        raise ValueError("Please specify which eras to combine using --all, --only22, --only23, or --sub_eras")
 
     main(input_args, eras_to_combine)
 

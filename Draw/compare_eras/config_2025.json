@@ -1,6 +1,6 @@
 {
     "input_path": "Draw/plots/a1-investigation/data-to-data/Run3_2025/control/tt/datacard_m_vis_cp_inclusive_tt_Run3_2025.root",
-    "output_path": "Draw/plots/a1-investigation/data-to-data/Run3_2025/mvis.png",
+    "output_path": "Draw/plots/a1-investigation/data-to-data/mvis-2025.png",
     "year": "Run3_2025",
     "channel": "tt",
     "reference_era": "2025D",

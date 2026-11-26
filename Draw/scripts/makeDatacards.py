@@ -215,18 +215,12 @@ if __name__ == "__main__":
 
     channels = config["channels"]
     eras = config["eras"]
-    specific_eras = config.get("specific_eras", None)
     parameter_path = config["parameter_path"]
     schemes = config["schemes"]
     run_systematics = config["run_systematics"]
     id_vsjet_algo = config.get("id_vsjet_algo", "PNet")
     id_vsjet_wp = config.get("id_vsjet_wp", 7)
     apply_residual_corrections = config.get("apply_residual_corrections", False)
-
-    if specific_eras is not None and len(eras) > 1:
-        raise ValueError(
-            "You cannot specify both 'specific_eras' and multiple 'eras' in the configuration."
-        )
 
     available_channels = ["mm", "ee", "mt", "tt", "et"]
     for channel in channels:
@@ -318,6 +312,7 @@ if __name__ == "__main__":
                         additional_selections = [additional_selections]
                     set_alias = setting.get("set_alias", "")
                     reweighting = setting.get("reweighting", "*(1)")
+                    specific_eras = setting.get("specific_eras", None)
                     extra_identifier = setting.get("extra_identifier", "")
                     aiso = setting.get("aiso", False)
                     same_sign = setting.get("same_sign", False)
@@ -332,6 +327,10 @@ if __name__ == "__main__":
                         parameter_file = f"{parameter_path}/{era}/params_DYfiltered.yaml"
                     if set_alias and set_alias in available_aliases:
                         set_alias = available_aliases[set_alias]
+                    if specific_eras is not None and len(eras) > 1:
+                        raise ValueError(
+                            "You cannot specify both 'specific_eras' and multiple 'eras' in the configuration."
+                        )
 
                     for cat in category:
                         if set_alias:
